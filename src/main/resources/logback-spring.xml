@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration scan="true" debug="true">
+    <include resource="org/springframework/boot/logging/logback/defaults.xml"/>
+    <appender name="stdout" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
+            <charset>UTF-8</charset>
+            <pattern>%d{yyyy-MM-dd HH:mm:ss} %.-10p [%-5.100t] \(%class{0}.java:%L\) - %msg%n</pattern>
+        </encoder>
+    </appender>
+    <appender name="dailyout" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>../logs/govApi.log</file>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>../logs/govApi.log.%d{yyyyMMdd}</fileNamePattern>
+            <maxHistory>30</maxHistory>
+        </rollingPolicy>
+        <encoder class="ch.qos.logback.core.encoder.LayoutWrappingEncoder">
+            <charset>UTF-8</charset>
+            <layout class="ch.qos.logback.classic.PatternLayout">
+                <pattern>%d{yyyy-MM-dd HH:mm:ss} %.-10p [%-5.100t] \(%class{0}.java:%L\) - %msg%n</pattern>
+            </layout>
+        </encoder>
+    </appender>
+    <appender name="analysis" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>../logs/analysis/govApi-analysis.log</file>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>${LOG_PATH}/analysis/govApi-analysis.log.%d{yyyyMMdd}</fileNamePattern>
+            <maxHistory>30</maxHistory>
+        </rollingPolicy>
+        <encoder class="ch.qos.logback.core.encoder.LayoutWrappingEncoder">
+            <charset>UTF-8</charset>
+            <layout class="ch.qos.logback.classic.PatternLayout">
+                <pattern>%d{yyyy-MM-dd HH:mm:ss} \(%class{0}.java:%L\) - %msg%n</pattern>
+            </layout>
+        </encoder>
+    </appender>
+    <!-- Configure the Sentry appender, overriding the logging threshold to the WARN level -->
+
+
+    <springProfile name="local,dev,stage">
+        <property name="LOG_LEVEL" value="DEBUG"/>
+        <property name="JDBC_LOG_LEVEL" value="DEBUG"/>
+    </springProfile>
+    <springProfile name="prod">
+        <property name="LOG_LEVEL" value="INFO"/>
+        <property name="JDBC_LOG_LEVEL" value="ERROR"/>
+    </springProfile>
+
+
+    <!-- Query Loggers -->
+    <logger name="jdbc.sqlonly" level="DEBUG"/>
+    <logger name="jdbc.audit" level="OFF"/>
+    <logger name="jdbc.resultset" level="OFF"/>
+    <logger name="jdbc.connection" level="OFF"/>
+    <logger name="jdbc.resultsettable" level="OFF"/>
+    <logger name="log4jdbc.debug" level="OFF"/>
+    <logger name="jdbc.sqltiming" level="${JDBC_LOG_LEVEL}"/>
+   <!-- <logger name="com.bespin.oauth.config" level="info" additivity="true">
+        <appender-ref ref="stdout"/>
+    </logger>-->Application
+    <!-- Application Loggers -->
+    <logger name="com.dcon" level="${LOG_LEVEL}"/>
+    <!-- IP Check Loggers -->
+<!--    <logger name="com.bespinglobal.framework.security.authentication" level="${LOG_LEVEL}"/>-->
+    <!-- <logger name="org.apache.http.wire" additivity="false" level="debug" /> -->
+    <!-- 3rdparty Loggers -->
+    <logger name="org.mybatis.spring" level="DEBUG"/>
+    <logger name="org.mybatis.spring.SqlSessionUtils" level="DEBUG"/>
+    <logger name="org.mybatis.spring.SqlSessionUtils$SqlSessionSynchronization" level="DEBUG"/>
+    <logger name="org.mybatis.spring.transaction.SpringManagedTransaction" level="DEBUG"/>
+
+
+    <root level="info">
+        <appender-ref ref="stdout"/>
+        <appender-ref ref="dailyout"/>
+    </root>
+
+
+</configuration>

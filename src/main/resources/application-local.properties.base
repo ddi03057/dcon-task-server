@@ -1,0 +1,14 @@
+server.port=8080
+front.env=LOCAL
+
+spring.datasource.driverClassName=net.sf.log4jdbc.sql.jdbcapi.DriverSpy
+spring.datasource.url=jdbc:log4jdbc:mariadb://34.64.213.62:3306/dcon?serverTimezone=Asia/Seoul
+#spring.datasource.username=root
+#spring.datasource.password=1q2w3e4r5t!
+spring.datasource.username=dcon
+spring.datasource.password=dcon123!
+
+logging.config=classpath:logback-spring.xml
+
+dcon.jwtSecret: dconthesecretkey1234012300040
+dcon.jwtExpiration= 86400000

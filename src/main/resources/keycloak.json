@@ -1,0 +1,10 @@
+{
+  "realm": "dcon",
+  "auth-server-url": "http://localhost:8081/auth/",
+  "ssl-required": "external",
+  "resource": "dcon-task-backend",
+  "credentials": {
+    "secret": "I1co5j6s0W0Gofp98JCidEP6eSKtTGkU"
+  },
+  "confidential-port": 0
+}

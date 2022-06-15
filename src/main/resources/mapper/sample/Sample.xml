@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dcon.dcontaskserver.sample.mapper.SampleMapper">
+
+    <sql id="sampleList">
+        SELECT username AS userName,
+               useremail AS userEmail,
+               seq AS seq
+        FROM sample
+
+
+    </sql>
+
+    <select id="selectSampleListCountTotal" parameterType="kr.co.dcon.taskserver.sample.dto.SampleListReqDTO" resultType="java.lang.Integer">
+        SELECT COUNT(*)
+        FROM(
+        <include refid="sampleList"/>
+        )A
+    </select>
+
+    <select id="selectSampleList" parameterType="kr.co.dcon.taskserver.sample.dto.SampleListReqDTO" resultType="kr.co.dcon.taskserver.sample.dto.SampleOverView">
+
+        <include refid="sampleList"/>
+
+    </select>
+
+    <select id="selectSampleDetail" parameterType="kr.co.dcon.taskserver.sample.dto.SampleListReqDTO" resultType="kr.co.dcon.taskserver.sample.dto.SampleDTO">
+        SELECT username AS userName,
+                useremail AS userEmail,
+                seq AS seq
+        FROM sample
+        WHERE seq = (SELECT max(seq) FROM sample)
+
+    </select>
+
+    <insert id="sampleInsert" parameterType="kr.co.dcon.taskserver.sample.dto.SampleReqDTO">
+        INSERT INTO sample
+        (userEmail,
+         userName)
+        VALUES (#{userEmail},
+                #{userName}
+                )
+
+    </insert>
+
+    <update id="sampleUpdate" parameterType="kr.co.dcon.taskserver.sample.dto.SampleReqDTO">
+        UPDATE sample
+        SET userEmail = #{userEmail},
+            userName =  #{userName}
+        WHERE seq = #{seq}
+    </update>
+
+    <delete id="deleteSample" parameterType="map">
+
+        DELETE FROM sample   WHERE seq = #{id}
+    </delete>
+
+</mapper>
