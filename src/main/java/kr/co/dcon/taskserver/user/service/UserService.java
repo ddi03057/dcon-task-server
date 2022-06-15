@@ -3,8 +3,6 @@ package kr.co.dcon.taskserver.user.service;
 
 import kr.co.dcon.taskserver.auth.dto.UserSimpleDTO;
 import kr.co.dcon.taskserver.auth.service.CurrentUserService;
-import kr.co.dcon.taskserver.common.constants.CommonConstants;
-import kr.co.dcon.taskserver.common.constants.UserOtherClaim;
 import kr.co.dcon.taskserver.common.util.Utils;
 import kr.co.dcon.taskserver.user.dto.UserChangeDTO;
 import kr.co.dcon.taskserver.user.dto.UserChangePasswordDTO;
@@ -14,39 +12,57 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.map.HashedMap;
 import org.keycloak.KeycloakPrincipal;
 import org.keycloak.KeycloakSecurityContext;
-import org.keycloak.OAuth2Constants;
 import org.keycloak.adapters.springsecurity.token.KeycloakAuthenticationToken;
 import org.keycloak.admin.client.Keycloak;
 import org.keycloak.admin.client.KeycloakBuilder;
-import org.keycloak.admin.client.resource.RealmResource;
-import org.keycloak.admin.client.resource.UserResource;
-import org.keycloak.admin.client.resource.UsersResource;
 import org.keycloak.representations.idm.CredentialRepresentation;
 import org.keycloak.representations.idm.UserRepresentation;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.ws.rs.BadRequestException;
-import javax.ws.rs.NotFoundException;
 import javax.ws.rs.core.Response;
-import java.util.*;
-
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 @Service
 @Slf4j
 //@AllArgsConstructor
 public class UserService {
 
-    //  @Autowired
-    //  private AuthClient authClient;
+    @Value("${keycloak.auth-server-url}")
+    public String authServerUrl;
+
+    @Value("${keycloak.realm}")
+    private String realm;
+
+    @Value("${keycloak.resource}")
+    private String clientId;
+
+    @Value("${dcon.keycloak.rest.clientSecret}")
+    private String clientSecret;
     @Autowired
     private CurrentUserService currentUserService;
 
     private static final String RESULT_STRING = "result";
 
+
+    private Keycloak getInstance() {
+        return KeycloakBuilder
+                .builder()
+                .serverUrl(authServerUrl)
+                .realm(realm)
+             //   .username("dcon-master")
+             //   .password("1q2w3e4r5t!!Q")
+                .clientId(clientId)
+                .clientSecret(clientSecret)
+                .build();
+    }
 
     public UserDTO selectCurrentUser() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
@@ -57,7 +73,11 @@ public class UserService {
 
 
         log.info("currentUserService.;::{}", currentUserService.getCurrentUser().toString());
+        String nowToken = context.getTokenString();
 
+        log.info("nowToken:::{}", "Bearer " + nowToken);
+        currentUserService.getCurrentUser().setToken(nowToken);
+        log.info("currentUserService.;::{}", currentUserService.getCurrentUser().toString());
 
 //        UsersResource userResource = getKeycloakUserResource();
 //        UserRepresentation user = new UserRepresentation();
@@ -66,10 +86,10 @@ public class UserService {
     }
 
     public Map<String, String> updateUserPassword(UserChangePasswordDTO changePasswordmodel) {
-        log.info("changePasswordmodel::{}",changePasswordmodel.toString());
+       log.info("changePasswordmodel::{}",changePasswordmodel.toString());
 
         Map<String, String> resultMap = new HashMap<>();
-
+  /*
         Keycloak keycloak = buildKeycloak();
         RealmResource realmResource = keycloak.realm("dcon");
         log.info("realmResource.users()::{}",realmResource.users());
@@ -91,9 +111,10 @@ public class UserService {
             resultMap.put(RESULT_STRING, "Server Error");
             return resultMap;
         }
-
+*/
         return resultMap;
     }
+/*
 
     public Keycloak buildKeycloak() {
         return KeycloakBuilder.builder().serverUrl("http://localhost:8081/auth/") //
@@ -113,11 +134,12 @@ public class UserService {
         credential.setValue(password);
         return credential;
     }
+*/
 
     @Transactional
     public Map<String, String> updateUser(String userId, UserChangeDTO useChg) {
         Map<String, String> resultMap = new HashMap<>();
-        String result = "Y";
+       /* String result = "Y";
         Keycloak keycloak = buildKeycloak();
         RealmResource realmResource = keycloak.realm("dcon");
         log.info("realmResource.users()::{}",realmResource.users());
@@ -147,7 +169,7 @@ public class UserService {
                 result = "DB ERROR";
                 resultMap.put(RESULT_STRING, result);
                 log.info("updateUser5::{}",e.getMessage());
-            }
+            }*/
      //   }
         return resultMap;
     }
@@ -159,6 +181,11 @@ public class UserService {
         String password = Utils.getRandomString();
         user.setPassword(password);
         try {
+
+            CredentialRepresentation credential = new CredentialRepresentation();
+            credential.setType(CredentialRepresentation.PASSWORD);
+            credential.setValue(password);
+
             UserRepresentation createUser = new UserRepresentation();
             createUser.setId(user.getUserId());
             createUser.setUsername(user.getUserName());
@@ -167,29 +194,36 @@ public class UserService {
             createUser.setLastName(user.getLastName());
             createUser.setEnabled(true);
             createUser.setEmailVerified(true);
+            createUser.setCredentials(Arrays.asList(credential));
+
+
 
             Map<String, List<String>> attributes = new HashedMap<>();
 //            attributes.put(UserOtherClaim.LOCALE,  Arrays.asList(user.getLocale()));
 //            attributes.put(UserOtherClaim.CREATE_ID, Arrays.asList(currentUser.getUserId()));
+            response = getInstance().realm(realm).users().create(createUser);
 
-            createUser.setAttributes(attributes);
-            CredentialRepresentation credential = new CredentialRepresentation();
-            credential.setTemporary(false);
-            credential.setType(CredentialRepresentation.PASSWORD);
-            credential.setValue(user.getPassword());
-            createUser.setCredentials(Arrays.asList(credential));
+            int status = response.getStatus();
 
-            Keycloak keycloak = buildKeycloak();
-            RealmResource realmResource = keycloak.realm("dcon");
-            UsersResource usersResource = realmResource.users();
-//            log.info("realmResource.users()::{}",realmResource.users());
-            log.info("updateUser::");
-            UserResource userResource = (UserResource) keycloak.realm("dcon").users();
-         //   UserResource userResource = realmResource.users().get(currentUserService.getCurrentUser().getUserId());
-            log.info("updateUser1::");
-            log.info("createUser: {}", createUser);
-            response = usersResource.create(createUser);
-            log.info("response: {}", response.toString());
+            log.info("status:::{}",status);
+//            createUser.setAttributes(attributes);
+//            CredentialRepresentation credential = new CredentialRepresentation();
+//            credential.setTemporary(false);
+//            credential.setType(CredentialRepresentation.PASSWORD);
+//            credential.setValue(user.getPassword());
+//            createUser.setCredentials(Arrays.asList(credential));
+
+//            Keycloak keycloak = buildKeycloak();
+//            RealmResource realmResource = keycloak.realm("dcon");
+//            UsersResource usersResource = realmResource.users();
+////            log.info("realmResource.users()::{}",realmResource.users());
+//            log.info("updateUser::");
+//            UserResource userResource = (UserResource) keycloak.realm("dcon").users();
+//         //   UserResource userResource = realmResource.users().get(currentUserService.getCurrentUser().getUserId());
+//            log.info("updateUser1::");
+//            log.info("createUser: {}", createUser);
+//            response = usersResource.create(createUser);
+//            log.info("response: {}", response.toString());
         } catch (Exception e) {
 
         } finally {

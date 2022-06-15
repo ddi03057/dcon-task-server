@@ -21,6 +21,8 @@ public class UserSimpleDTO{
 	private String empAuthDept;
 	private String useYn;
 
+	private String token;
+
 	//ocp에서  사용자 이메일이 바로 아이디임 
 	// 따로 아이디 관리 안함.
 	public String getUserId() {
