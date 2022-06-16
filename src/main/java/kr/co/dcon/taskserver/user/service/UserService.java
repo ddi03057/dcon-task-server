@@ -3,6 +3,7 @@ package kr.co.dcon.taskserver.user.service;
 
 import kr.co.dcon.taskserver.auth.service.CurrentUserService;
 import kr.co.dcon.taskserver.common.constants.CommonConstants;
+import kr.co.dcon.taskserver.common.constants.ResultCode;
 import kr.co.dcon.taskserver.common.constants.UserOtherClaim;
 import kr.co.dcon.taskserver.common.util.Utils;
 import kr.co.dcon.taskserver.user.dto.UserChangeDTO;
@@ -59,28 +60,6 @@ public class UserService {
     private static final String RESULT_STRING = "result";
 
 
-    /*    private Keycloak getInstance() {
-            return KeycloakBuilder
-                    .builder()
-                    .serverUrl(authServerUrl)
-                    .grantType(OAuth2Constants.CLIENT_CREDENTIALS)
-                    .realm(realm)
-                 //   .username("dcon-master")
-                 //   .password("1q2w3e4r5t!!Q")
-                    .clientId(clientId)
-                    .clientSecret(clientSecret)
-                    .resteasyClient(resteasyClient)
-                    .build();
-        }*/
-/*
-return KeycloakBuilder.builder().serverUrl(url)
-				.grantType(OAuth2Constants.CLIENT_CREDENTIALS)
-				.realm(MASTER)
-				.clientId(masterClientId)
-				.clientSecret(masterClientSecret)
-				.resteasyClient(resteasyClient)
-				.build();
- */
     public UserDTO selectCurrentUser() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         KeycloakAuthenticationToken token = (KeycloakAuthenticationToken) authentication;
@@ -198,34 +177,32 @@ return KeycloakBuilder.builder().serverUrl(url)
     }
 
     @Transactional
-    public void createUser(UserCreateDTO user) {
+    public int createUser(UserCreateDTO user) {
         log.info("createUser:::");
-        Response response = null;
+
+        int insertResultCnt = 0;
+
         try {
             // step 1: insert in Keycloak
             String password = Utils.getRandomString();
-            response = insertKeycloakUserInfo(user, password);
+
+            insertResultCnt = insertKeycloakUserInfo(user, password);
 
             // step 02: insert in DB & send email
-            String keycloakId = CreatedResponseUtil.getCreatedId(response);
-            user.setKeycloakId(keycloakId);
+          //  String keycloakId = CreatedResponseUtil.getCreatedId(response);
+          //  user.setKeycloakId(keycloakId);
 
         } catch (Exception e) {
             log.info("Exception getMessage::{}", e.getMessage());
             log.info("Exception toString::{}", e.toString());
-            //  resultMap.put(RESULT_STRING, CommonConstants.NO);
-        } finally {
-            log.info("finally");
-            // 20210923 smk 소나큐부 버그 fix
-            if (response != null) {
-                response.close();
-            }
-        }
 
+            //  resultMap.put(RESULT_STRING, CommonConstants.NO);
+        }
+        return insertResultCnt;
     }
 
-    public Response insertKeycloakUserInfo(UserCreateDTO user, String password) {
-        Response response = null;
+    public int insertKeycloakUserInfo(UserCreateDTO user, String password) {
+        int cnt = 0;
         // 1-1. Configure Keycloak
         try {
             Keycloak keycloak = buildKeycloak();
@@ -247,17 +224,22 @@ return KeycloakBuilder.builder().serverUrl(url)
                 String userId = currentUserService.getCurrentUser().getUserId();
                 List<UserRepresentation> search = realmResource.users().search(userId); //
                 log.info("search.size()::{}",search.size());
-                response = usersResource.create(createUser);
+                if(search.size() > 0){
+                    cnt = search.size();
+                }else{
+                    usersResource.create(createUser);
+                }
+
             } catch (Exception e) {
-                log.info("wwwww111::{}", e.toString());
-                log.info("wwwww111 getMessage::{}", e.getMessage());
+                cnt = 2 ;
             }
             log.info("createUser: {}", createUser);
         } catch (Exception e) {
+            cnt = 2 ;
             log.info("wwwww::{}", e.toString());
             log.info("wwwww getMessage::{}", e.getMessage());
         }
-        return response;
+        return cnt;
     }
 
     public Keycloak buildKeycloak() {

@@ -100,12 +100,18 @@ public class UserController {
     @PostMapping("")
     public ResponseDTO<NoResultDTO> createUser(@Valid @RequestBody UserCreateDTO createUser) {
         log.info("user.toString()::{}",createUser.toString());
-        try {
+        ResultCode resultCode = ResultCode.OK;
+        int cnt = userService.createUser(createUser);
 
-            userService.createUser(createUser);
-        } catch (Exception e) {
-            new ResponseDTO<>(ResultCode.ETC_ERROR);
+        if(cnt == 0){
+            resultCode = ResultCode.OK;
+        }else if(cnt == 1){
+            resultCode = ResultCode.USER_EXIST_ALREADY;
+        }else if(cnt == 3){
+            resultCode = ResultCode.ETC_ERROR;
         }
-        return new ResponseDTO<>(ResultCode.OK);
+
+        return new ResponseDTO<>(resultCode, null);
+
     }
 }

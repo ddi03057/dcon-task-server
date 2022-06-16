@@ -13,18 +13,15 @@ import java.util.Date;
 @ToString
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class ResponseDTO<T> implements Serializable {
-    /**
-	 *
-	 */
-	private static final long serialVersionUID = 1L;
-
-	private Date timestamp = new Date();
+    private Date timestamp = new Date();
 
     private Integer code;
 
     private String codeName;
 
     private String desc;
+
+    private String descKr;
 
     private T resultData;
 
@@ -41,5 +38,6 @@ public class ResponseDTO<T> implements Serializable {
         this.code = resultCode.getCode();
         this.codeName = resultCode.name();
         this.desc = resultCode.getDescription();
+        this.descKr = resultCode.getDescriptionKr();
     }
 }
