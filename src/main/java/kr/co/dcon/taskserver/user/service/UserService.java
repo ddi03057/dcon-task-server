@@ -54,24 +54,24 @@ public class UserService {
     @Autowired
     private CurrentUserService currentUserService;
 
-   // @Autowired
+    // @Autowired
     ResteasyClient resteasyClient;
     private static final String RESULT_STRING = "result";
 
 
-/*    private Keycloak getInstance() {
-        return KeycloakBuilder
-                .builder()
-                .serverUrl(authServerUrl)
-                .grantType(OAuth2Constants.CLIENT_CREDENTIALS)
-                .realm(realm)
-             //   .username("dcon-master")
-             //   .password("1q2w3e4r5t!!Q")
-                .clientId(clientId)
-                .clientSecret(clientSecret)
-                .resteasyClient(resteasyClient)
-                .build();
-    }*/
+    /*    private Keycloak getInstance() {
+            return KeycloakBuilder
+                    .builder()
+                    .serverUrl(authServerUrl)
+                    .grantType(OAuth2Constants.CLIENT_CREDENTIALS)
+                    .realm(realm)
+                 //   .username("dcon-master")
+                 //   .password("1q2w3e4r5t!!Q")
+                    .clientId(clientId)
+                    .clientSecret(clientSecret)
+                    .resteasyClient(resteasyClient)
+                    .build();
+        }*/
 /*
 return KeycloakBuilder.builder().serverUrl(url)
 				.grantType(OAuth2Constants.CLIENT_CREDENTIALS)
@@ -103,7 +103,7 @@ return KeycloakBuilder.builder().serverUrl(url)
     }
 
     public Map<String, String> updateUserPassword(UserChangePasswordDTO changePasswordmodel) {
-       log.info("changePasswordmodel::{}",changePasswordmodel.toString());
+        log.info("changePasswordmodel::{}", changePasswordmodel.toString());
 
         Map<String, String> resultMap = new HashMap<>();
 
@@ -122,7 +122,7 @@ return KeycloakBuilder.builder().serverUrl(url)
             resultMap.put(RESULT_STRING, CommonConstants.NO);
             return resultMap;
         } catch (Exception e) {
-            log.info("Exception::{}",e.toString());
+            log.info("Exception::{}", e.toString());
             resultMap.put(RESULT_STRING, "Server Error");
             return resultMap;
         }
@@ -157,11 +157,11 @@ return KeycloakBuilder.builder().serverUrl(url)
     public Map<String, String> updateUser(String userId, UserChangeDTO useChg) {
         Map<String, String> resultMap = new HashMap<>();
 
-        log.info("useChg.toString()::{}",useChg.toString());
+        log.info("useChg.toString()::{}", useChg.toString());
         Keycloak keycloak = buildKeycloak();
 
         RealmResource realmResource = keycloak.realm(realm);
-      //  String userId = currentUserService.getCurrentUser().getUserId();
+        //  String userId = currentUserService.getCurrentUser().getUserId();
 
         UserResource usersResource = realmResource.users().get(userId);
 
@@ -181,25 +181,24 @@ return KeycloakBuilder.builder().serverUrl(url)
             updateUser.setEmail("suseok.park");
             usersResource.update(updateUser);
         } catch (NotFoundException notFoundException) {
-         //   result = "NotFoundException";
-        //    resultMap.put(RESULT_STRING, result);
-            log.info("updateUser4::{}",notFoundException.getMessage());
+            //   result = "NotFoundException";
+            //    resultMap.put(RESULT_STRING, result);
+            log.info("updateUser4::{}", notFoundException.getMessage());
         } catch (Exception e) {
-         //   result = "DB ERROR";
-         //   resultMap.put(RESULT_STRING, result);
-          //  log.info("updateUser5::{}",e.getMessage());
+            //   result = "DB ERROR";
+            //   resultMap.put(RESULT_STRING, result);
+            //  log.info("updateUser5::{}",e.getMessage());
         }
 
 
-      //  updateUser = setUserRepresentation(updateUser, useChg);
-
+        //  updateUser = setUserRepresentation(updateUser, useChg);
 
 
         return resultMap;
     }
 
     @Transactional
-    public void createUser( UserCreateDTO user) {
+    public void createUser(UserCreateDTO user) {
         log.info("createUser:::");
         Response response = null;
         try {
@@ -212,9 +211,9 @@ return KeycloakBuilder.builder().serverUrl(url)
             user.setKeycloakId(keycloakId);
 
         } catch (Exception e) {
-            log.info("Exception getMessage::{}",e.getMessage());
-            log.info("Exception toString::{}",e.toString());
-          //  resultMap.put(RESULT_STRING, CommonConstants.NO);
+            log.info("Exception getMessage::{}", e.getMessage());
+            log.info("Exception toString::{}", e.toString());
+            //  resultMap.put(RESULT_STRING, CommonConstants.NO);
         } finally {
             log.info("finally");
             // 20210923 smk 소나큐부 버그 fix
@@ -244,16 +243,19 @@ return KeycloakBuilder.builder().serverUrl(url)
             createUser.setCredentials(Arrays.asList(credential));
             log.info("7777");
             // 1-4. Create User in Keycloak
-            try{
-              response = usersResource.create(createUser);
-            }catch (Exception e){
-                log.info("wwwww111::{}",e.toString());
-                log.info("wwwww111 getMessage::{}",e.getMessage());
+            try {
+                String userId = currentUserService.getCurrentUser().getUserId();
+                List<UserRepresentation> search = realmResource.users().search(userId); //
+                log.info("search.size()::{}",search.size());
+                response = usersResource.create(createUser);
+            } catch (Exception e) {
+                log.info("wwwww111::{}", e.toString());
+                log.info("wwwww111 getMessage::{}", e.getMessage());
             }
             log.info("createUser: {}", createUser);
-        }catch (Exception e){
-            log.info("wwwww::{}",e.toString());
-            log.info("wwwww getMessage::{}",e.getMessage());
+        } catch (Exception e) {
+            log.info("wwwww::{}", e.toString());
+            log.info("wwwww getMessage::{}", e.getMessage());
         }
         return response;
     }
@@ -271,7 +273,7 @@ return KeycloakBuilder.builder().serverUrl(url)
                 .username("admin")
                 .password("1q2w3e4r5t!!Q")
                 .clientId("admin-cli")
-                    .build();
+                .build();
 //                .realm(realm) //
 //                .grantType(OAuth2Constants.CLIENT_CREDENTIALS)
 //                .clientId(clientId) //
@@ -289,7 +291,7 @@ return KeycloakBuilder.builder().serverUrl(url)
     public UserRepresentation setInsertUserRepresentation(UserRepresentation createUser,
                                                           UserCreateDTO user) {
 
-        String userFullName = Objects.equals("en", user.getLocale())? user.getFirstName() + " " + user.getLastName(): user.getLastName() + user.getFirstName();
+        String userFullName = Objects.equals("en", user.getLocale()) ? user.getFirstName() + " " + user.getLastName() : user.getLastName() + user.getFirstName();
 
         createUser.setId(user.getUserId());
         createUser.setUsername(user.getUserName());
@@ -297,16 +299,16 @@ return KeycloakBuilder.builder().serverUrl(url)
         createUser.setFirstName(user.getFirstName());
         createUser.setLastName(user.getLastName());
         createUser.setEnabled(true);
-       // createUser.setEmailVerified(true);
+        // createUser.setEmailVerified(true);
         Map<String, List<String>> attributes = new HashedMap<>();
         log.info("11");
-        attributes.put(UserOtherClaim.LOCALE,  Arrays.asList(user.getLocale()));
+        attributes.put(UserOtherClaim.LOCALE, Arrays.asList(user.getLocale()));
         log.info("22");
 //        attributes.put(UserOtherClaim.CREATE_ID, Arrays.asList(currentUser.getUserId()));
 //        attributes.put(UserOtherClaim.RECEIVE_SMS, Arrays.asList(user.getReceiveSMS()? "Y": "N"));
 //        attributes.put(UserOtherClaim.USER_MBL_TEL_CNTR_CD, Arrays.asList(user.getUserTelNoCtrCd()));
 //        attributes.put(UserOtherClaim.USER_TEL_NO, Arrays.asList(user.getUserTelNo()));
-        attributes.put(UserOtherClaim.USER_NAME,  Arrays.asList(userFullName));
+        attributes.put(UserOtherClaim.USER_NAME, Arrays.asList(userFullName));
         log.info("33");
         createUser.setAttributes(attributes);
         log.info("44");
