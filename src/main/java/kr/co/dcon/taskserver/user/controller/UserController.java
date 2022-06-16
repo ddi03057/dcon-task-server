@@ -17,10 +17,16 @@ import kr.co.dcon.taskserver.user.dto.UserDTO;
 import kr.co.dcon.taskserver.user.service.UserService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.StringUtils;
+import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
+import org.keycloak.admin.client.Keycloak;
+import org.keycloak.admin.client.KeycloakBuilder;
+import org.keycloak.representations.idm.CredentialRepresentation;
+import org.keycloak.representations.idm.UserRepresentation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
-
+import static java.util.Arrays.asList;
 import javax.validation.Valid;
+import javax.ws.rs.core.Response;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -92,10 +98,11 @@ public class UserController {
     }
     @ApiOperation(value = "로그인한 사용자 추가")
     @PostMapping("")
-    public ResponseDTO<NoResultDTO> createUser(@Valid @RequestBody UserCreateDTO user) {
-
+    public ResponseDTO<NoResultDTO> createUser(@Valid @RequestBody UserCreateDTO createUser) {
+        log.info("user.toString()::{}",createUser.toString());
         try {
-            userService.createUser(user);
+
+            userService.createUser(createUser);
         } catch (Exception e) {
             new ResponseDTO<>(ResultCode.ETC_ERROR);
         }

@@ -13,7 +13,7 @@ public class UserChangeDTO {
 	@ApiModelProperty(value = "비밀번호", notes = "비밀번호", example = "abc123")
 	private String password;
 
-	@ApiModelProperty(value = "이메일", notes = "이메일", example = "jihee.kim@bespinglobal.com", required = true)
+	@ApiModelProperty(value = "이메일", notes = "이메일", example = "ripple31222@naver.com", required = true)
 	@NotBlank
 	@Email(message = "이메일 형식에 맞지 않습니다.")
 	private String userEmail;
@@ -22,7 +22,6 @@ public class UserChangeDTO {
 //	@Pattern(regexp = "^(?:\\d\\s?){9,20}$", message = "10 ~ 11 자리의 숫자만 입력 가능합니다.")
 //	private String telNo;
 //
-	private String userTelNoCtrCd;
 
 	@ApiModelProperty(value = "result")
 	private String result;
@@ -30,10 +29,10 @@ public class UserChangeDTO {
 	@ApiModelProperty(value = "사용자 ID")
 	private String userId;
 	
-	@ApiModelProperty(value = "firstName", notes = "firstName", example = "성", required = true)
+	@ApiModelProperty(value = "firstName", notes = "firstName", example = "박", required = true)
 	private String firstName;
 	
-	@ApiModelProperty(value = "lastName", notes = "lastName", example = "이", required = true)
+	@ApiModelProperty(value = "lastName", notes = "lastName", example = "테스트", required = true)
 	private String lastName;
 	
 	private String locale;

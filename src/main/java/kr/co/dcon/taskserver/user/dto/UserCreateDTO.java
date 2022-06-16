@@ -18,6 +18,8 @@ public class UserCreateDTO {
 	private String userTelNo;
 	private Boolean receiveSMS;
 	private String password;
+
+	private String keycloakId;
 //	private List<GroupDTO> groups;
 
 }
