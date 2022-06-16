@@ -1,6 +1,7 @@
 package kr.co.dcon.taskserver.user.controller;
 
 import io.swagger.annotations.ApiParam;
+import kr.co.dcon.taskserver.auth.dto.UserDetailsDTO;
 import kr.co.dcon.taskserver.auth.dto.UserSimpleDTO;
 import kr.co.dcon.taskserver.auth.service.CurrentUserService;
 import kr.co.dcon.taskserver.common.constants.CommonConstants;
@@ -113,5 +114,11 @@ public class UserController {
 
         return new ResponseDTO<>(resultCode, null);
 
+    }
+
+    @ApiOperation(value = "사용자 조회 상세")
+    @GetMapping(value = "{userId}")
+    public ResponseDTO<UserDetailsDTO> selectUserDetail(@ApiParam(value = "userId", required = true, example = "653e297b-5d10-4982-bf1e-d1114415ac97") @PathVariable String userId) {
+        return new ResponseDTO<>(ResultCode.OK, userService.selectUserDetail(userId));
     }
 }

@@ -1,10 +1,12 @@
 package kr.co.dcon.taskserver.user.service;
 
 
+import kr.co.dcon.taskserver.auth.dto.UserDetailsDTO;
 import kr.co.dcon.taskserver.auth.service.CurrentUserService;
 import kr.co.dcon.taskserver.common.constants.CommonConstants;
 import kr.co.dcon.taskserver.common.constants.ResultCode;
 import kr.co.dcon.taskserver.common.constants.UserOtherClaim;
+import kr.co.dcon.taskserver.common.exception.UserAttributeException;
 import kr.co.dcon.taskserver.common.util.Utils;
 import kr.co.dcon.taskserver.user.dto.UserChangeDTO;
 import kr.co.dcon.taskserver.user.dto.UserChangePasswordDTO;
@@ -12,6 +14,7 @@ import kr.co.dcon.taskserver.user.dto.UserCreateDTO;
 import kr.co.dcon.taskserver.user.dto.UserDTO;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.map.HashedMap;
+import org.apache.commons.lang.StringUtils;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
 import org.keycloak.KeycloakPrincipal;
 import org.keycloak.KeycloakSecurityContext;
@@ -59,6 +62,8 @@ public class UserService {
     ResteasyClient resteasyClient;
     private static final String RESULT_STRING = "result";
 
+    public static final Integer FIRST_INDEX = 0;
+    public static final Integer MAX_RESULT = 10000000;
 
     public UserDTO selectCurrentUser() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
@@ -81,6 +86,103 @@ public class UserService {
         return new UserDTO(context);
     }
 
+    public UserDetailsDTO selectUserDetail(String userId) {
+        if (StringUtils.isEmpty(userId)) {
+            throw new IllegalArgumentException("selectUserByUserId() userId can not be empty");
+        }
+
+        Keycloak keycloak = buildKeycloak();
+
+        RealmResource realmResource = keycloak.realm(realm);
+        //  String userId = currentUserService.getCurrentUser().getUserId();
+
+        UserResource userResource = realmResource.users().get(userId);
+
+        UserRepresentation user = userResource.toRepresentation();
+
+        Map<String, List<String>> attributes = user.getAttributes();
+
+        return buildUserDetail(user);
+    }
+    private UserDetailsDTO buildUserDetail(UserRepresentation user) {
+
+        UserDetailsDTO userDetails = new UserDetailsDTO();
+        Map<String, List<String>> attribute = user.getAttributes();
+
+        if (attribute == null ) {
+            throw new UserAttributeException(user.getId());
+        }
+
+        userDetails.setUserId(user.getId());
+        userDetails.setUserEmail(user.getEmail());
+        userDetails.setEmail(user.getEmail());
+        userDetails.setUseYn(Boolean.TRUE.equals(user.isEnabled()) ? CommonConstants.YES: CommonConstants.NO);
+        userDetails.setFirstName(user.getFirstName());
+        userDetails.setLastName(user.getLastName());
+        fetchUserAttribute(userDetails, attribute);
+        return userDetails;
+    }
+
+    private void fetchUserAttribute(UserDetailsDTO userDetails, Map<String, List<String>> attribute) {
+
+        userDetails.setUserName(attribute.get(UserOtherClaim.USER_NAME).get(0));
+   //     userDetails.setUserTelNo(attribute.get(UserOtherClaim.USER_TEL_NO).get(0));
+
+
+
+        if (attribute.get(UserOtherClaim.LOCALE) != null) {
+            userDetails.setLocale(attribute.get(UserOtherClaim.LOCALE).get(0));
+        }
+
+        if (attribute.get(UserOtherClaim.ERROR_CNT) != null) {
+            userDetails.setErrorCnt(Integer.parseInt(attribute.get(UserOtherClaim.ERROR_CNT).get(0)));
+        }
+
+/*
+        if (attribute.get(UserOtherClaim.LAST_LOGIN_DT) != null) {
+            String lastLoginDateString = DateUtils.getDateStrFronTimeStamp(attribute.get(UserOtherClaim.LAST_LOGIN_DT).get(0));
+            userDetails.setLastLoginDate(lastLoginDateString);
+        }
+        if (attribute.get(UserOtherClaim.LAST_LOGIN_DEVICE) != null) {
+            userDetails.setLastLoginDevice(attribute.get(UserOtherClaim.LAST_LOGIN_DEVICE).get(0));
+        }
+
+        if (attribute.get(UserOtherClaim.LAST_LOGIN_IPADDR) != null) {
+            userDetails.setLastLoginIp(attribute.get(UserOtherClaim.LAST_LOGIN_IPADDR).get(0));
+        }
+        if (attribute.get(UserOtherClaim.DISABLE_MULTI_LOGIN) != null) {
+            userDetails.setDisableMultiLoginYn(attribute.get(UserOtherClaim.DISABLE_MULTI_LOGIN).get(0));
+        }
+
+        if (attribute.get(UserOtherClaim.PWD_INIT_YN) != null) {
+            userDetails.setPasswordInitYn(attribute.get(UserOtherClaim.PWD_INIT_YN).get(0));
+        }
+
+        if (attribute.get(UserOtherClaim.PWD_CHG_DT) != null) {
+            String passwordChangeDate = DateUtils.getDateStrFronTimeStamp(attribute.get(UserOtherClaim.PWD_CHG_DT).get(0));
+            userDetails.setPasswordChangeDate(passwordChangeDate);
+        }
+
+
+        if (attribute.get(UserOtherClaim.CREATE_ID) != null) {
+            userDetails.setCreatorId(attribute.get(UserOtherClaim.CREATE_ID).get(0));
+        }
+
+        if (attribute.get(UserOtherClaim.UPDATED) != null) {
+            userDetails.setUpdated(attribute.get(UserOtherClaim.UPDATED).get(0));
+        }
+
+        if (attribute.get(UserOtherClaim.UPDATED_ID) != null) {
+            userDetails.setUpdaterId(attribute.get(UserOtherClaim.UPDATED_ID).get(0));
+        }
+
+        if (attribute.get(UserOtherClaim.ERROR_CNT) != null) {
+            userDetails.setErrorCnt(Integer.parseInt(attribute.get(UserOtherClaim.ERROR_CNT).get(0)));
+        }
+
+     */
+
+    }
     public Map<String, String> updateUserPassword(UserChangePasswordDTO changePasswordmodel) {
         log.info("changePasswordmodel::{}", changePasswordmodel.toString());
 
@@ -221,7 +323,17 @@ public class UserService {
             log.info("7777");
             // 1-4. Create User in Keycloak
             try {
-                String userId = currentUserService.getCurrentUser().getUserId();
+                String userId = user.getUserId();
+
+             //   RealmResource selectRealmResource = keycloak.realm(realm);
+                //  String userId = currentUserService.getCurrentUser().getUserId();
+
+                UserResource selectUsersResource = realmResource.users().get(userId);
+                UserRepresentation userRepresentation = selectUsersResource.toRepresentation();
+                log.info("getId:::::{}",userRepresentation.toString());
+
+                UserResource userResource = realmResource.users().get(user.getKeycloakId());
+                log.info("111search.size()::{}",userResource.toRepresentation());
                 List<UserRepresentation> search = realmResource.users().search(userId); //
                 log.info("search.size()::{}",search.size());
                 if(search.size() > 0){
@@ -254,7 +366,7 @@ public class UserService {
                 .realm("master")
                 .username("admin")
                 .password("1q2w3e4r5t!!Q")
-                .clientId("admin-cli")
+                .clientId("dcon-master")
                 .build();
 //                .realm(realm) //
 //                .grantType(OAuth2Constants.CLIENT_CREDENTIALS)
