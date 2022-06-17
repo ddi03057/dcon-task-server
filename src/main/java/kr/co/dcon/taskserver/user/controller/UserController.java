@@ -57,23 +57,18 @@ public class UserController {
         if (!changePassword.getNewCredential().equals(changePassword.getNewCredentialConfirm())) {
             return new ResponseDTO<>(ResultCode.BAD_REQUEST);
         }
-
+        log.info("changePassword::{}",changePassword.toString());
         UserSimpleDTO currentUser = currentUserService.getCurrentUser();
         try {
-            UserChangePasswordDTO userChangePasswordDTO = new UserChangePasswordDTO();
-            log.info("userChangePasswordDTO::{}",userChangePasswordDTO.toString());
+//            UserChangePasswordDTO userChangePasswordDTO = new UserChangePasswordDTO();
+//            log.info("userChangePasswordDTO::{}",userChangePasswordDTO.toString());
 
-            if (StringUtils.isEmpty(changePassword.getUserId())) {
-                userChangePasswordDTO.setUserId(currentUser.getUserId());
-            }else {
-                log.info("changePassword.getUserId()::{}",changePassword.getUserId());
-                userChangePasswordDTO.setUserId(changePassword.getUserId());
-            }
+
             log.info("changePassword.getNewCredential()::{}",changePassword.getNewCredential());
             log.info("changePassword.getNewCredentialConfirm()::{}",changePassword.getNewCredentialConfirm());
-            userChangePasswordDTO.setNewCredential(changePassword.getNewCredential());
-            userChangePasswordDTO.setNewCredentialConfirm(changePassword.getNewCredentialConfirm());
-            userService.updateUserPassword(userChangePasswordDTO);
+//            userChangePasswordDTO.setNewCredential(changePassword.getNewCredential());
+//            userChangePasswordDTO.setNewCredentialConfirm(changePassword.getNewCredentialConfirm());
+            userService.updateUserPassword(changePassword);
             map.put(RESULT_STRING, CommonConstants.YES);
             map.put("lastPasswordChangeDate", DateUtils.getDateStrFronTimeStamp(String.valueOf(System.currentTimeMillis() )));
         } catch (Exception e) {
@@ -89,7 +84,7 @@ public class UserController {
 
         Map<String, String> token = new HashMap<>();
         try {
-            userService.updateUser(user.getUserId(), user);
+            userService.updateUser(user);
             token.put(RESULT_STRING, CommonConstants.YES);
         } catch (Exception e) {
             token.put(RESULT_STRING, CommonConstants.NO);
@@ -120,5 +115,12 @@ public class UserController {
     @GetMapping(value = "{userId}")
     public ResponseDTO<UserDetailsDTO> selectUserDetail(@ApiParam(value = "userId", required = true, example = "653e297b-5d10-4982-bf1e-d1114415ac97") @PathVariable String userId) {
         return new ResponseDTO<>(ResultCode.OK, userService.selectUserDetail(userId));
+    }
+
+    @ApiOperation(value = "사용자 탈퇴")
+    @DeleteMapping("{userId}")
+    public ResponseDTO<Map<String, String>> userWithdraw(@ApiParam(value = "userId", required = true, example = "653e297b-5d10-4982-bf1e-d1114415ac97") @PathVariable String userId) {
+        userService.withdraw(userId);
+        return new ResponseDTO<>(ResultCode.OK);
     }
 }

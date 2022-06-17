@@ -25,9 +25,9 @@ public class UserSimpleDTO{
 
 	//ocp에서  사용자 이메일이 바로 아이디임 
 	// 따로 아이디 관리 안함.
-	public String getUserId() {
-		return this.userEmail;
-	}
+//	public String getUserId() {
+//		return this.userEmail;
+//	}
 	
 
 }

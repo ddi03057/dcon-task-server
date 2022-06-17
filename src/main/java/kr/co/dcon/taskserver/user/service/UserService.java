@@ -12,6 +12,7 @@ import kr.co.dcon.taskserver.user.dto.UserChangeDTO;
 import kr.co.dcon.taskserver.user.dto.UserChangePasswordDTO;
 import kr.co.dcon.taskserver.user.dto.UserCreateDTO;
 import kr.co.dcon.taskserver.user.dto.UserDTO;
+import kr.co.dcon.taskserver.user.mapper.UserMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.map.HashedMap;
 import org.apache.commons.lang.StringUtils;
@@ -19,7 +20,6 @@ import org.jboss.resteasy.client.jaxrs.ResteasyClient;
 import org.keycloak.KeycloakPrincipal;
 import org.keycloak.KeycloakSecurityContext;
 import org.keycloak.adapters.springsecurity.token.KeycloakAuthenticationToken;
-import org.keycloak.admin.client.CreatedResponseUtil;
 import org.keycloak.admin.client.Keycloak;
 import org.keycloak.admin.client.KeycloakBuilder;
 import org.keycloak.admin.client.resource.RealmResource;
@@ -36,7 +36,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.ws.rs.BadRequestException;
 import javax.ws.rs.NotFoundException;
-import javax.ws.rs.core.Response;
 import java.util.*;
 
 @Service
@@ -58,12 +57,16 @@ public class UserService {
     @Autowired
     private CurrentUserService currentUserService;
 
+    @Autowired
+    private UserMapper userMapper;
+
     // @Autowired
     ResteasyClient resteasyClient;
     private static final String RESULT_STRING = "result";
 
     public static final Integer FIRST_INDEX = 0;
     public static final Integer MAX_RESULT = 10000000;
+
 
     public UserDTO selectCurrentUser() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
@@ -191,11 +194,21 @@ public class UserService {
         Keycloak keycloak = buildKeycloak();
 
         RealmResource realmResource = keycloak.realm(realm);
-        String userId = currentUserService.getCurrentUser().getUserId();
-        UserResource usersResource = realmResource.users().get(userId);
+        String userEmail = changePasswordmodel.getEmail();
+        String userId = userMapper.selectKeyCloakUserId(userEmail);
+
+
+        UserResource userResource = realmResource.users().get(userId);
         CredentialRepresentation credential = setCredential(changePasswordmodel.getNewCredential());
         try {
-            usersResource.resetPassword(credential);
+            userResource.resetPassword(credential);
+
+            UserRepresentation user = userResource.toRepresentation();
+            user.getAttributes().put(UserOtherClaim.ERROR_CNT,Arrays.asList(CommonConstants.ZERO));
+//            user.getAttributes().put(UserOtherClaim.PWD_INIT_YN,Arrays.asList(CommonConstants.YES));
+//            user.getAttributes().put(UserOtherClaim.PWD_CHG_DT, Arrays.asList(String.valueOf(System.currentTimeMillis())));
+//            user.getAttributes().put(UserOtherClaim.SKIP_PWD_CHG_DT, Arrays.asList(String.valueOf(System.currentTimeMillis())));
+            userResource.update(user);
             log.info("try::");
         } catch (BadRequestException e) {
             log.info("BadRequestException::");
@@ -207,44 +220,21 @@ public class UserService {
             resultMap.put(RESULT_STRING, "Server Error");
             return resultMap;
         }
-  /*
-        Keycloak keycloak = buildKeycloak();
-        RealmResource realmResource = keycloak.realm("dcon");
-        log.info("realmResource.users()::{}",realmResource.users());
-        log.info("updateUserPassword::");
-        UserResource userResource = realmResource.users().get(currentUserService.getCurrentUser().getUserId());
-        log.info("updateUserPassword2::");
-        CredentialRepresentation credential = setCredential(changePasswordmodel.getNewCredential());
-        log.info("updateUserPassword3::");
-        try {
-            userResource.resetPassword(credential);
-            log.info("try::");
-        } catch (BadRequestException e) {
-            log.info("BadRequestException::");
-            // credential setvalue시 전 암호와 같은 암호라면 400 에러 발생.
-            resultMap.put(RESULT_STRING, CommonConstants.NO);
-            return resultMap;
-        } catch (Exception e) {
-            log.info("Exception::{}",e.toString());
-            resultMap.put(RESULT_STRING, "Server Error");
-            return resultMap;
-        }
-*/
+
         return resultMap;
     }
 
 
     @Transactional
-    public Map<String, String> updateUser(String userId, UserChangeDTO useChg) {
+    public Map<String, String> updateUser(UserChangeDTO useChg) {
         Map<String, String> resultMap = new HashMap<>();
 
         log.info("useChg.toString()::{}", useChg.toString());
-        Keycloak keycloak = buildKeycloak();
 
-        RealmResource realmResource = keycloak.realm(realm);
         //  String userId = currentUserService.getCurrentUser().getUserId();
-
-        UserResource usersResource = realmResource.users().get(userId);
+        String userEmail = useChg.getUserEmail();
+        String userId = userMapper.selectKeyCloakUserId(userEmail);
+        log.info("userId::{}",userId);
 
 
         try {
@@ -256,11 +246,15 @@ public class UserService {
             param.put(UserOtherClaim.LOCALE, useChg.getLocale());
             param.put("firstName", useChg.getFirstName());
             param.put("lastName", useChg.getLastName());
-            UserRepresentation updateUser = usersResource.toRepresentation();
+            param.put(UserOtherClaim.ERROR_CNT ,"1");
+          //  UserRepresentation updateUser = usersResource.toRepresentation();
 
-            updateUser.getAttributes().put("ko", Collections.singletonList(UserOtherClaim.LOCALE));
-            updateUser.setEmail("suseok.park");
-            usersResource.update(updateUser);
+            resultMap = updateKeyCloakUser(userId,param);
+//
+//            updateUser.getAttributes().put(UserOtherClaim.LOCALE, Collections.singletonList(UserOtherClaim.LOCALE));
+//            updateUser.setEmail("useChg.getUserEmail()");
+//
+//            usersResource.update(updateUser);
         } catch (NotFoundException notFoundException) {
             //   result = "NotFoundException";
             //    resultMap.put(RESULT_STRING, result);
@@ -276,6 +270,48 @@ public class UserService {
 
 
         return resultMap;
+    }
+
+    public Map<String, String> updateKeyCloakUser(String userId, Map<String, String> param) {
+
+        Map<String, String> result = new HashedMap<>();
+
+        Keycloak keycloak = buildKeycloak();
+
+        RealmResource realmResource = keycloak.realm(realm);
+        UserResource userResource = realmResource.users().get(userId);
+
+        UserRepresentation user = userResource.toRepresentation();
+
+        if (param.containsKey("firstName") && param.get("firstName") != null)
+        {
+            user.setFirstName(param.get("firstName"));
+        }
+        if (param.containsKey("lastName") && param.get("lastName") != null) {
+            user.setLastName(param.get("lastName"));
+        }
+
+        Map<String, List<String>> attributes =  user.getAttributes();
+        for (Map.Entry<String, String> entry : param.entrySet()) {
+            if (Objects.equals("fistName", entry.getKey())
+                    || Objects.equals("lastName", entry.getKey())) {
+                continue;
+            }
+
+            attributes.put(entry.getKey(), Arrays.asList(entry.getValue()));
+        }
+        if (this.currentUserService.getCurrentUser() != null) {
+            attributes.put(UserOtherClaim.UPDATED_ID, Arrays.asList(this.currentUserService.getCurrentUser().getUserId()));
+        }
+        attributes.put(UserOtherClaim.UPDATED, Arrays.asList(String.valueOf(System.currentTimeMillis())));
+        try {
+            userResource.update(user);
+            result.put(RESULT_STRING , CommonConstants.YES);
+        }catch (Exception e){
+            result.put(RESULT_STRING , CommonConstants.NO);
+        }
+
+        return result;
     }
 
     @Transactional
@@ -323,21 +359,10 @@ public class UserService {
             log.info("7777");
             // 1-4. Create User in Keycloak
             try {
-                String userId = user.getUserId();
-
-             //   RealmResource selectRealmResource = keycloak.realm(realm);
-                //  String userId = currentUserService.getCurrentUser().getUserId();
-
-                UserResource selectUsersResource = realmResource.users().get(userId);
-                UserRepresentation userRepresentation = selectUsersResource.toRepresentation();
-                log.info("getId:::::{}",userRepresentation.toString());
-
-                UserResource userResource = realmResource.users().get(user.getKeycloakId());
-                log.info("111search.size()::{}",userResource.toRepresentation());
-                List<UserRepresentation> search = realmResource.users().search(userId); //
-                log.info("search.size()::{}",search.size());
-                if(search.size() > 0){
-                    cnt = search.size();
+               int userCount = userMapper.selectKeyCloakUserCount(user);
+                log.info("userCount::{}",userCount);
+                if(userCount > 0){
+                    cnt = userCount;
                 }else{
                     usersResource.create(createUser);
                 }
@@ -345,7 +370,6 @@ public class UserService {
             } catch (Exception e) {
                 cnt = 2 ;
             }
-            log.info("createUser: {}", createUser);
         } catch (Exception e) {
             cnt = 2 ;
             log.info("wwwww::{}", e.toString());
@@ -408,5 +432,14 @@ public class UserService {
         log.info("44");
 
         return createUser;
+    }
+
+    public void withdraw(String userId) {
+
+        Keycloak keycloak = buildKeycloak();
+
+        RealmResource realmResource = keycloak.realm(realm);
+        UsersResource usersResource = realmResource.users();
+        usersResource.delete(userId);
     }
 }

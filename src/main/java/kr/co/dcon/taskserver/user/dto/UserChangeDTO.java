@@ -26,9 +26,7 @@ public class UserChangeDTO {
 	@ApiModelProperty(value = "result")
 	private String result;
 
-	@ApiModelProperty(value = "사용자 ID")
-	private String userId;
-	
+
 	@ApiModelProperty(value = "firstName", notes = "firstName", example = "박", required = true)
 	private String firstName;
 	
