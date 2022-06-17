@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="kr.co.dcon.taskserver.user.mapper.UserMapper">
+
+
+    <select id="selectKeyCloakUserCount" parameterType="kr.co.dcon.taskserver.user.dto.UserCreateDTO" resultType="java.lang.Integer">
+        SELECT COUNT(*)
+        FROM `dcon-keycloak`.USER_ENTITY
+        WHERE email = #{userId}
+
+    </select>
+    <select id="selectKeyCloakUserId" parameterType="String" resultType="string">
+        SELECT id
+        FROM `dcon-keycloak`.USER_ENTITY
+        WHERE email = #{userEmail}
+
+    </select>
+
+
+
+</mapper>
