@@ -24,7 +24,7 @@ public class KeyCloakCurrentUserServiceImpl  implements CurrentUserService{
 		userSimple.setUserId(accessToken.getSubject());
 		userSimple.setUserEmail(accessToken.getEmail());
 		userSimple.setUserName(accessToken.getEmail());
-		userSimple.setUserNm((String)otherClaims.get(UserOtherClaim.USER_NAME));
+		userSimple.setUserName((String)otherClaims.get(UserOtherClaim.USER_NAME));
 //		userSimple.setCompanyCode((String)otherClaims.get(UserOtherClaim.COMPANY_CODE));
 //		userSimple.setCustomerCode((String)otherClaims.get(UserOtherClaim.CUSTOMER_CODE));
 //		userSimple.setDeptCode((String)otherClaims.get(UserOtherClaim.CUS_DEPT_CD));

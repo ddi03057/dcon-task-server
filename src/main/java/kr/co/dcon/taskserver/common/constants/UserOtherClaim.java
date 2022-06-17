@@ -21,8 +21,7 @@ public final class UserOtherClaim {
 	public static final String UPDATED = "UPDT_DT";
 	public static final String UPDATED_ID = "UPDT_ID";
 	public static final String ERROR_CNT = "ERROR_CNT";
-	public static final String LOCALE = "locale";
-	public static final String CUR_CMPN_ID = "CUR_CMPN_ID";
-	public static final String CUR_GRP_ID = "CUR_GRP_ID";
+	public static final String LOCALE = "USER_LOCALE";
+	public static final String AUTH = "USER_AUTH";
 
 }

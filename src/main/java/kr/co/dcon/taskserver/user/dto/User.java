@@ -1,9 +1,8 @@
 package kr.co.dcon.taskserver.user.dto;
 
 //import kr.co.dcon.taskserver.auth.dto.RoleDTO;
-import lombok.Data;
 
-import java.util.Set;
+import lombok.Data;
 
 @Data
 public class User {

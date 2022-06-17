@@ -4,7 +4,6 @@ package kr.co.dcon.taskserver.user.service;
 import kr.co.dcon.taskserver.auth.dto.UserDetailsDTO;
 import kr.co.dcon.taskserver.auth.service.CurrentUserService;
 import kr.co.dcon.taskserver.common.constants.CommonConstants;
-import kr.co.dcon.taskserver.common.constants.ResultCode;
 import kr.co.dcon.taskserver.common.constants.UserOtherClaim;
 import kr.co.dcon.taskserver.common.exception.UserAttributeException;
 import kr.co.dcon.taskserver.common.util.Utils;
@@ -25,6 +24,7 @@ import org.keycloak.admin.client.KeycloakBuilder;
 import org.keycloak.admin.client.resource.RealmResource;
 import org.keycloak.admin.client.resource.UserResource;
 import org.keycloak.admin.client.resource.UsersResource;
+import org.keycloak.representations.AccessToken;
 import org.keycloak.representations.idm.CredentialRepresentation;
 import org.keycloak.representations.idm.UserRepresentation;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -80,11 +80,17 @@ public class UserService {
         String nowToken = context.getTokenString();
 
         log.info("nowToken:::{}", "Bearer " + nowToken);
-        currentUserService.getCurrentUser().setToken(nowToken);
-        log.info("currentUserService.;::{}", currentUserService.getCurrentUser().toString());
 
-//        UsersResource userResource = getKeycloakUserResource();
-//        UserRepresentation user = new UserRepresentation();
+
+        AccessToken accessToken = context.getToken();
+        String userName = String.valueOf(accessToken.getOtherClaims().get(UserOtherClaim.USER_NAME));
+        String userLocale = String.valueOf(accessToken.getOtherClaims().get(UserOtherClaim.LOCALE));
+        log.info("userLocale;::{}", userLocale);
+        currentUserService.getCurrentUser().setUserName(userName);
+        currentUserService.getCurrentUser().setLocale(userLocale);
+        log.info("currentUserService.;::{}", currentUserService.getCurrentUser().toString());
+        log.info("accessToken;::{}", accessToken.getOtherClaims().get("locale"));
+
 
         return new UserDTO(context);
     }
@@ -97,7 +103,6 @@ public class UserService {
         Keycloak keycloak = buildKeycloak();
 
         RealmResource realmResource = keycloak.realm(realm);
-        //  String userId = currentUserService.getCurrentUser().getUserId();
 
         UserResource userResource = realmResource.users().get(userId);
 
@@ -107,19 +112,20 @@ public class UserService {
 
         return buildUserDetail(user);
     }
+
     private UserDetailsDTO buildUserDetail(UserRepresentation user) {
 
         UserDetailsDTO userDetails = new UserDetailsDTO();
         Map<String, List<String>> attribute = user.getAttributes();
 
-        if (attribute == null ) {
+        if (attribute == null) {
             throw new UserAttributeException(user.getId());
         }
 
         userDetails.setUserId(user.getId());
         userDetails.setUserEmail(user.getEmail());
         userDetails.setEmail(user.getEmail());
-        userDetails.setUseYn(Boolean.TRUE.equals(user.isEnabled()) ? CommonConstants.YES: CommonConstants.NO);
+        userDetails.setUseYn(Boolean.TRUE.equals(user.isEnabled()) ? CommonConstants.YES : CommonConstants.NO);
         userDetails.setFirstName(user.getFirstName());
         userDetails.setLastName(user.getLastName());
         fetchUserAttribute(userDetails, attribute);
@@ -129,8 +135,7 @@ public class UserService {
     private void fetchUserAttribute(UserDetailsDTO userDetails, Map<String, List<String>> attribute) {
 
         userDetails.setUserName(attribute.get(UserOtherClaim.USER_NAME).get(0));
-   //     userDetails.setUserTelNo(attribute.get(UserOtherClaim.USER_TEL_NO).get(0));
-
+        //     userDetails.setUserTelNo(attribute.get(UserOtherClaim.USER_TEL_NO).get(0));
 
 
         if (attribute.get(UserOtherClaim.LOCALE) != null) {
@@ -186,6 +191,7 @@ public class UserService {
      */
 
     }
+
     public Map<String, String> updateUserPassword(UserChangePasswordDTO changePasswordmodel) {
         log.info("changePasswordmodel::{}", changePasswordmodel.toString());
 
@@ -204,7 +210,7 @@ public class UserService {
             userResource.resetPassword(credential);
 
             UserRepresentation user = userResource.toRepresentation();
-            user.getAttributes().put(UserOtherClaim.ERROR_CNT,Arrays.asList(CommonConstants.ZERO));
+            user.getAttributes().put(UserOtherClaim.ERROR_CNT, Arrays.asList(CommonConstants.ZERO));
 //            user.getAttributes().put(UserOtherClaim.PWD_INIT_YN,Arrays.asList(CommonConstants.YES));
 //            user.getAttributes().put(UserOtherClaim.PWD_CHG_DT, Arrays.asList(String.valueOf(System.currentTimeMillis())));
 //            user.getAttributes().put(UserOtherClaim.SKIP_PWD_CHG_DT, Arrays.asList(String.valueOf(System.currentTimeMillis())));
@@ -234,7 +240,7 @@ public class UserService {
         //  String userId = currentUserService.getCurrentUser().getUserId();
         String userEmail = useChg.getUserEmail();
         String userId = userMapper.selectKeyCloakUserId(userEmail);
-        log.info("userId::{}",userId);
+        log.info("userId::{}", userId);
 
 
         try {
@@ -246,10 +252,10 @@ public class UserService {
             param.put(UserOtherClaim.LOCALE, useChg.getLocale());
             param.put("firstName", useChg.getFirstName());
             param.put("lastName", useChg.getLastName());
-            param.put(UserOtherClaim.ERROR_CNT ,"1");
-          //  UserRepresentation updateUser = usersResource.toRepresentation();
+            param.put(UserOtherClaim.ERROR_CNT, "1");
+            //  UserRepresentation updateUser = usersResource.toRepresentation();
 
-            resultMap = updateKeyCloakUser(userId,param);
+            resultMap = updateKeyCloakUser(userId, param);
 //
 //            updateUser.getAttributes().put(UserOtherClaim.LOCALE, Collections.singletonList(UserOtherClaim.LOCALE));
 //            updateUser.setEmail("useChg.getUserEmail()");
@@ -283,15 +289,14 @@ public class UserService {
 
         UserRepresentation user = userResource.toRepresentation();
 
-        if (param.containsKey("firstName") && param.get("firstName") != null)
-        {
+        if (param.containsKey("firstName") && param.get("firstName") != null) {
             user.setFirstName(param.get("firstName"));
         }
         if (param.containsKey("lastName") && param.get("lastName") != null) {
             user.setLastName(param.get("lastName"));
         }
 
-        Map<String, List<String>> attributes =  user.getAttributes();
+        Map<String, List<String>> attributes = user.getAttributes();
         for (Map.Entry<String, String> entry : param.entrySet()) {
             if (Objects.equals("fistName", entry.getKey())
                     || Objects.equals("lastName", entry.getKey())) {
@@ -306,9 +311,9 @@ public class UserService {
         attributes.put(UserOtherClaim.UPDATED, Arrays.asList(String.valueOf(System.currentTimeMillis())));
         try {
             userResource.update(user);
-            result.put(RESULT_STRING , CommonConstants.YES);
-        }catch (Exception e){
-            result.put(RESULT_STRING , CommonConstants.NO);
+            result.put(RESULT_STRING, CommonConstants.YES);
+        } catch (Exception e) {
+            result.put(RESULT_STRING, CommonConstants.NO);
         }
 
         return result;
@@ -327,8 +332,8 @@ public class UserService {
             insertResultCnt = insertKeycloakUserInfo(user, password);
 
             // step 02: insert in DB & send email
-          //  String keycloakId = CreatedResponseUtil.getCreatedId(response);
-          //  user.setKeycloakId(keycloakId);
+            //  String keycloakId = CreatedResponseUtil.getCreatedId(response);
+            //  user.setKeycloakId(keycloakId);
 
         } catch (Exception e) {
             log.info("Exception getMessage::{}", e.getMessage());
@@ -359,19 +364,19 @@ public class UserService {
             log.info("7777");
             // 1-4. Create User in Keycloak
             try {
-               int userCount = userMapper.selectKeyCloakUserCount(user);
-                log.info("userCount::{}",userCount);
-                if(userCount > 0){
+                int userCount = userMapper.selectKeyCloakUserCount(user);
+                log.info("userCount::{}", userCount);
+                if (userCount > 0) {
                     cnt = userCount;
-                }else{
+                } else {
                     usersResource.create(createUser);
                 }
 
             } catch (Exception e) {
-                cnt = 2 ;
+                cnt = 2;
             }
         } catch (Exception e) {
-            cnt = 2 ;
+            cnt = 2;
             log.info("wwwww::{}", e.toString());
             log.info("wwwww getMessage::{}", e.getMessage());
         }
