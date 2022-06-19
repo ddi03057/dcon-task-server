@@ -74,9 +74,6 @@ public class UserService {
         @SuppressWarnings("unchecked")
         KeycloakPrincipal<KeycloakSecurityContext> keycloakPrincipal = (KeycloakPrincipal<KeycloakSecurityContext>) token.getPrincipal();
         KeycloakSecurityContext context = keycloakPrincipal.getKeycloakSecurityContext();
-
-
-        log.info("currentUserService.;::{}", currentUserService.getCurrentUser().toString());
         String nowToken = context.getTokenString();
 
         log.info("nowToken:::{}", "Bearer " + nowToken);
@@ -85,11 +82,8 @@ public class UserService {
         AccessToken accessToken = context.getToken();
         String userName = String.valueOf(accessToken.getOtherClaims().get(UserOtherClaim.USER_NAME));
         String userLocale = String.valueOf(accessToken.getOtherClaims().get(UserOtherClaim.LOCALE));
-        log.info("userLocale;::{}", userLocale);
         currentUserService.getCurrentUser().setUserName(userName);
         currentUserService.getCurrentUser().setLocale(userLocale);
-        log.info("currentUserService.;::{}", currentUserService.getCurrentUser().toString());
-        log.info("accessToken;::{}", accessToken.getOtherClaims().get("locale"));
 
 
         return new UserDTO(context);
@@ -103,11 +97,8 @@ public class UserService {
         Keycloak keycloak = buildKeycloak();
 
         RealmResource realmResource = keycloak.realm(realm);
-
         UserResource userResource = realmResource.users().get(userId);
-
         UserRepresentation user = userResource.toRepresentation();
-
         Map<String, List<String>> attributes = user.getAttributes();
 
         return buildUserDetail(user);
@@ -135,9 +126,6 @@ public class UserService {
     private void fetchUserAttribute(UserDetailsDTO userDetails, Map<String, List<String>> attribute) {
 
         userDetails.setUserName(attribute.get(UserOtherClaim.USER_NAME).get(0));
-        //     userDetails.setUserTelNo(attribute.get(UserOtherClaim.USER_TEL_NO).get(0));
-
-
         if (attribute.get(UserOtherClaim.LOCALE) != null) {
             userDetails.setLocale(attribute.get(UserOtherClaim.LOCALE).get(0));
         }
@@ -235,13 +223,8 @@ public class UserService {
     public Map<String, String> updateUser(UserChangeDTO useChg) {
         Map<String, String> resultMap = new HashMap<>();
 
-        log.info("useChg.toString()::{}", useChg.toString());
-
-        //  String userId = currentUserService.getCurrentUser().getUserId();
         String userEmail = useChg.getUserEmail();
         String userId = userMapper.selectKeyCloakUserId(userEmail);
-        log.info("userId::{}", userId);
-
 
         try {
             log.info("updateUser3::");
@@ -253,14 +236,8 @@ public class UserService {
             param.put("firstName", useChg.getFirstName());
             param.put("lastName", useChg.getLastName());
             param.put(UserOtherClaim.ERROR_CNT, "1");
-            //  UserRepresentation updateUser = usersResource.toRepresentation();
 
             resultMap = updateKeyCloakUser(userId, param);
-//
-//            updateUser.getAttributes().put(UserOtherClaim.LOCALE, Collections.singletonList(UserOtherClaim.LOCALE));
-//            updateUser.setEmail("useChg.getUserEmail()");
-//
-//            usersResource.update(updateUser);
         } catch (NotFoundException notFoundException) {
             //   result = "NotFoundException";
             //    resultMap.put(RESULT_STRING, result);
@@ -321,25 +298,14 @@ public class UserService {
 
     @Transactional
     public int createUser(UserCreateDTO user) {
-        log.info("createUser:::");
 
         int insertResultCnt = 0;
 
         try {
-            // step 1: insert in Keycloak
             String password = Utils.getRandomString();
-
             insertResultCnt = insertKeycloakUserInfo(user, password);
 
-            // step 02: insert in DB & send email
-            //  String keycloakId = CreatedResponseUtil.getCreatedId(response);
-            //  user.setKeycloakId(keycloakId);
-
         } catch (Exception e) {
-            log.info("Exception getMessage::{}", e.getMessage());
-            log.info("Exception toString::{}", e.toString());
-
-            //  resultMap.put(RESULT_STRING, CommonConstants.NO);
         }
         return insertResultCnt;
     }
@@ -353,16 +319,10 @@ public class UserService {
             RealmResource realmResource = keycloak.realm(realm);
             UsersResource usersResource = realmResource.users();
 
-            // 1-2. Define user in keycloak
             UserRepresentation createUser = new UserRepresentation();
             createUser = setInsertUserRepresentation(createUser, user);
-            log.info("5555");
-            // 1-3. Set password
             CredentialRepresentation credential = setCredential(password);
-            log.info("6666");
             createUser.setCredentials(Arrays.asList(credential));
-            log.info("7777");
-            // 1-4. Create User in Keycloak
             try {
                 int userCount = userMapper.selectKeyCloakUserCount(user);
                 log.info("userCount::{}", userCount);
@@ -377,8 +337,7 @@ public class UserService {
             }
         } catch (Exception e) {
             cnt = 2;
-            log.info("wwwww::{}", e.toString());
-            log.info("wwwww getMessage::{}", e.getMessage());
+
         }
         return cnt;
     }
@@ -386,21 +345,11 @@ public class UserService {
     public Keycloak buildKeycloak() {
         return KeycloakBuilder.builder()
                 .serverUrl(authServerUrl) //
-//                .grantType(OAuth2Constants.CLIENT_CREDENTIALS)
-//                .realm("master")
-//                .clientId("dcon-master-client")
-//                .clientSecret("2CN2cTFvlq6LPseOo5gV0i5bM5gq4SzY")
-//                .resteasyClient(resteasyClient)
-//                .build();
                 .realm("master")
                 .username("admin")
                 .password("1q2w3e4r5t!!Q")
                 .clientId("dcon-master")
                 .build();
-//                .realm(realm) //
-//                .grantType(OAuth2Constants.CLIENT_CREDENTIALS)
-//                .clientId(clientId) //
-//                .clientSecret(clientSecret).build();
     }
 
     public CredentialRepresentation setCredential(String password) {
@@ -422,19 +371,14 @@ public class UserService {
         createUser.setFirstName(user.getFirstName());
         createUser.setLastName(user.getLastName());
         createUser.setEnabled(true);
-        // createUser.setEmailVerified(true);
         Map<String, List<String>> attributes = new HashedMap<>();
-        log.info("11");
         attributes.put(UserOtherClaim.LOCALE, Arrays.asList(user.getLocale()));
-        log.info("22");
 //        attributes.put(UserOtherClaim.CREATE_ID, Arrays.asList(currentUser.getUserId()));
 //        attributes.put(UserOtherClaim.RECEIVE_SMS, Arrays.asList(user.getReceiveSMS()? "Y": "N"));
 //        attributes.put(UserOtherClaim.USER_MBL_TEL_CNTR_CD, Arrays.asList(user.getUserTelNoCtrCd()));
 //        attributes.put(UserOtherClaim.USER_TEL_NO, Arrays.asList(user.getUserTelNo()));
         attributes.put(UserOtherClaim.USER_NAME, Arrays.asList(userFullName));
-        log.info("33");
         createUser.setAttributes(attributes);
-        log.info("44");
 
         return createUser;
     }
