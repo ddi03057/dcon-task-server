@@ -9,7 +9,6 @@ import kr.co.dcon.taskserver.common.exception.RuntimeExceptionBase;
 import kr.co.dcon.taskserver.common.util.RestTemplateUtil;
 import kr.co.dcon.taskserver.sample.dto.*;
 import kr.co.dcon.taskserver.sample.mapper.SampleMapper;
-import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -17,7 +16,6 @@ import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 @Service
@@ -28,7 +26,7 @@ public class SampleService {
 
     @Autowired
     CurrentUserService currentUserService;
-    @Value("${taskserver.ur}")
+    @Value("${taskserver.url}")
     private String sampleUrl;
 
     public ResponseDTO<SampleListDTO> selectSampleList(SampleListReqDTO reqDTO) {
@@ -39,23 +37,19 @@ public class SampleService {
         String userEmail = currentUserService.getCurrentUser().getUserEmail();
         reqDTO.setUserEmail(userEmail);
         reqDTO.setUserName(userName);
-        // 청구내역 list (화면 : 계약정보의 우측 상단 리스트 )
-       // List<SampleOverView> list = sampleMapper.selectSampleList(reqDTO);
 
-        return RestTemplateUtil.getForResponseDTO(reqDTO.getUrlToForward(sampleUrl), new ParameterizedTypeReference<ResponseDTO<SampleListDTO>>() {});
-        //  log.info("currentUserService:::::{}",currentUserService.getCurrentUser());
-        //  sampleListDTO.setList(list);
+        String url = sampleUrl+"/sample/list";
+        return RestTemplateUtil.getForResponseDTO(reqDTO.getUrlToForward(url), new ParameterizedTypeReference<ResponseDTO<SampleListDTO>>() {});
 
-        //  sampleListDTO.setPagingDTO(reqDTO);
+    }
 
-        //  return sampleListDTO;
+
+    public ResponseDTO<SampleDTO> selectSampleDetail(SampleListReqDTO reqDTO) {
+        String url = sampleUrl+"/sample/detail";
+        return RestTemplateUtil.getForResponseDTO(reqDTO.getUrlToForward(url), new ParameterizedTypeReference<ResponseDTO<SampleDTO>>() {});
+
     }
 /*
-
-    public SampleDTO selectSampleDetail(SampleListReqDTO reqDTO) {
-        return sampleMapper.selectSampleDetail(reqDTO);
-    }
-
     public void sampleInsert(SampleReqDTO reqDTO) {
         try {
             sampleMapper.sampleInsert(reqDTO);
