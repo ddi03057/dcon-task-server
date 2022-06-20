@@ -21,6 +21,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -62,7 +63,6 @@ public class UserController {
 
         return new ResponseDTO<>(ResultCode.OK, map);
     }
-
     @ApiOperation(value = "사용자 정보 업데이트")
     @PutMapping
     public ResponseDTO<Map<String, String>> userUpdate(@Valid @RequestBody UserChangeDTO user) {
@@ -99,7 +99,7 @@ public class UserController {
 
     @ApiOperation(value = "사용자 조회 상세")
     @GetMapping(value = "{userId}")
-    public ResponseDTO<UserDetailsDTO> selectUserDetail(@ApiParam(value = "userId", required = true, example = "653e297b-5d10-4982-bf1e-d1114415ac97") @PathVariable String userId) {
+    public ResponseDTO<UserDetailsDTO> selectUserDetail(@ApiParam(value = "userId", required = true, example = "653e297b-5d10-4982-bf1e-d1114415ac97") @PathVariable String userId) throws IOException {
         return new ResponseDTO<>(ResultCode.OK, userService.selectUserDetail(userId));
     }
 

@@ -75,6 +75,10 @@ public class UserService {
         currentUserService.getCurrentUser().setUserName(userName);
         currentUserService.getCurrentUser().setLocale(userLocale);
 
+        String nowToken = KeycloakUtil.getContext().getTokenString();
+
+        log.info("nowToken:::{}", "Bearer " + nowToken);
+
         return new UserDTO(KeycloakUtil.getContext());
     }
 
