@@ -13,6 +13,7 @@ import kr.co.dcon.taskserver.sample.dto.SampleListDTO;
 import kr.co.dcon.taskserver.sample.dto.SampleListReqDTO;
 import kr.co.dcon.taskserver.sample.dto.SampleReqDTO;
 import kr.co.dcon.taskserver.sample.service.SampleService;
+import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -23,26 +24,27 @@ import javax.validation.Valid;
 @Api(value = "SAMPLE API")
 @RequestMapping(value = "/api/v1/sample")
 @RestController
-@CrossOrigin("*")
+@AllArgsConstructor
 public class SampleController {
-    @Autowired
+   // @Autowired
     SampleService sampleService;
 
     @ApiOperation(value = "sample list", notes = " sample list")
     @GetMapping("/list")
     public ResponseDTO<SampleListDTO> selectSampleList(@Valid SampleListReqDTO reqDTO) {
         log.info("rereqDTOq::{}",reqDTO.toString());
-        return new ResponseDTO<>(ResultCode.OK, sampleService.selectSampleList(reqDTO));
+       // return new ResponseDTO<>(ResultCode.OK, sampleService.selectSampleList(reqDTO));
+        return sampleService.selectSampleList(reqDTO);
 
     }
-
+/*
     @ApiOperation(value = "sample detail", notes = " sample detail")
     @GetMapping("/detail")
     public ResponseDTO<SampleDTO> selectSampleDetail(@Valid SampleListReqDTO reqDTO) {
         return new ResponseDTO<>(ResultCode.OK, sampleService.selectSampleDetail(reqDTO));
 
-    }
-
+    }*/
+/*
     @ApiOperation(value = "sample insert", notes = " sample insert")
     @PostMapping("/insert")
     public ResponseDTO<ResultDTO> insert (@Valid @RequestBody SampleReqDTO reqDTO) {
@@ -78,4 +80,5 @@ public class SampleController {
         }
         return new ResponseDTO<>(ResultCode.OK);
     }
+    */
 }
