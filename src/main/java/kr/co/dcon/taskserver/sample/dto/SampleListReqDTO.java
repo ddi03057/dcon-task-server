@@ -1,8 +1,8 @@
 package kr.co.dcon.taskserver.sample.dto;
 
+import io.swagger.annotations.ApiModelProperty;
 import kr.co.dcon.taskserver.common.dto.Forwardable;
 import kr.co.dcon.taskserver.common.dto.PagingDTO;
-import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.extern.slf4j.Slf4j;

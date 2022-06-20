@@ -1,6 +1,9 @@
 package kr.co.dcon.taskserver.sample.mapper;
 
-import kr.co.dcon.taskserver.sample.dto.*;
+import kr.co.dcon.taskserver.sample.dto.SampleDTO;
+import kr.co.dcon.taskserver.sample.dto.SampleListReqDTO;
+import kr.co.dcon.taskserver.sample.dto.SampleOverView;
+import kr.co.dcon.taskserver.sample.dto.SampleReqDTO;
 
 import java.util.List;
 import java.util.Map;

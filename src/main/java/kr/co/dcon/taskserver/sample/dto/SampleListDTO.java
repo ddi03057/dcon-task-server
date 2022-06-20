@@ -1,7 +1,7 @@
 package kr.co.dcon.taskserver.sample.dto;
 
-import kr.co.dcon.taskserver.common.dto.PagingDTO;
 import io.swagger.annotations.ApiModelProperty;
+import kr.co.dcon.taskserver.common.dto.PagingDTO;
 import lombok.Data;
 
 import java.util.List;

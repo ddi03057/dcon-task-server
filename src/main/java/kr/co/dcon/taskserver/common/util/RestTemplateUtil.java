@@ -8,10 +8,13 @@ import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
 
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.Map;
 
 @Component
@@ -29,11 +32,11 @@ public class RestTemplateUtil {
     public static <T> ResponseDTO<T> getForResponseDTO(String url, ParameterizedTypeReference<ResponseDTO<T>> responseType) {
         return RestTemplateUtil.getForResponseDTO(url, null, responseType);
     }
-  /*  public static ResponseEntity<AlertNowDTO> getForResponseDTO(String url, HttpHeaders headers, Map<String, Object> params) throws URISyntaxException {
-        HttpEntity<Object> requestEntity = new HttpEntity<>(params, headers);
-        log.info("result Test : {}", restTemplate.exchange(new URI(url), HttpMethod.GET, requestEntity, AlertNowDTO.class));
-        return restTemplate.exchange(new URI(url), HttpMethod.GET, requestEntity, AlertNowDTO.class);
-    }*/
+//    public static ResponseEntity<AlertNowDTO> getForResponseDTO(String url, HttpHeaders headers, Map<String, Object> params) throws URISyntaxException {
+//        HttpEntity<Object> requestEntity = new HttpEntity<>(params, headers);
+//        log.info("result Test : {}", restTemplate.exchange(new URI(url), HttpMethod.GET, requestEntity, AlertNowDTO.class));
+//        return restTemplate.exchange(new URI(url), HttpMethod.GET, requestEntity, AlertNowDTO.class);
+//    }
 
     public static <T> ResponseDTO<T> getForResponseDTO(String url, Map<String, Object> params, ParameterizedTypeReference<ResponseDTO<T>> responseType) {
         HttpEntity<Object> requestEntity = new HttpEntity<>(params);
@@ -54,5 +57,6 @@ public class RestTemplateUtil {
         HttpEntity<Object> requestEntity = new HttpEntity<>(obj, headers);
         return restTemplate.exchange(url, HttpMethod.PUT, requestEntity, String.class).getBody();
     }
+
 
 }

@@ -1,19 +1,23 @@
 package kr.co.dcon.taskserver.sample.controller;
 
 
-
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
+import kr.co.dcon.taskserver.common.constants.ResultCode;
 import kr.co.dcon.taskserver.common.dto.ResponseDTO;
 import kr.co.dcon.taskserver.sample.dto.SampleDTO;
 import kr.co.dcon.taskserver.sample.dto.SampleListDTO;
 import kr.co.dcon.taskserver.sample.dto.SampleListReqDTO;
+import kr.co.dcon.taskserver.sample.dto.SampleReqDTO;
 import kr.co.dcon.taskserver.sample.service.SampleService;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.util.HashMap;
+import java.util.Map;
 
 @Slf4j
 @Api(value = "SAMPLE API")
@@ -21,58 +25,70 @@ import javax.validation.Valid;
 @RestController
 @AllArgsConstructor
 public class SampleController {
-   // @Autowired
+    // @Autowired
     SampleService sampleService;
 
     @ApiOperation(value = "sample list", notes = " sample list")
     @GetMapping("/list")
     public ResponseDTO<SampleListDTO> selectSampleList(@Valid SampleListReqDTO reqDTO) {
-        log.info("rereqDTOq::{}",reqDTO.toString());
-       // return new ResponseDTO<>(ResultCode.OK, sampleService.selectSampleList(reqDTO));
         return sampleService.selectSampleList(reqDTO);
 
     }
+
     @ApiOperation(value = "sample detail", notes = " sample detail")
     @GetMapping("/detail")
     public ResponseDTO<SampleDTO> selectSampleDetail(@Valid SampleListReqDTO reqDTO) {
         return sampleService.selectSampleDetail(reqDTO);
 
     }
-/*
+
     @ApiOperation(value = "sample insert", notes = " sample insert")
     @PostMapping("/insert")
-    public ResponseDTO<ResultDTO> insert (@Valid @RequestBody SampleReqDTO reqDTO) {
-        try {
-            sampleService.sampleInsert(reqDTO);
-        } catch (Exception e) {
-            new ResponseDTO<>(ResultCode.ETC_ERROR);
+    public ResponseDTO<Map<String, String>> insert(@Valid @RequestBody SampleReqDTO reqDTO) {
+
+        Map<String, String> result = new HashMap<>();
+        String insertResult = "";
+        boolean insert = sampleService.sampleInsert(reqDTO);
+
+        if (insert) {
+            insertResult = "Y";
+        } else {
+            insertResult = "N";
         }
-        return new ResponseDTO<>(ResultCode.OK);
+        result.put("result", insertResult);
+        return new ResponseDTO<>(ResultCode.OK, result);
+
+
     }
 
-    @PutMapping("{id}")
-    @ApiOperation(value = "sample 수정", notes = "sample 수정")
-    public ResponseDTO<SampleDTO> updateSample(@Valid @RequestBody SampleReqDTO reqDTO,
-                                               @ApiParam(value = " 아이디", required = true, example = "0") @PathVariable String id){
-        reqDTO.setSeq(id);
-        int updateCnt = sampleService.sampleUpdate(reqDTO);
+    @ApiOperation(value = "사용자 수정")
+    @PutMapping("{userEmail}")
+    public ResponseDTO<Map<String, String>> updateSample(@Valid @RequestBody SampleReqDTO reqDTO,
+                                                         @ApiParam(value = "이메일", required = true, example = "dcon@dcon.co.kr") @PathVariable String userEmail) {
+        Map<String, String> result = new HashMap<>();
 
-        if(updateCnt < 0) {
-            new ResponseDTO<>(ResultCode.ETC_ERROR);
+        reqDTO.setUserEmail(userEmail);
+        String updateResult = "";
+        boolean insert = sampleService.sampleUpdate(reqDTO);
+        if (insert) {
+            updateResult = "Y";
+        } else {
+            updateResult = "N";
         }
-        return new ResponseDTO<>(ResultCode.OK);
+        result.put("result", updateResult);
+        return new ResponseDTO<>(ResultCode.OK, result);
     }
 
     @ApiOperation(value = "sample 삭제")
-    @DeleteMapping("{id}")
-    public ResponseDTO<Boolean> deleteSample(@ApiParam(value = "번호", required = true) @PathVariable String id){
+    @PutMapping("/sample/{userEmail}")
+    public ResponseDTO<Boolean> deleteSample(@ApiParam(value = "userEmail", required = true) @PathVariable String userEmail) {
 
-        try {
-            sampleService.deleteSample(id);
-        } catch (Exception e) {
-            new ResponseDTO<>(ResultCode.ETC_ERROR);
+        if (Boolean.FALSE.equals(sampleService.deleteSample(userEmail).getResultData())) {
+            return new ResponseDTO<>(ResultCode.BAD_REQUEST);
         }
-        return new ResponseDTO<>(ResultCode.OK);
+
+        return new ResponseDTO<>(ResultCode.OK, Boolean.TRUE);
+
     }
-    */
+
 }
