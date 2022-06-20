@@ -31,9 +31,6 @@ public class SampleReqDTO implements Forwardable {
        // urlParam.append(userEmail);
         urlParam.append("?userEmail="+userEmail);
         urlParam.append("&userName="+userName);
-        log.info("urlParam.toString()::{}",urlParam.toString());
         return urlParam.toString();
     }
 }
-//http://localhost:8082/task/v1/sample/sampleUserCount/test123@1.com?userEmail=test123@1.com?userName=test1111
-//http://localhost:8082/task/v1/sample/sampleUserCount/test123@1.com?userEmail=test123%401.com&userName=test1111

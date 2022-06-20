@@ -38,8 +38,6 @@ public class SampleService {
 
 
     public ResponseDTO<SampleListDTO> selectSampleList(SampleListReqDTO reqDTO) {
-        log.info("req::{}", reqDTO.toString());
-        log.info("currentUserService::{}", currentUserService.getCurrentUser().toString());
         SampleListDTO sampleListDTO = new SampleListDTO();
         String userName = currentUserService.getCurrentUser().getUserName();
         String userEmail = currentUserService.getCurrentUser().getUserEmail();
@@ -119,6 +117,7 @@ public class SampleService {
         return result;
     }
     public ResponseDTO<Boolean> deleteSample(String userEmail) {
+   // public void deleteSample(String userEmail) {
         SampleReqDTO reqDTO = new SampleReqDTO();
         reqDTO.setUserEmail(userEmail);
         Map<String,Object> memberMap =  this.memberSampleCount(reqDTO).getResultData();

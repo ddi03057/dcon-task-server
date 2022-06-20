@@ -43,7 +43,6 @@ public class SampleListReqDTO extends PagingDTO implements Forwardable {
         }
         urlParam.append("&size=" + this.getSize());
         urlParam.append("&pageNo=" + this.getPageNo());
-        log.info("urlParam.toString()::{}",urlParam.toString());
         return urlParam.toString();
     }
 }

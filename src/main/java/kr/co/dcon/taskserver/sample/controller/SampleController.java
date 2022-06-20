@@ -80,14 +80,11 @@ public class SampleController {
     }
 
     @ApiOperation(value = "sample 삭제")
-    @PutMapping("/sample/{userEmail}")
-    public ResponseDTO<Boolean> deleteSample(@ApiParam(value = "userEmail", required = true) @PathVariable String userEmail) {
+    @DeleteMapping("/sample/{userEmail}")
+    public ResponseDTO<ResponseDTO<Map<String, String>>> deleteSample(@ApiParam(value = "userEmail", required = true) @PathVariable String userEmail) {
 
-        if (Boolean.FALSE.equals(sampleService.deleteSample(userEmail).getResultData())) {
-            return new ResponseDTO<>(ResultCode.BAD_REQUEST);
-        }
-
-        return new ResponseDTO<>(ResultCode.OK, Boolean.TRUE);
+        sampleService.deleteSample(userEmail).getResultData();
+        return new ResponseDTO<>(ResultCode.OK);
 
     }
 
