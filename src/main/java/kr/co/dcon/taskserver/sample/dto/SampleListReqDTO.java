@@ -1,16 +1,20 @@
 package kr.co.dcon.taskserver.sample.dto;
 
+import kr.co.dcon.taskserver.common.dto.Forwardable;
 import kr.co.dcon.taskserver.common.dto.PagingDTO;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
 
 @Data
 @EqualsAndHashCode(callSuper=false)
-public class SampleListReqDTO extends PagingDTO {
+@Slf4j
+public class SampleListReqDTO extends PagingDTO implements Forwardable {
 
     @ApiModelProperty(value = "사용자 이름", notes = "사용자 이름", example = "홍길동")
     private String userName;
@@ -23,7 +27,24 @@ public class SampleListReqDTO extends PagingDTO {
     @ApiModelProperty(value = "email", notes = "email", example = "email")
     private String searchGubun;
 
-    @ApiModelProperty(value = "token", notes = "token", example = "email")
-    private String token;
+
+    @Override
+    public String getUrlToForward(String baseUrl) {
+        StringBuilder urlParam = new StringBuilder();
+
+        urlParam.append(baseUrl);
+
+//        if(StringUtils.isNotEmpty(userName)) {
+//            urlParam.append("?userName=" + userName);
+//        }
+        urlParam.append("?userEmail="+userEmail);
+        if(StringUtils.isNotEmpty(searchGubun)) {
+            urlParam.append("&searchGubun=" + searchGubun);
+        }
+        urlParam.append("&size=" + this.getSize());
+        urlParam.append("&pageNo=" + this.getPageNo());
+        log.info("urlParam.toString()::{}",urlParam.toString());
+        return urlParam.toString();
+    }
 }
 

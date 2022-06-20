@@ -4,17 +4,13 @@ package kr.co.dcon.taskserver.sample.controller;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiParam;
-import kr.co.dcon.taskserver.common.constants.ResultCode;
 import kr.co.dcon.taskserver.common.dto.ResponseDTO;
-import kr.co.dcon.taskserver.common.dto.ResultDTO;
 import kr.co.dcon.taskserver.sample.dto.SampleDTO;
 import kr.co.dcon.taskserver.sample.dto.SampleListDTO;
 import kr.co.dcon.taskserver.sample.dto.SampleListReqDTO;
-import kr.co.dcon.taskserver.sample.dto.SampleReqDTO;
 import kr.co.dcon.taskserver.sample.service.SampleService;
+import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
@@ -23,26 +19,26 @@ import javax.validation.Valid;
 @Api(value = "SAMPLE API")
 @RequestMapping(value = "/api/v1/sample")
 @RestController
-@CrossOrigin("*")
+@AllArgsConstructor
 public class SampleController {
-    @Autowired
+   // @Autowired
     SampleService sampleService;
 
     @ApiOperation(value = "sample list", notes = " sample list")
     @GetMapping("/list")
     public ResponseDTO<SampleListDTO> selectSampleList(@Valid SampleListReqDTO reqDTO) {
         log.info("rereqDTOq::{}",reqDTO.toString());
-        return new ResponseDTO<>(ResultCode.OK, sampleService.selectSampleList(reqDTO));
+       // return new ResponseDTO<>(ResultCode.OK, sampleService.selectSampleList(reqDTO));
+        return sampleService.selectSampleList(reqDTO);
 
     }
-
     @ApiOperation(value = "sample detail", notes = " sample detail")
     @GetMapping("/detail")
     public ResponseDTO<SampleDTO> selectSampleDetail(@Valid SampleListReqDTO reqDTO) {
-        return new ResponseDTO<>(ResultCode.OK, sampleService.selectSampleDetail(reqDTO));
+        return sampleService.selectSampleDetail(reqDTO);
 
     }
-
+/*
     @ApiOperation(value = "sample insert", notes = " sample insert")
     @PostMapping("/insert")
     public ResponseDTO<ResultDTO> insert (@Valid @RequestBody SampleReqDTO reqDTO) {
@@ -78,4 +74,5 @@ public class SampleController {
         }
         return new ResponseDTO<>(ResultCode.OK);
     }
+    */
 }
