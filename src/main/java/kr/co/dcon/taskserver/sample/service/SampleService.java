@@ -1,6 +1,5 @@
 package kr.co.dcon.taskserver.sample.service;
 
-//import com.dcon.dcontaskserver.auth.service.CurrentUserService;
 
 import com.google.gson.Gson;
 import kr.co.dcon.taskserver.auth.service.CurrentUserService;
@@ -12,7 +11,6 @@ import kr.co.dcon.taskserver.sample.dto.SampleDTO;
 import kr.co.dcon.taskserver.sample.dto.SampleListDTO;
 import kr.co.dcon.taskserver.sample.dto.SampleListReqDTO;
 import kr.co.dcon.taskserver.sample.dto.SampleReqDTO;
-import kr.co.dcon.taskserver.sample.mapper.SampleMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.ParameterizedTypeReference;
@@ -25,15 +23,13 @@ import java.util.Map;
 @Service
 @Slf4j
 public class SampleService {
-    SampleMapper sampleMapper;
 
     CurrentUserService currentUserService;
     @Value("${taskserver.url}")
     private String sampleUrl;
 
-    public SampleService(CurrentUserService currentUserService, SampleMapper sampleMapper) {
+    public SampleService(CurrentUserService currentUserService) {
         this.currentUserService = currentUserService;
-        this.sampleMapper = sampleMapper;
     }
 
     private static final String RESULT = "result";
