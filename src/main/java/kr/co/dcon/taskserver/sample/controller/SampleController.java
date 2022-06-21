@@ -23,10 +23,12 @@ import java.util.Map;
 @Api(value = "SAMPLE API")
 @RequestMapping(value = "/api/v1/sample")
 @RestController
-@AllArgsConstructor
 public class SampleController {
-    // @Autowired
     SampleService sampleService;
+
+    public SampleController(SampleService sampleService) {
+        this.sampleService = sampleService;
+    }
 
     @ApiOperation(value = "sample list", notes = " sample list")
     @GetMapping("/list")

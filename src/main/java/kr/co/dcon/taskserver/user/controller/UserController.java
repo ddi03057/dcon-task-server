@@ -17,7 +17,6 @@ import kr.co.dcon.taskserver.user.dto.UserCreateDTO;
 import kr.co.dcon.taskserver.user.dto.UserDTO;
 import kr.co.dcon.taskserver.user.service.UserService;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
@@ -31,13 +30,17 @@ import java.util.Map;
 @RestController
 public class UserController {
 
-    @Autowired
     UserService userService;
 
-    @Autowired
     private CurrentUserService currentUserService;
 
-    private static final String RESULT_STRING = "result";
+    private final String RESULT_STRING = "result";
+
+
+    public UserController(CurrentUserService currentUserService, UserService userService) {
+        this.currentUserService = currentUserService;
+        this.userService = userService;
+    }
 
     @ApiOperation(value = "로그인한 사용자 최신 정보 조회")
     @GetMapping("user-info")
@@ -63,6 +66,7 @@ public class UserController {
 
         return new ResponseDTO<>(ResultCode.OK, map);
     }
+
     @ApiOperation(value = "사용자 정보 업데이트")
     @PutMapping
     public ResponseDTO<Map<String, String>> userUpdate(@Valid @RequestBody UserChangeDTO user) {
