@@ -3,6 +3,7 @@ package kr.co.dcon.taskserver.common.util;
 import org.apache.commons.lang.StringUtils;
 
 public class StringUtil extends StringUtils {
+
     public static String snakeToCamel(String str)
     {
         // Capitalize first letter of string

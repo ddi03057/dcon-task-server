@@ -64,11 +64,13 @@ public class UserService implements UserServiceKeycloak {
 
     private static final String RESULT_STRING = "result";
 
-    public static final Integer FIRST_INDEX = 0;
-    public static final Integer MAX_RESULT = 10000000;
+    public static String RESULT_CODE = "RESULT_CODE";
+    public static String FRIST_NAME = "firstName";
+    public static String LAST_NAME = "lastName";
+
 
     private static final String[] attributeArr = {UserOtherClaim.USER_NAME, UserOtherClaim.USER_LOCALE};
-    private static final String[] ignoreProperties = {"userId", "userEmail", "email", "useYn", "firstName", "lastName"};
+    private static final String[] ignoreProperties = {"userId", "userEmail", "email", "useYn", FRIST_NAME, LAST_NAME};
 
     public UserService(CurrentUserService currentUserService, UserMapper userMapper) {
         this.currentUserService = currentUserService;
@@ -137,17 +139,12 @@ public class UserService implements UserServiceKeycloak {
 
     private void fetchUserAttribute(UserDetailsDTO userDetails, Map<String, List<String>> attribute) throws IOException {
 
-        // TODO : attribute 와 키값과 userDetails의 필드명이 같은지 확인할 것
-        // attribute 의 키값(snake)을 카멜로 변환하였을 때 userDetails 의 필드명과 일치해야 한다!!
         Map<String, String> userDetailsMap = new HashMap<>();
 
         if (!ObjectUtils.isEmpty(attribute)) {
             attribute.forEach((k, v) -> {
-                if (!ObjectUtils.isEmpty(v)) {
-                    if (Arrays.asList(attributeArr).contains(k)) {
-                        log.info("kkkk : {}", k);
-                        userDetailsMap.put(StringUtil.snakeToCamel(k), v.get(0));
-                    }
+                if (!ObjectUtils.isEmpty(v) && Arrays.asList(attributeArr).contains(k)) {
+                    userDetailsMap.put(StringUtil.snakeToCamel(k), v.get(0));
                 }
             });
 
@@ -180,14 +177,14 @@ public class UserService implements UserServiceKeycloak {
 //            user.getAttributes().put(UserOtherClaim.PWD_CHG_DT, Arrays.asList(String.valueOf(System.currentTimeMillis())));
 //            user.getAttributes().put(UserOtherClaim.SKIP_PWD_CHG_DT, Arrays.asList(String.valueOf(System.currentTimeMillis())));
             userResource.update(user);
-            log.info("try::");
+
         } catch (BadRequestException e) {
-            log.info("BadRequestException::");
+
             // credential setvalue시 전 암호와 같은 암호라면 400 에러 발생.
             resultMap.put(RESULT_STRING, CommonConstants.NO);
             return resultMap;
         } catch (Exception e) {
-            log.info("Exception::{}", e.toString());
+
             resultMap.put(RESULT_STRING, "Server Error");
             return resultMap;
         }
@@ -204,7 +201,7 @@ public class UserService implements UserServiceKeycloak {
         String userId = userMapper.selectKeyCloakUserId(userEmail);
 
         if (!dconMasterUserId.equals(userId)) {
-            resultMap.put("RESULT_CODE", ResultCode.USER_NOT_EXISTS_EXCEPTION);
+            resultMap.put(RESULT_CODE, ResultCode.USER_NOT_EXISTS_EXCEPTION);
             return resultMap;
         }
 
@@ -214,15 +211,15 @@ public class UserService implements UserServiceKeycloak {
 //                param.put(UserOtherClaim.USER_MBL_TEL_CNTR_CD, useChg.getUserTelNoCtrCd());
 //                param.put(UserOtherClaim.USER_REGIST_COMPANY_NAME, useChg.getRegistCompanyName());
             param.put(UserOtherClaim.USER_LOCALE, useChg.getUserLocale());
-            param.put("firstName", useChg.getFirstName());
-            param.put("lastName", useChg.getLastName());
+            param.put(FRIST_NAME, useChg.getFirstName());
+            param.put(LAST_NAME, useChg.getLastName());
             param.put(UserOtherClaim.ERROR_CNT, "0");
 
             resultMap = updateKeyCloakUser(userId, param);
         } catch (NotFoundException notFoundException) {
-            resultMap.put("RESULT_CODE", ResultCode.USER_NOT_EXISTS_EXCEPTION);
+            resultMap.put(RESULT_CODE, ResultCode.USER_NOT_EXISTS_EXCEPTION);
         } catch (Exception e) {
-            resultMap.put("RESULT_CODE", String.valueOf(ResultCode.ETC_ERROR));
+            resultMap.put(RESULT_CODE, String.valueOf(ResultCode.ETC_ERROR));
         }
 
         return resultMap;
@@ -235,17 +232,17 @@ public class UserService implements UserServiceKeycloak {
         UserResource userResource = getUserResource(userId);
         UserRepresentation user = userResource.toRepresentation();
 
-        if (param.containsKey("firstName") && param.get("firstName") != null) {
-            user.setFirstName(param.get("firstName"));
+        if (param.containsKey(FRIST_NAME) && param.get(FRIST_NAME) != null) {
+            user.setFirstName(param.get(FRIST_NAME));
         }
-        if (param.containsKey("lastName") && param.get("lastName") != null) {
-            user.setLastName(param.get("lastName"));
+        if (param.containsKey(LAST_NAME) && param.get(LAST_NAME) != null) {
+            user.setLastName(param.get(LAST_NAME));
         }
 
         Map<String, List<String>> attributes = user.getAttributes();
         for (Map.Entry<String, String> entry : param.entrySet()) {
             if (Objects.equals("fistName", entry.getKey())
-                    || Objects.equals("lastName", entry.getKey())) {
+                    || Objects.equals(LAST_NAME, entry.getKey())) {
                 continue;
             }
 
@@ -290,17 +287,15 @@ public class UserService implements UserServiceKeycloak {
             createUser = setInsertUserRepresentation(createUser, user);
             CredentialRepresentation credential = setCredential(password);
             createUser.setCredentials(Arrays.asList(credential));
-            try {
-                int userCount = userMapper.selectKeyCloakUserCount(user);
-                log.info("userCount::{}", userCount);
-                if (userCount > 0) {
-                    resultMap.put(RESULT_STRING, ResultCode.USER_EXIST_ALREADY);
-                } else {
-                    usersResource.create(createUser);
-                }
-            } catch (Exception e) {
-                resultMap.put(RESULT_STRING, ResultCode.ETC_ERROR);
+
+            int userCount = userMapper.selectKeyCloakUserCount(user);
+
+            if (userCount > 0) {
+                resultMap.put(RESULT_STRING, ResultCode.USER_EXIST_ALREADY);
+            } else {
+                usersResource.create(createUser);
             }
+
         } catch (Exception e) {
             resultMap.put(RESULT_STRING, ResultCode.ETC_ERROR);
         }

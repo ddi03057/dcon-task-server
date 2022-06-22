@@ -27,7 +27,9 @@ public class MenuService {
     }
     public ResponseDTO<MenuListDTO> selectMenuList(MenuLeftListReqDTO reqDTO) {
         String url = taskUrl + "/menu/list";
-        return RestTemplateUtil.getForResponseDTO(reqDTO.getUrlToForward(url), new ParameterizedTypeReference<ResponseDTO<MenuListDTO>>() {
-        });
+        log.info("MenuService reqDTO::{}",reqDTO.toString());
+        log.info("RestTemplateUtil reqDTO::{}",RestTemplateUtil.getForResponseDTO(reqDTO.getUrlToForward(url), new ParameterizedTypeReference<ResponseDTO<MenuListDTO>>() {}));
+
+        return RestTemplateUtil.getForResponseDTO(reqDTO.getUrlToForward(url), new ParameterizedTypeReference<ResponseDTO<MenuListDTO>>() {});
     }
 }
