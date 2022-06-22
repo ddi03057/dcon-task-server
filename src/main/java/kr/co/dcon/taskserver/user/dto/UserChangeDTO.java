@@ -20,7 +20,6 @@ public class UserChangeDTO {
 //	@ApiModelProperty(value = "전화번호")
 //	@Pattern(regexp = "^(?:\\d\\s?){9,20}$", message = "10 ~ 11 자리의 숫자만 입력 가능합니다.")
 //	private String telNo;
-//
 
 	@ApiModelProperty(value = "result")
 	private String result;
@@ -32,7 +31,7 @@ public class UserChangeDTO {
 	@ApiModelProperty(value = "lastName", notes = "lastName", example = "테스트", required = true)
 	private String lastName;
 	
-	private String locale;
+	private String userLocale;
 }
 
 

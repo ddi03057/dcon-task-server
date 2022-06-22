@@ -2,7 +2,6 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="kr.co.dcon.taskserver.user.mapper.UserMapper">
 
-
     <select id="selectKeyCloakUserCount" parameterType="kr.co.dcon.taskserver.user.dto.UserCreateDTO" resultType="java.lang.Integer">
         SELECT COUNT(*)
         FROM `dcon-keycloak`.USER_ENTITY
@@ -16,6 +15,15 @@
 
     </select>
 
+    <select id="selectKecloakRealmInfo" resultType="kr.co.dcon.taskserver.auth.dto.RealmInfoDTO">
+        SELECT realm_name as realmName
+             , client_id as clientId
+             , client_secret as clientSecret
+             , user_name as userName
+             , password
+          FROM keycloak_realm_info
+
+    </select>
 
 
 </mapper>

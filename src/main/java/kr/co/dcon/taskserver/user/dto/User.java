@@ -1,7 +1,5 @@
 package kr.co.dcon.taskserver.user.dto;
 
-//import kr.co.dcon.taskserver.auth.dto.RoleDTO;
-
 import lombok.Data;
 
 @Data
@@ -34,6 +32,5 @@ public class User {
     private String useYnNm;
     private String email;
     private String userDetail;
-   // private Set<RoleDTO> roles;
     private String token;
 }

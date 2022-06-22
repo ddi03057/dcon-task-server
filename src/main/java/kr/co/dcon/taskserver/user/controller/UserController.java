@@ -10,6 +10,7 @@ import kr.co.dcon.taskserver.common.constants.CommonConstants;
 import kr.co.dcon.taskserver.common.constants.ResultCode;
 import kr.co.dcon.taskserver.common.dto.NoResultDTO;
 import kr.co.dcon.taskserver.common.dto.ResponseDTO;
+import kr.co.dcon.taskserver.common.exception.RuntimeExceptionBase;
 import kr.co.dcon.taskserver.common.util.DateUtils;
 import kr.co.dcon.taskserver.user.dto.UserChangeDTO;
 import kr.co.dcon.taskserver.user.dto.UserChangePasswordDTO;
@@ -17,6 +18,7 @@ import kr.co.dcon.taskserver.user.dto.UserCreateDTO;
 import kr.co.dcon.taskserver.user.dto.UserDTO;
 import kr.co.dcon.taskserver.user.service.UserService;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.collections4.map.HashedMap;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
@@ -36,7 +38,6 @@ public class UserController {
 
     private final String RESULT_STRING = "result";
 
-
     public UserController(CurrentUserService currentUserService, UserService userService) {
         this.currentUserService = currentUserService;
         this.userService = userService;
@@ -44,73 +45,70 @@ public class UserController {
 
     @ApiOperation(value = "로그인한 사용자 최신 정보 조회")
     @GetMapping("user-info")
-    public ResponseDTO<UserDTO> getCurrentUser() {
+    public ResponseDTO<UserDTO> getCurrentUser() throws Exception {
         return new ResponseDTO<>(ResultCode.OK, userService.selectCurrentUser());
     }
 
     @ApiOperation(value = "사용자 비밀번호 변경")
     @PutMapping("update-password")
-    public ResponseDTO<Map<String, String>> updateUserPassword(@RequestBody UserChangePasswordDTO changePassword) {
-        Map<String, String> map = new HashMap<>();
+    public ResponseDTO<Map<String, Object>> updateUserPassword(@RequestBody UserChangePasswordDTO changePassword) {
+
+        Map<String, Object> result = new HashedMap<>();
         if (!changePassword.getNewCredential().equals(changePassword.getNewCredentialConfirm())) {
             return new ResponseDTO<>(ResultCode.BAD_REQUEST);
         }
-        UserSimpleDTO currentUser = currentUserService.getCurrentUser();
         try {
-            userService.updateUserPassword(changePassword);
-            map.put(RESULT_STRING, CommonConstants.YES);
-            map.put("lastPasswordChangeDate", DateUtils.getDateStrFronTimeStamp(String.valueOf(System.currentTimeMillis())));
-        } catch (Exception e) {
-            map.put(RESULT_STRING, CommonConstants.NO);
+            result.put(RESULT_STRING, ResultCode.OK);
+            result = userService.updateUserPassword(changePassword);
+            result.put("lastPasswordChangeDate", DateUtils.getDateStrFronTimeStamp(String.valueOf(System.currentTimeMillis())));
+        } catch (RuntimeExceptionBase runtimeExceptionBase) {
+            result.put(RESULT_STRING, ResultCode.USER_NOT_AVAILABLE_EXCEPTION);
+        }
+        catch (Exception e) {
+            result.put(RESULT_STRING, ResultCode.ETC_ERROR);
         }
 
-        return new ResponseDTO<>(ResultCode.OK, map);
+        return new ResponseDTO<>(ResultCode.OK, result);
     }
 
     @ApiOperation(value = "사용자 정보 업데이트")
     @PutMapping
-    public ResponseDTO<Map<String, String>> userUpdate(@Valid @RequestBody UserChangeDTO user) {
+    public ResponseDTO<Map<String, Object>> userUpdate(@Valid @RequestBody UserChangeDTO user) {
 
-        Map<String, String> token = new HashMap<>();
+        Map<String, Object> result = new HashMap<>();
         try {
-            userService.updateUser(user);
-            token.put(RESULT_STRING, CommonConstants.YES);
+            result.put(RESULT_STRING, userService.updateUser(user));
         } catch (Exception e) {
-            token.put(RESULT_STRING, CommonConstants.NO);
+            result.put(RESULT_STRING, ResultCode.ETC_ERROR);
         }
 
-        return new ResponseDTO<>(ResultCode.OK, token);
+        return new ResponseDTO<>(ResultCode.OK, result);
     }
 
     @ApiOperation(value = "로그인한 사용자 추가")
     @PostMapping("")
-    public ResponseDTO<NoResultDTO> createUser(@Valid @RequestBody UserCreateDTO createUser) {
+    public ResponseDTO<Map<String, Object>> createUser(@Valid @RequestBody UserCreateDTO createUser) {
 
         ResultCode resultCode = ResultCode.OK;
-        int cnt = userService.createUser(createUser);
-
-        if (cnt == 0) {
-            resultCode = ResultCode.OK;
-        } else if (cnt == 1) {
-            resultCode = ResultCode.USER_EXIST_ALREADY;
-        } else if (cnt == 3) {
-            resultCode = ResultCode.ETC_ERROR;
-        }
-
-        return new ResponseDTO<>(resultCode, null);
-
+        return new ResponseDTO<>(resultCode, userService.createUser(createUser));
     }
 
     @ApiOperation(value = "사용자 조회 상세")
     @GetMapping(value = "{userId}")
-    public ResponseDTO<UserDetailsDTO> selectUserDetail(@ApiParam(value = "userId", required = true, example = "653e297b-5d10-4982-bf1e-d1114415ac97") @PathVariable String userId) throws IOException {
+    public ResponseDTO<UserDetailsDTO> selectUserDetail(@ApiParam(value = "userId", required = true, example = "653e297b-5d10-4982-bf1e-d1114415ac97") @PathVariable String userId) throws Exception {
         return new ResponseDTO<>(ResultCode.OK, userService.selectUserDetail(userId));
     }
 
     @ApiOperation(value = "사용자 탈퇴")
     @DeleteMapping("{userId}")
-    public ResponseDTO<Map<String, String>> userWithdraw(@ApiParam(value = "userId", required = true, example = "653e297b-5d10-4982-bf1e-d1114415ac97") @PathVariable String userId) {
+    public ResponseDTO<Map<String, String>> userWithdraw(@ApiParam(value = "userId", required = true, example = "653e297b-5d10-4982-bf1e-d1114415ac97") @PathVariable String userId) throws Exception{
         userService.withdraw(userId);
         return new ResponseDTO<>(ResultCode.OK);
+    }
+
+    @ApiOperation(value = "사용자 리스트")
+    @GetMapping("allUser/{userId}")
+    public ResponseDTO<Map<String, Object>> selectUserList(@ApiParam(value = "userId", required = true, example = "20878cc7-4397-4d26-8269-73cd220c95a3") @PathVariable String userId) throws Exception {
+        return new ResponseDTO<>(ResultCode.OK, userService.selectUserList(userId));
     }
 }
