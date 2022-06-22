@@ -41,6 +41,6 @@ public class UserDetailsDTO implements Serializable {
 	private String authName;
 	private String useYnName;
 
-	private String locale;
+	private String userLocale;
 }
 

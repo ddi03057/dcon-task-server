@@ -6,7 +6,7 @@ public class StringUtil extends StringUtils {
     public static String snakeToCamel(String str)
     {
         // Capitalize first letter of string
-        str = str.substring(0, 1).toUpperCase() + str.substring(1);
+        str = str.toLowerCase();
 
         // Convert to StringBuilder
         StringBuilder builder = new StringBuilder(str);

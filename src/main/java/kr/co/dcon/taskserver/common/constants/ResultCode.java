@@ -36,6 +36,8 @@ public enum ResultCode {
 
 	USER_EXISTS_EXCEPTION(8500, "User exists", "사용자가 있습니다"),
 	USER_NOT_EXISTS_EXCEPTION(8600, "User not exists","사용자가 없습니다."),
+
+	USER_NOT_AVAILABLE_EXCEPTION(8700, "This user is not available","사용 할 수 없는 사용자입니다."),
 	ETC_ERROR(9999, "etcError", "기타 에러") ;
 
 
