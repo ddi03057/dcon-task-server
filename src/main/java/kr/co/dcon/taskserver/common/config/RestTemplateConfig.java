@@ -1,11 +1,6 @@
 package kr.co.dcon.taskserver.common.config;
 
-import kr.co.dcon.taskserver.common.constants.CommonConstants;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang.StringUtils;
-import org.keycloak.admin.client.resource.RealmResource;
-import org.keycloak.admin.client.resource.UserResource;
-import org.keycloak.representations.idm.UserRepresentation;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.context.annotation.Bean;
@@ -18,7 +13,8 @@ import org.springframework.http.MediaType;
 import org.springframework.web.client.RestTemplate;
 
 import java.time.Duration;
-import java.util.*;
+import java.util.Collections;
+import java.util.Objects;
 
 @Configuration
 @Slf4j
@@ -41,10 +37,10 @@ public class RestTemplateConfig {
 		} catch (Exception e) {
 			log.warn("error init resttemplate properties client - use default");
 		}
-		
+
 		RestTemplate restTemplate = restTemplateBuilder.setConnectTimeout(Duration.ofMillis(connectionTimeout))
 				.setReadTimeout(Duration.ofMillis(readTimeout)).build();
-		
+
 		restTemplate.getInterceptors().add((request, body, execution) -> {
 			if(Objects.equals(request.getMethod(), HttpMethod.PUT)){
 				request.getHeaders().setContentType(MediaType.APPLICATION_JSON);
@@ -54,7 +50,7 @@ public class RestTemplateConfig {
 			request.getHeaders().setAccept(Collections.singletonList(MediaType.APPLICATION_JSON));
 			return execution.execute(request, body);
 		});
-		
+
 		return restTemplate;
 	}
 
