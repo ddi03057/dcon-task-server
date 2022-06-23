@@ -1,9 +1,11 @@
 package kr.co.dcon.taskserver.common.dto;
 
 
-import kr.co.dcon.taskserver.common.constants.ResultCode;
 import com.fasterxml.jackson.annotation.JsonInclude;
-import lombok.*;
+import kr.co.dcon.taskserver.common.constants.ResultCode;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import lombok.ToString;
 
 import java.io.Serializable;
 import java.util.Date;

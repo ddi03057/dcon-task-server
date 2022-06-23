@@ -161,7 +161,11 @@ public class Utils {
 		Date dateNow = Calendar.getInstance(new SimpleTimeZone(0x1ee6280, "KST")).getTime();
 		SimpleDateFormat formatter = new SimpleDateFormat("yyyyMMdd", Locale.getDefault());
 		return formatter.format(dateNow);
-
+	}
+	public static String getCurrentDateYYMMDD() {
+		Date dateNow = Calendar.getInstance(new SimpleTimeZone(0x1ee6280, "KST")).getTime();
+		SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault());
+		return formatter.format(dateNow);
 	}
 
 	public static String getCurrentDateYMD() {
