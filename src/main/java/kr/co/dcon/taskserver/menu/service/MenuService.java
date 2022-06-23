@@ -5,7 +5,6 @@ import kr.co.dcon.taskserver.common.dto.ResponseDTO;
 import kr.co.dcon.taskserver.common.util.RestTemplateUtil;
 import kr.co.dcon.taskserver.menu.dto.MenuLeftListReqDTO;
 import kr.co.dcon.taskserver.menu.dto.MenuListDTO;
-import kr.co.dcon.taskserver.sample.dto.SampleListDTO;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.ParameterizedTypeReference;

@@ -5,7 +5,6 @@ import io.swagger.annotations.ApiModelProperty;
 import kr.co.dcon.taskserver.common.dto.Forwardable;
 import lombok.Data;
 
-import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
 
 @Data
