@@ -1,5 +1,6 @@
 package kr.co.dcon.taskserver.user.dto;
 
+import kr.co.dcon.taskserver.common.util.Utils;
 import lombok.Data;
 
 import java.util.Date;
@@ -15,10 +16,9 @@ public class UserCreateDTO {
     private String password;
 
     private int errorCnt;
-    private Date updateDate;
+    private String updateDate;
     private String updateId;
     private String userAuth;
     private String userEmail;
     private String userLocale;
-
 }

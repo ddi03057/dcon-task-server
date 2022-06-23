@@ -2,27 +2,32 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="kr.co.dcon.taskserver.user.mapper.UserMapper">
 
-    <select id="selectKeyCloakUserCount" parameterType="kr.co.dcon.taskserver.user.dto.UserCreateDTO" resultType="java.lang.Integer">
-        SELECT COUNT(*)
-        FROM `dcon-keycloak`.USER_ENTITY
-        WHERE email = #{userId}
+    <select id="selectKeyCloakUserCount" parameterType="kr.co.dcon.taskserver.user.dto.UserCreateDTO"
+            resultType="java.lang.Integer">
+        SELECT count(UE.id)
+        FROM `dcon-keycloak`.USER_ENTITY UE,
+             `dcon-keycloak`.USER_ATTRIBUTE UA
+        WHERE UE.email = #{userEmail}
+          AND UE.id = UA.user_id
+          AND CONCAT(UA.name, UA.value) = 'USE_YNY'
 
     </select>
     <select id="selectKeyCloakUserId" parameterType="String" resultType="string">
-        SELECT id
-        FROM `dcon-keycloak`.USER_ENTITY
-        WHERE email = #{userEmail}
-
+        SELECT UE.id
+        FROM `dcon-keycloak`.USER_ENTITY UE,
+             `dcon-keycloak`.USER_ATTRIBUTE UA
+        WHERE UE.email = #{userEmail}
+          AND UE.id = UA.user_id
+          AND CONCAT(UA.name, UA.value) = 'USE_YNY'
     </select>
 
     <select id="selectKecloakRealmInfo" resultType="kr.co.dcon.taskserver.auth.dto.RealmInfoDTO">
-        SELECT realm_name as realmName
-             , client_id as clientId
+        SELECT realm_name    as realmName
+             , client_id     as clientId
              , client_secret as clientSecret
-             , user_name as userName
+             , user_name     as userName
              , password
-          FROM keycloak_realm_info
-
+        FROM keycloak_realm_info
     </select>
 
 
