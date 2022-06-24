@@ -7,18 +7,17 @@ import lombok.Data;
 public class MenuLeftListDTO {
 
     @ApiModelProperty(value = "href", notes = "href")
-    String href;
+    private String href;
 
     @ApiModelProperty(value = "title", notes = "title")
-    String title;
+    private String title;
 
     @ApiModelProperty(value = "title", notes = "title")
-    String icon;
+    private String icon;
 
     @ApiModelProperty(value = "seq", notes = "seq")
-    String seq;
+    private String seq;
 
-    @ApiModelProperty(value = "num", notes = "num")
-    String num;
-
+    @ApiModelProperty(value = "메뉴 순서", notes = "메뉴 순서", example = "메뉴 순서")
+    private int menuOrder;
 }
