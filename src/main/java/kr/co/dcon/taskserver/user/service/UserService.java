@@ -92,9 +92,13 @@ public class UserService implements UserServiceKeycloak {
 
         AccessToken accessToken = context.getToken();
         String userName = String.valueOf(accessToken.getOtherClaims().get(UserOtherClaim.USER_NAME));
+        String userAuth = String.valueOf(accessToken.getOtherClaims().get(UserOtherClaim.AUTH));
+        String userUseYn = String.valueOf(accessToken.getOtherClaims().get(UserOtherClaim.USE_YN));
         String userLocale = String.valueOf(accessToken.getOtherClaims().get(UserOtherClaim.USER_LOCALE));
         currentUserService.getCurrentUser().setUserName(userName);
         currentUserService.getCurrentUser().setLocale(userLocale);
+        currentUserService.getCurrentUser().setAuth(userAuth);
+        currentUserService.getCurrentUser().setUseYn(userUseYn);
         currentUserService.setRealmInfo();
 
         return new UserDTO(context);

@@ -30,4 +30,14 @@ public class UserDTO {
         return String.valueOf(this.token.getOtherClaims().get(UserOtherClaim.USER_NAME));
     }
 
+    @ApiModelProperty(value = "getUserAuth", notes = "getUserAuth", example = "admin", required = true)
+    public String getUserAuth() {
+        return String.valueOf(this.token.getOtherClaims().get(UserOtherClaim.AUTH));
+    }
+
+    @ApiModelProperty(value = "useYn", notes = "useYn", example = "Y", required = true)
+    public String getUseYn() {
+        return String.valueOf(this.token.getOtherClaims().get(UserOtherClaim.USE_YN));
+    }
+
 }

@@ -33,6 +33,9 @@ public class MenuService {
 
     public ResponseDTO<List<MenuTopListDTO>> selectMenuTopList(MenuTopListReqDTO reqDTO) {
         String url = taskUrl + "/menu/menuTop/" + reqDTO.getUserId();
+       log.info("currentUserService.getCurrentUser()::{}",currentUserService.getCurrentUser().toString());
+        reqDTO.setUserAuth(currentUserService.getCurrentUser().getAuth());
+        reqDTO.setUseYn(currentUserService.getCurrentUser().getUseYn());
         log.info("MenuService reqDTO::{}", reqDTO.toString());
         return RestTemplateUtil.getForResponseDTO(reqDTO.getUrlToForward(url), new ParameterizedTypeReference<ResponseDTO<List<MenuTopListDTO>>>() {
         });

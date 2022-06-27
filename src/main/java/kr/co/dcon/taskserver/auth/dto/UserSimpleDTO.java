@@ -13,7 +13,6 @@ public class UserSimpleDTO{
 	private String userEmail;
 	private String auth;
 	private String loginType;
-	private String empNo;
 	private String useYn;
 	private String locale;
 
