@@ -10,7 +10,6 @@ public class MenuTopListDTO {
     @ApiModelProperty(value = "menu id", notes = "menu id", example = "menu_1")
     private String menuId;
 
-
     @ApiModelProperty(value = "project id", notes = "project id", example = "dcon_project_1")
     private String projectId;
 
