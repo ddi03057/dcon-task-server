@@ -9,7 +9,7 @@ import java.util.List;
 public class MenuListDTO {
 
     @ApiModelProperty(value = "menu header", notes = "menu header")
-    MenuInfoDTO menuInfoDTO;
+    MenuInfoDTO info;
 
     @ApiModelProperty(value = "menu", notes = "menu")
     List<MenuLeftListDTO> list;

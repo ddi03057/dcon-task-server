@@ -15,4 +15,6 @@ public class MenuTopProjectListDTO {
     @ApiModelProperty(value = "사용 유무", notes = "사용 유무", example = "Y")
     private String useYn;
 
+    @ApiModelProperty(value = "url", notes = "url", example = "/project/issue/dcon_project_1")
+    private String href;
 }

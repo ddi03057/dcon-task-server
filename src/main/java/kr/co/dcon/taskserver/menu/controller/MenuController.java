@@ -41,7 +41,7 @@ public class MenuController {
     }
 
     @ApiOperation(value = "menu list", notes = " menu list")
-    @GetMapping("/list")
+    @GetMapping("/menuLeftList")
     public ResponseDTO<MenuListDTO> selectMenuList(@Valid MenuLeftListReqDTO reqDTO) {
         return menuService.selectMenuList(reqDTO);
 
