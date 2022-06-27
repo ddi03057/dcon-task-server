@@ -38,17 +38,14 @@ public class KeyCloakCurrentUserServiceImpl  implements CurrentUserService{
 
 	private UserSimpleDTO buildUserSimple(AccessToken accessToken) {
 		Map<String, Object> otherClaims = accessToken.getOtherClaims();
-		
+
 		UserSimpleDTO userSimple = new UserSimpleDTO();
 		userSimple.setUserId(accessToken.getSubject());
 		userSimple.setUserEmail(accessToken.getEmail());
 		userSimple.setUserName(accessToken.getEmail());
 		userSimple.setUserName((String)otherClaims.get(UserOtherClaim.USER_NAME));
-//		userSimple.setCompanyCode((String)otherClaims.get(UserOtherClaim.COMPANY_CODE));
-//		userSimple.setCustomerCode((String)otherClaims.get(UserOtherClaim.CUSTOMER_CODE));
-//		userSimple.setDeptCode((String)otherClaims.get(UserOtherClaim.CUS_DEPT_CD));
-//
-//		userSimple.setSiteCode(TokenUtil.getContext().getRealm());
+		userSimple.setAuth((String)otherClaims.get(UserOtherClaim.AUTH));
+		userSimple.setUseYn((String)otherClaims.get(UserOtherClaim.USE_YN));
 		return userSimple;
 	}
 
