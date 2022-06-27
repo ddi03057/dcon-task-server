@@ -27,23 +27,25 @@ public class MenuService {
     private static final String RESULT = "result";
 
 
-    public MenuService(CurrentUserService currentUserService){
+    public MenuService(CurrentUserService currentUserService) {
         this.currentUserService = currentUserService;
     }
 
     public ResponseDTO<List<MenuTopListDTO>> selectMenuTopList(MenuTopListReqDTO reqDTO) {
-        String url = taskUrl + "/menu/menuTop/"+reqDTO.getUserId();
-        log.info("MenuService reqDTO::{}",reqDTO.toString());
-      //  return RestTemplateUtil.getForResponseDTO(reqDTO.getUrlToForward(url), new ParameterizedTypeReference<ResponseDTO<List<MenuTopListDTO>>>() {});
-        return RestTemplateUtil.getForResponseDTO(reqDTO.getUrlToForward(url), new ParameterizedTypeReference<ResponseDTO<List<MenuTopListDTO>>>() {});
+        String url = taskUrl + "/menu/menuTop/" + reqDTO.getUserId();
+        log.info("MenuService reqDTO::{}", reqDTO.toString());
+        return RestTemplateUtil.getForResponseDTO(reqDTO.getUrlToForward(url), new ParameterizedTypeReference<ResponseDTO<List<MenuTopListDTO>>>() {
+        });
     }
 
     public ResponseDTO<MenuListDTO> selectMenuList(MenuLeftListReqDTO reqDTO) {
-        String url = taskUrl + "/menu/list";
-        log.info("MenuService reqDTO::{}",reqDTO.toString());
-        log.info("RestTemplateUtil reqDTO::{}",RestTemplateUtil.getForResponseDTO(reqDTO.getUrlToForward(url), new ParameterizedTypeReference<ResponseDTO<MenuListDTO>>() {}));
+        String url = taskUrl + "/menu/list/" + reqDTO.getUserId();;
+        log.info("MenuService reqDTO::{}", reqDTO.toString());
+        log.info("RestTemplateUtil reqDTO::{}", RestTemplateUtil.getForResponseDTO(reqDTO.getUrlToForward(url), new ParameterizedTypeReference<ResponseDTO<MenuListDTO>>() {
+        }));
 
-        return RestTemplateUtil.getForResponseDTO(reqDTO.getUrlToForward(url), new ParameterizedTypeReference<ResponseDTO<MenuListDTO>>() {});
+        return RestTemplateUtil.getForResponseDTO(reqDTO.getUrlToForward(url), new ParameterizedTypeReference<ResponseDTO<MenuListDTO>>() {
+        });
     }
 
 

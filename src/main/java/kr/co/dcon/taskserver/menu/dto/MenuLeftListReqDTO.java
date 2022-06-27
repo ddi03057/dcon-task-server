@@ -17,6 +17,8 @@ public class MenuLeftListReqDTO implements Forwardable {
     @ApiModelProperty(value = "사용 유무", notes = "사용 유무", example = "Y")
     private String useYn;
 
+    @ApiModelProperty(value = "menu path", notes = "menu path", example = "dcon_project_1")
+    private String projectId;
 
     @Override
     public String getUrlToForward(String baseUrl) {
@@ -25,6 +27,7 @@ public class MenuLeftListReqDTO implements Forwardable {
         urlParam.append(baseUrl);
         urlParam.append("/");
         urlParam.append("?userid=" + userId);
+        urlParam.append("&projectId=" + projectId);
 
         return urlParam.toString();
     }
