@@ -19,11 +19,13 @@ import kr.co.dcon.taskserver.user.dto.UserDTO;
 import kr.co.dcon.taskserver.user.service.UserService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.map.HashedMap;
+import org.keycloak.representations.idm.UserRepresentation;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @Slf4j
@@ -108,7 +110,7 @@ public class UserController {
 
     @ApiOperation(value = "사용자 리스트")
     @GetMapping("allUser/{userId}")
-    public ResponseDTO<Map<String, Object>> selectUserList(@ApiParam(value = "userId", required = true, example = "20878cc7-4397-4d26-8269-73cd220c95a3") @PathVariable String userId) throws Exception {
+    public ResponseDTO<List<UserRepresentation>> selectUserList(@ApiParam(value = "userId", required = true, example = "20878cc7-4397-4d26-8269-73cd220c95a3") @PathVariable String userId) throws Exception {
         return new ResponseDTO<>(ResultCode.OK, userService.selectUserList(userId));
     }
 }

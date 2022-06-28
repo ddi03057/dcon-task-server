@@ -7,6 +7,7 @@ import kr.co.dcon.taskserver.auth.service.CurrentUserService;
 import kr.co.dcon.taskserver.common.constants.CommonConstants;
 import kr.co.dcon.taskserver.common.constants.ResultCode;
 import kr.co.dcon.taskserver.common.constants.UserOtherClaim;
+import kr.co.dcon.taskserver.common.dto.NoResultDTO;
 import kr.co.dcon.taskserver.common.exception.RuntimeExceptionBase;
 import kr.co.dcon.taskserver.common.exception.UserAttributeException;
 import kr.co.dcon.taskserver.common.util.EncryptUtil;
@@ -367,12 +368,25 @@ public class UserService implements UserServiceKeycloak {
         usersResource.delete(userId);
     }
 
-    public Map<String, Object> selectUserList(String userId) throws Exception {
+    public List<UserRepresentation> selectUserList(String userId) throws Exception {
         Map<String, Object> resultMap = new HashedMap<>();
         Keycloak keycloak = buildKeycloak();
         List<UserRepresentation> list = keycloak.realm(realm).users().list();
         log.info("list.size()::{}", list.size());
-        resultMap.put("reuslt", list);
-        return resultMap;
+
+        for(Iterator<UserRepresentation> it=list.iterator(); it.hasNext();){
+            String str = String.valueOf(it.next());
+            if(str.equals(dconMasterUserId)) it.remove();
+        }
+        for(UserRepresentation vo : list){
+            log.info("vo.getId()::{}",vo.getId());
+            if(vo.getId().equals(dconMasterUserId.trim())){
+                log.info("vdconMasterUserId()::{}",dconMasterUserId);
+                list.remove(vo.getId());
+            }
+
+        }
+
+        return list;
     }
 }

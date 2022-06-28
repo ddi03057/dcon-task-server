@@ -31,6 +31,7 @@ public class ProjectController {
     @GetMapping("/issueList")
     public ResponseDTO<List<ProjectListDTO>> selectIssueList(@Valid ProjectListReqDTO reqDTO){
         return  projectService.selectIssueList(reqDTO);
+
     }
 
 }
