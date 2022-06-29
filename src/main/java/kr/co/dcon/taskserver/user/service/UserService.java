@@ -7,7 +7,6 @@ import kr.co.dcon.taskserver.auth.service.CurrentUserService;
 import kr.co.dcon.taskserver.common.constants.CommonConstants;
 import kr.co.dcon.taskserver.common.constants.ResultCode;
 import kr.co.dcon.taskserver.common.constants.UserOtherClaim;
-import kr.co.dcon.taskserver.common.dto.NoResultDTO;
 import kr.co.dcon.taskserver.common.exception.RuntimeExceptionBase;
 import kr.co.dcon.taskserver.common.exception.UserAttributeException;
 import kr.co.dcon.taskserver.common.util.EncryptUtil;
@@ -90,6 +89,7 @@ public class UserService implements UserServiceKeycloak {
         String nowToken = context.getTokenString();
 
         log.info("nowToken :  {}", "Bearer " + nowToken);
+        log.info("getCurrentDateYYYMMD :  {}",  Utils.getCurrentDateYYYMMD());
 
         AccessToken accessToken = context.getToken();
         String userName = String.valueOf(accessToken.getOtherClaims().get(UserOtherClaim.USER_NAME));

@@ -58,7 +58,7 @@
         <appender-ref ref="stdout"/>
     </logger>-->Application
     <!-- Application Loggers -->
-    <logger name="com.dcon" level="${LOG_LEVEL}"/>
+    <logger name="kr.co.dcon" level="${LOG_LEVEL}"/>
     <!-- IP Check Loggers -->
 <!--    <logger name="com.bespinglobal.framework.security.authentication" level="${LOG_LEVEL}"/>-->
     <!-- <logger name="org.apache.http.wire" additivity="false" level="debug" /> -->

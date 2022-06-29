@@ -15,4 +15,7 @@ public class CodeReqDTO{
     @NotBlank
     private String codeGroupId;
 
+    @ApiModelProperty(value = "codeId", notes = "codeId", example = "open")
+    private String codeId;
+
 }

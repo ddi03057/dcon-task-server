@@ -31,4 +31,10 @@ public class CodeController {
     public ResponseDTO<List<CodeListDTO>> selectCodeList(@Valid CodeReqDTO reqDTO){
         return  codeService.selectCodeList(reqDTO);
     }
+
+    @ApiOperation(value = "code", notes = "code")
+    @GetMapping("/code")
+    public ResponseDTO<CodeListDTO> selectCode(@Valid CodeReqDTO reqDTO){
+        return  codeService.selectCode(reqDTO);
+    }
 }
