@@ -22,4 +22,10 @@ public class CodeService {
         return RestTemplateUtil.getForResponseDTO(url, new ParameterizedTypeReference<ResponseDTO<List<CodeListDTO>>>() {
         });
     }
+
+    public ResponseDTO<CodeListDTO> selectCode(CodeReqDTO reqDTO) {
+        String url = taskUrl + "/code/code/" + reqDTO.getCodeGroupId()+"/"+reqDTO.getCodeId();
+        return RestTemplateUtil.getForResponseDTO(url, new ParameterizedTypeReference<ResponseDTO<CodeListDTO>>() {
+        });
+    }
 }
