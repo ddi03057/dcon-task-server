@@ -26,7 +26,6 @@ public class ProjectController {
 
     ProjectService projectService;
 
-    private final String RESULT_STRING = "result";
 
     public ProjectController(ProjectService projectService) {
         this.projectService = projectService;
@@ -44,7 +43,6 @@ public class ProjectController {
     @GetMapping("/taskStatus/{taskStatus}")
     public ResponseDTO<ProjectPutReqDTO> updateProjectStatus(@Valid ProjectPutReqDTO reqDTO,
                                                              @ApiParam(value = "taskStatus", required = true, example = "open") @PathVariable String taskStatus) {
-        Map<String, Object> result = new HashedMap<>();
         ResultCode resultCode = ResultCode.OK;
 
         try {
@@ -63,7 +61,6 @@ public class ProjectController {
     @GetMapping("/taskAssign/{taskId}")
     public ResponseDTO<ProjectPutReqDTO> updateProjectTaskAssign(@Valid ProjectPutReqDTO reqDTO,
                                                              @ApiParam(value = "taskId", required = true, example = "task_1") @PathVariable String taskId) {
-        Map<String, Object> result = new HashedMap<>();
         ResultCode resultCode = ResultCode.OK;
 
         try {
