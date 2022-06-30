@@ -45,6 +45,9 @@ public final class CommonConstants {
 	public static final String JOIN_GROUP_PATH = "joinGroupPath";
 
 	public static final String OTP = "otp";
+	public static final String KO = "ko";
+
+
 
 	public static final String[] KEY_CLOAK_PROPERTY_ARR = {"ERROR_CNT", "USE_YN", "UPDATE_DATE", "UPDATE_ID", "USER_AUTH", "USER_EMAIL", "USER_LOCALE", "USER_NAME"};
 

@@ -12,10 +12,7 @@ import kr.co.dcon.taskserver.common.exception.UserAttributeException;
 import kr.co.dcon.taskserver.common.util.EncryptUtil;
 import kr.co.dcon.taskserver.common.util.StringUtil;
 import kr.co.dcon.taskserver.common.util.Utils;
-import kr.co.dcon.taskserver.user.dto.UserChangeDTO;
-import kr.co.dcon.taskserver.user.dto.UserChangePasswordDTO;
-import kr.co.dcon.taskserver.user.dto.UserCreateDTO;
-import kr.co.dcon.taskserver.user.dto.UserDTO;
+import kr.co.dcon.taskserver.user.dto.*;
 import kr.co.dcon.taskserver.user.mapper.UserMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.map.HashedMap;
@@ -56,6 +53,9 @@ public class UserService implements UserServiceKeycloak {
     @Value("${keycloak.realm}")
     private String realm;
 
+    @Value("${dcon.realmName}")
+    private String realmName;
+
     @Value("${dcon.keycloak.dconmaster.userid}")
     private String dconMasterUserId;
     private CurrentUserService currentUserService;
@@ -89,7 +89,6 @@ public class UserService implements UserServiceKeycloak {
         String nowToken = context.getTokenString();
 
         log.info("nowToken :  {}", "Bearer " + nowToken);
-        log.info("getCurrentDateYYYMMD :  {}",  Utils.getCurrentDateYYYMMD());
 
         AccessToken accessToken = context.getToken();
         String userName = String.valueOf(accessToken.getOtherClaims().get(UserOtherClaim.USER_NAME));
@@ -369,24 +368,40 @@ public class UserService implements UserServiceKeycloak {
     }
 
     public List<UserRepresentation> selectUserList(String userId) throws Exception {
-        Map<String, Object> resultMap = new HashedMap<>();
         Keycloak keycloak = buildKeycloak();
         List<UserRepresentation> list = keycloak.realm(realm).users().list();
-        log.info("list.size()::{}", list.size());
-
-        for(Iterator<UserRepresentation> it=list.iterator(); it.hasNext();){
-            String str = String.valueOf(it.next());
-            if(str.equals(dconMasterUserId)) it.remove();
-        }
-        for(UserRepresentation vo : list){
-            log.info("vo.getId()::{}",vo.getId());
-            if(vo.getId().equals(dconMasterUserId.trim())){
-                log.info("vdconMasterUserId()::{}",dconMasterUserId);
-                list.remove(vo.getId());
-            }
-
-        }
-
         return list;
+    }
+
+    public List<UserListDTO> selectProjectUserList(UserListProjectReqDTO reqDTO) {
+        reqDTO.setProjectRealm(realmName);
+        reqDTO.setRealmMasterUseUserId(dconMasterUserId);
+        List<UserListDTO> userList = new ArrayList<>();
+        List<UserListDTO> list = userMapper.selectProjectUserList(reqDTO);
+
+        String userLocal = currentUserService.getCurrentUser().getLocale();
+        for(UserListDTO vo : list){
+            if(CommonConstants.KO.equals(userLocal)){
+                vo.setUserName(vo.getLastName().concat(vo.getFirstName()));
+            }else{
+                vo.setUserName(vo.getFirstName().concat(vo.getLastName()));
+            }
+            userList.add(vo);
+        }
+        return userList;
+    }
+
+    public UserListDTO selectProjectUserDetail(UserListProjectReqDTO reqDTO) {
+
+        String userLocal = currentUserService.getCurrentUser().getLocale();
+        reqDTO.setProjectRealm(realmName);
+        UserListDTO dto = userMapper.selectProjectUserDetail(reqDTO);
+        if(CommonConstants.KO.equals(userLocal)){
+            dto.setUserName(dto.getLastName().concat(dto.getFirstName()));
+        }else{
+            dto.setUserName(dto.getFirstName().concat(dto.getLastName()));
+        }
+
+        return dto;
     }
 }

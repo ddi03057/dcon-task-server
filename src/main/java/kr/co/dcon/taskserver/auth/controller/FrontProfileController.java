@@ -32,16 +32,9 @@ public class FrontProfileController {
 	@GetMapping("/front-profile")
 	@ApiOperation(value = "front end profile 조회")
 	public ResponseDTO<FrontProfileDTO> getFrontProfile(HttpServletRequest request){
-		log.info("request.getRequestURL().toString()::{}",request.getRequestURL().toString());
-		log.info("getFrontProfile::{}",DomainUtil.getRootUrl(request.getRequestURL().toString()));
 		String rootUrl = DomainUtil.getRootUrl(request.getRequestURL().toString());
 		return new ResponseDTO<>(ResultCode.OK, service.selectFrontFile(rootUrl));
 	}
-//	@ResponseBody
-//	public String frontProfile() {
-//		return env;
-//	}
-
 
 
 }

@@ -46,6 +46,7 @@ public class KeyCloakCurrentUserServiceImpl  implements CurrentUserService{
 		userSimple.setUserName((String)otherClaims.get(UserOtherClaim.USER_NAME));
 		userSimple.setAuth((String)otherClaims.get(UserOtherClaim.AUTH));
 		userSimple.setUseYn((String)otherClaims.get(UserOtherClaim.USE_YN));
+		userSimple.setLocale((String)otherClaims.get(UserOtherClaim.USER_LOCALE));
 		return userSimple;
 	}
 
