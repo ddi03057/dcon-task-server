@@ -5,7 +5,7 @@ import kr.co.dcon.taskserver.common.dto.Forwardable;
 import lombok.Data;
 
 @Data
-public class ProjectPutReqDTO implements Forwardable {
+public class ProjectTaskUpdateReqDTO implements Forwardable {
     @ApiModelProperty(value = "projectId", notes = "projectId", example = "dcon_project_1", required = true)
     private String projectId;
 

@@ -4,7 +4,7 @@ import kr.co.dcon.taskserver.common.dto.ResponseDTO;
 import kr.co.dcon.taskserver.common.util.RestTemplateUtil;
 import kr.co.dcon.taskserver.project.dto.ProjectListDTO;
 import kr.co.dcon.taskserver.project.dto.ProjectListReqDTO;
-import kr.co.dcon.taskserver.project.dto.ProjectPutReqDTO;
+import kr.co.dcon.taskserver.project.dto.ProjectTaskUpdateReqDTO;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.ParameterizedTypeReference;
@@ -26,19 +26,18 @@ public class ProjectService {
         });
     }
 
-    public ResponseDTO<ProjectPutReqDTO> updateProjectStatus(ProjectPutReqDTO reqDTO) {
+    public ResponseDTO<ProjectTaskUpdateReqDTO> updateProjectTaskStatus(ProjectTaskUpdateReqDTO reqDTO) {
         Map<String, Object> result = new HashMap<>();
-        String url = taskUrl + "/project/taskStatus/"+reqDTO.getTaskStatus();
-
-        return RestTemplateUtil.getForResponseDTO(reqDTO.getUrlToForward(url), new ParameterizedTypeReference<ResponseDTO<ProjectPutReqDTO>>() {
+        String url = taskUrl + "/project/taskStatus/"+reqDTO.getProjectId()+"/"+reqDTO.getTaskId()+"/"+reqDTO.getTaskStatus();
+        return RestTemplateUtil.getForResponseDTO(reqDTO.getUrlToForward(url), new ParameterizedTypeReference<ResponseDTO<ProjectTaskUpdateReqDTO>>() {
         });
     }
 
-    public ResponseDTO<ProjectPutReqDTO> updateProjectTaskAssign(ProjectPutReqDTO reqDTO) {
+    public ResponseDTO<ProjectTaskUpdateReqDTO> updateProjectTaskAssign(ProjectTaskUpdateReqDTO reqDTO) {
         Map<String, Object> result = new HashMap<>();
-        String url = taskUrl + "/project/taskAssign/"+reqDTO.getTaskId();
+        String url = taskUrl + "/project/taskAssign/"+reqDTO.getProjectId()+"/"+reqDTO.getTaskId();
 
-        return RestTemplateUtil.getForResponseDTO(reqDTO.getUrlToForward(url), new ParameterizedTypeReference<ResponseDTO<ProjectPutReqDTO>>() {
+        return RestTemplateUtil.getForResponseDTO(reqDTO.getUrlToForward(url), new ParameterizedTypeReference<ResponseDTO<ProjectTaskUpdateReqDTO>>() {
         });
     }
 }

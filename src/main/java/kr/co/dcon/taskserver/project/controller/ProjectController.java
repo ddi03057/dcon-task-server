@@ -2,25 +2,19 @@ package kr.co.dcon.taskserver.project.controller;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiParam;
 import kr.co.dcon.taskserver.common.constants.ResultCode;
 import kr.co.dcon.taskserver.common.dto.ResponseDTO;
 import kr.co.dcon.taskserver.common.exception.RuntimeExceptionBase;
 import kr.co.dcon.taskserver.project.dto.ProjectListDTO;
 import kr.co.dcon.taskserver.project.dto.ProjectListReqDTO;
-import kr.co.dcon.taskserver.project.dto.ProjectPutReqDTO;
+import kr.co.dcon.taskserver.project.dto.ProjectTaskUpdateReqDTO;
 import kr.co.dcon.taskserver.project.service.ProjectService;
-import kr.co.dcon.taskserver.user.dto.UserListDTO;
-import kr.co.dcon.taskserver.user.dto.UserListProjectReqDTO;
 import kr.co.dcon.taskserver.user.service.UserService;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.collections4.map.HashedMap;
-import org.keycloak.representations.idm.UserRepresentation;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.util.List;
-import java.util.Map;
 
 @Slf4j
 @Api(value = "PROJECT API")
@@ -46,13 +40,12 @@ public class ProjectController {
     }
 
     @ApiOperation(value = "task Status 수정", notes = "task Status")
-    @GetMapping("/taskStatus/{taskStatus}")
-    public ResponseDTO<ProjectPutReqDTO> updateProjectStatus(@Valid ProjectPutReqDTO reqDTO,
-                                                             @ApiParam(value = "taskStatus", required = true, example = "open") @PathVariable String taskStatus) {
+    @GetMapping("/taskStatus/{projectId}/{taskId}/{taskStatus}")
+    public ResponseDTO<ProjectTaskUpdateReqDTO> updateProjectTaskStatus(@Valid ProjectTaskUpdateReqDTO reqDTO) {
         ResultCode resultCode = ResultCode.OK;
 
         try {
-            projectService.updateProjectStatus(reqDTO);
+            projectService.updateProjectTaskStatus(reqDTO);
         } catch (RuntimeExceptionBase runtimeExceptionBase) {
             resultCode = ResultCode.USER_NOT_AVAILABLE_EXCEPTION;
         } catch (Exception e) {
@@ -64,9 +57,9 @@ public class ProjectController {
     }
 
     @ApiOperation(value = "task assign 수정", notes = "task assign")
-    @GetMapping("/taskAssign/{taskId}")
-    public ResponseDTO<ProjectPutReqDTO> updateProjectTaskAssign(@Valid ProjectPutReqDTO reqDTO,
-                                                             @ApiParam(value = "taskId", required = true, example = "task_1") @PathVariable String taskId) {
+    @GetMapping("/taskAssign/{projectId}/{taskId}")
+
+    public ResponseDTO<ProjectTaskUpdateReqDTO> updateProjectTaskAssign(@Valid ProjectTaskUpdateReqDTO reqDTO) {
         ResultCode resultCode = ResultCode.OK;
 
         try {
