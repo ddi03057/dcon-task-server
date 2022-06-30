@@ -9,10 +9,7 @@ import kr.co.dcon.taskserver.common.constants.ResultCode;
 import kr.co.dcon.taskserver.common.dto.ResponseDTO;
 import kr.co.dcon.taskserver.common.exception.RuntimeExceptionBase;
 import kr.co.dcon.taskserver.common.util.DateUtils;
-import kr.co.dcon.taskserver.user.dto.UserChangeDTO;
-import kr.co.dcon.taskserver.user.dto.UserChangePasswordDTO;
-import kr.co.dcon.taskserver.user.dto.UserCreateDTO;
-import kr.co.dcon.taskserver.user.dto.UserDTO;
+import kr.co.dcon.taskserver.user.dto.*;
 import kr.co.dcon.taskserver.user.service.UserService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.map.HashedMap;
@@ -108,5 +105,15 @@ public class UserController {
     @GetMapping("allUser/{userId}")
     public ResponseDTO<List<UserRepresentation>> selectUserList(@ApiParam(value = "userId", required = true, example = "20878cc7-4397-4d26-8269-73cd220c95a3") @PathVariable String userId) throws Exception {
         return new ResponseDTO<>(ResultCode.OK, userService.selectUserList(userId));
+    }
+    @ApiOperation(value = "사용자 리스트")
+    @GetMapping("/task/allUser")
+    public ResponseDTO<List<UserListDTO>> selectProjectUserList(@Valid UserListProjectReqDTO reqDTO) {
+        return new ResponseDTO<>(ResultCode.OK, userService.selectProjectUserList(reqDTO));
+    }
+    @ApiOperation(value = "사용자 리스트")
+    @GetMapping("/task/allUser/{userId}")
+    public ResponseDTO<UserListDTO> selectProjectUserDetail(@Valid UserListProjectReqDTO reqDTO) {
+        return new ResponseDTO<>(ResultCode.OK, userService.selectProjectUserDetail(reqDTO));
     }
 }

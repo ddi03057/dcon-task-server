@@ -29,8 +29,6 @@ public class MenuTopListReqDTO implements Forwardable {
         urlParam.append("&userAuth=").append(userAuth);
         urlParam.append("&userid=").append(userId);
 
-        log.info("urlParam.toString()::{}",urlParam.toString());
-
         return urlParam.toString();
     }
 }

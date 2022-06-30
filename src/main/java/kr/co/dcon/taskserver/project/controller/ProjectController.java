@@ -10,8 +10,12 @@ import kr.co.dcon.taskserver.project.dto.ProjectListDTO;
 import kr.co.dcon.taskserver.project.dto.ProjectListReqDTO;
 import kr.co.dcon.taskserver.project.dto.ProjectPutReqDTO;
 import kr.co.dcon.taskserver.project.service.ProjectService;
+import kr.co.dcon.taskserver.user.dto.UserListDTO;
+import kr.co.dcon.taskserver.user.dto.UserListProjectReqDTO;
+import kr.co.dcon.taskserver.user.service.UserService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.map.HashedMap;
+import org.keycloak.representations.idm.UserRepresentation;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
@@ -25,10 +29,12 @@ import java.util.Map;
 public class ProjectController {
 
     ProjectService projectService;
+    UserService userService;
 
 
-    public ProjectController(ProjectService projectService) {
+    public ProjectController(ProjectService projectService,UserService userService) {
         this.projectService = projectService;
+        this.userService = userService;
 
     }
 
@@ -74,4 +80,5 @@ public class ProjectController {
         return new ResponseDTO<>(resultCode, reqDTO);
 
     }
+
 }

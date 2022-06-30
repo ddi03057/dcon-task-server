@@ -24,8 +24,6 @@ public class ProjectListReqDTO implements Forwardable {
         urlParam.append("?projectId=").append(projectId);
         urlParam.append("&taskStatus=").append(taskStatus);
 
-        log.info("ProjectListReqDTOurlParam.toString()::{}", urlParam.toString());
-
         return urlParam.toString();
     }
 }
