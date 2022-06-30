@@ -17,4 +17,7 @@ public class MenuTopProjectListDTO {
 
     @ApiModelProperty(value = "url", notes = "url", example = "/project/issue/dcon_project_1")
     private String href;
+
+    @ApiModelProperty(value = "classification", notes = "classification", example = "menu")
+    private String classification;
 }
