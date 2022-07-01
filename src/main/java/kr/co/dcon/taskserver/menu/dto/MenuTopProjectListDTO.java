@@ -18,5 +18,5 @@ public class MenuTopProjectListDTO {
     @ApiModelProperty(value = "url", notes = "url", example = "/project/issue/dcon_project_1")
     private String href;
 
-   
+
 }
