@@ -2,7 +2,6 @@ package kr.co.dcon.taskserver.menu.dto;
 
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
-
 @Data
 public class MenuLeftListDTO {
 

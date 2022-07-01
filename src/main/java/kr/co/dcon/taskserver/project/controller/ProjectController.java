@@ -5,10 +5,7 @@ import io.swagger.annotations.ApiOperation;
 import kr.co.dcon.taskserver.common.constants.ResultCode;
 import kr.co.dcon.taskserver.common.dto.ResponseDTO;
 import kr.co.dcon.taskserver.common.exception.RuntimeExceptionBase;
-import kr.co.dcon.taskserver.project.dto.ProjectListDTO;
-import kr.co.dcon.taskserver.project.dto.ProjectListReqDTO;
-import kr.co.dcon.taskserver.project.dto.ProjectTaskCreateReqDTO;
-import kr.co.dcon.taskserver.project.dto.ProjectTaskUpdateReqDTO;
+import kr.co.dcon.taskserver.project.dto.*;
 import kr.co.dcon.taskserver.project.service.ProjectService;
 import kr.co.dcon.taskserver.user.service.UserService;
 import lombok.extern.slf4j.Slf4j;
@@ -78,9 +75,32 @@ public class ProjectController {
     @PostMapping("/taskAdd")
     public ResponseDTO<ProjectTaskCreateReqDTO> insertTaskinsert(@Valid @RequestBody ProjectTaskCreateReqDTO reqDTO){
         ResultCode resultCode = ResultCode.OK;
-        log.info("controller reqDTO.toString(){}",reqDTO.toString());
+
         try {
             projectService.insertTask(reqDTO);
+        } catch (RuntimeExceptionBase runtimeExceptionBase) {
+            resultCode = ResultCode.USER_NOT_AVAILABLE_EXCEPTION;
+        } catch (Exception e) {
+            resultCode = ResultCode.ETC_ERROR;
+        }
+
+        return new ResponseDTO<>(resultCode, reqDTO);
+
+    }
+
+    @ApiOperation(value = "task detail", notes = "task detail")
+    @GetMapping("/taskDetail")
+    public ResponseDTO<ProjectTaskDetailDTO>selectTaskDetail(@Valid ProjectTaskDetailReqDTO reqDTO){
+        return projectService.selectTaskDetail(reqDTO);
+    }
+
+    @ApiOperation(value = "task update", notes = "task update")
+    @PutMapping(value = "/taskDetail/update")
+    public ResponseDTO<ProjectTaskUpdateReqDTO> updateProjectTaskDetail(@Valid @RequestBody ProjectTaskUpdateReqDTO reqDTO) {
+        ResultCode resultCode = null;
+        try {
+            projectService.updateProjectTaskDetail(reqDTO);
+            resultCode = ResultCode.OK;
         } catch (RuntimeExceptionBase runtimeExceptionBase) {
             resultCode = ResultCode.USER_NOT_AVAILABLE_EXCEPTION;
         } catch (Exception e) {

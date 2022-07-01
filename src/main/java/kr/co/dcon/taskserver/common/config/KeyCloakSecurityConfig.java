@@ -85,38 +85,4 @@ public class KeyCloakSecurityConfig extends KeycloakWebSecurityConfigurerAdapter
   public KeycloakConfigResolver KeycloakConfigResolver() {
     return new KeycloakSpringBootConfigResolver();
   }
-   /* @Value("${front.env}")
-    String strServerType;
-
-    @Bean
-    public KeycloakConfigResolver keycloakConfigResolver() {
-        return new KeycloakConfigResolver() {
-            private KeycloakDeployment keycloakDeployment;
-
-            @Override
-            public KeycloakDeployment resolve(HttpFacade.Request facade) {
-                if (keycloakDeployment != null) {
-                    return keycloakDeployment;
-                }
-
-                String strKeyCloackJson = "";
-                if ("PROD".equals(strServerType)) {
-                    strKeyCloackJson = "/keycloak_prod.json";
-                } else if ("STAGE".equals(strServerType)) {
-                    strKeyCloackJson = "/keycloak_stg.json";
-                } else if ("DEV".equals(strServerType)) {
-                    strKeyCloackJson = "/keycloak_dev.json";
-                } else {
-                    strKeyCloackJson = "/keycloak.json";
-                }
-
-
-                // log.info("[strKeyCloackJson] strServerType = " + strServerType);
-                // log.info("[strKeyCloackJson] strKeyCloackJson = " + strKeyCloackJson);
-
-                InputStream configInputStream = getClass().getResourceAsStream(strKeyCloackJson);
-                return KeycloakDeploymentBuilder.build(configInputStream);
-            }
-        };
-    }*/
 }

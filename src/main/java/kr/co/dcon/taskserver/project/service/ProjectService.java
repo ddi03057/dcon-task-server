@@ -1,14 +1,9 @@
 package kr.co.dcon.taskserver.project.service;
 
 import com.google.gson.Gson;
-import kr.co.dcon.taskserver.common.constants.ResultCode;
 import kr.co.dcon.taskserver.common.dto.ResponseDTO;
-import kr.co.dcon.taskserver.common.exception.RuntimeExceptionBase;
 import kr.co.dcon.taskserver.common.util.RestTemplateUtil;
-import kr.co.dcon.taskserver.project.dto.ProjectListDTO;
-import kr.co.dcon.taskserver.project.dto.ProjectListReqDTO;
-import kr.co.dcon.taskserver.project.dto.ProjectTaskCreateReqDTO;
-import kr.co.dcon.taskserver.project.dto.ProjectTaskUpdateReqDTO;
+import kr.co.dcon.taskserver.project.dto.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.ParameterizedTypeReference;
@@ -50,7 +45,6 @@ public class ProjectService {
 
     public ResponseDTO<ProjectTaskUpdateReqDTO> insertTask(ProjectTaskCreateReqDTO reqDTO) {
         String url = taskUrl + "/project/taskAdd/";
-        log.info("service reqDTO.toString(){}",reqDTO.toString());
         MultiValueMap<String, String> parameters = new LinkedMultiValueMap<>();
 
         parameters.add("reqDTO", new Gson().toJson(reqDTO));
@@ -59,4 +53,16 @@ public class ProjectService {
     }
 
 
+    public ResponseDTO<ProjectTaskDetailDTO> selectTaskDetail(ProjectTaskDetailReqDTO reqDTO) {
+        String url = taskUrl + "/project/taskDetail/";
+        return RestTemplateUtil.getForResponseDTO(reqDTO.getUrlToForward(url), new ParameterizedTypeReference<ResponseDTO<ProjectTaskDetailDTO>>() {
+        });
+    }
+
+    public ResponseDTO<ProjectTaskUpdateReqDTO> updateProjectTaskDetail(ProjectTaskUpdateReqDTO reqDTO) {
+        String url = taskUrl + "/project/taskDetail/update";
+
+        return RestTemplateUtil.getForResponseDTO(reqDTO.getUrlToForward(url), new ParameterizedTypeReference<ResponseDTO<ProjectTaskUpdateReqDTO>>() {
+        });
+    }
 }
