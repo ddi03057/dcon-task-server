@@ -89,7 +89,6 @@ public class SampleService {
         return RestTemplateUtil.getForResponseDTO(reqDTO.getUrlToForward(url), new ParameterizedTypeReference<ResponseDTO<Map<String, Object>>>() {
         });
 
-        // return RestTemplateUtil.postJsonResponseDTO(url, parameters, new ResponseDTO<>());
     }
 
     public ResponseDTO<Map<String, Object>> insertSample(SampleReqDTO reqDTO) {
