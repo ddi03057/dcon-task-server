@@ -3,8 +3,10 @@ package kr.co.dcon.taskserver.project.dto;
 import io.swagger.annotations.ApiModelProperty;
 import kr.co.dcon.taskserver.common.dto.Forwardable;
 import lombok.Data;
+import lombok.extern.slf4j.Slf4j;
 
 @Data
+@Slf4j
 public class ProjectTaskUpdateReqDTO implements Forwardable {
     @ApiModelProperty(value = "projectId", notes = "projectId", example = "dcon_project_1", required = true)
     private String projectId;
@@ -21,6 +23,8 @@ public class ProjectTaskUpdateReqDTO implements Forwardable {
     @ApiModelProperty(value = "userId", notes = "userId", example = "af14336d-77e3-43df-a4f5-f8f7b5c7f10e'")
     private String userId;
 
+    @ApiModelProperty(value = "taskDesc", notes = "taskDesc", example = "taskDesc")
+    private String taskDesc;
 
     @Override
     public String getUrlToForward(String baseUrl) {
@@ -32,6 +36,10 @@ public class ProjectTaskUpdateReqDTO implements Forwardable {
         urlParam.append("&taskId="+taskId);
         urlParam.append("&updateId="+updateId);
         urlParam.append("&userId="+userId);
+        urlParam.append("&taskDesc="+taskDesc);
+
         return urlParam.toString();
     }
+
+
 }

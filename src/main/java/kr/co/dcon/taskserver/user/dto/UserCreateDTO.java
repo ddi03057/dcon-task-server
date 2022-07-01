@@ -1,9 +1,6 @@
 package kr.co.dcon.taskserver.user.dto;
 
-import kr.co.dcon.taskserver.common.util.Utils;
 import lombok.Data;
-
-import java.util.Date;
 
 @Data
 public class UserCreateDTO {

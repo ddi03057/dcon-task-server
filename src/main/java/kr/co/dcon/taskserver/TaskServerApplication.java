@@ -25,7 +25,6 @@ public class TaskServerApplication extends SpringBootServletInitializer {
     @PostConstruct
     void started() {
         TimeZone.setDefault(TimeZone.getTimeZone("Asia/Seoul"));
-        log.info("started");
     }
 
     @Override protected SpringApplicationBuilder configure(SpringApplicationBuilder builder) {

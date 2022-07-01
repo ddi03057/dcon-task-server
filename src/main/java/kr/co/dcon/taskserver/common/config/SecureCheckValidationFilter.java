@@ -54,13 +54,13 @@ public class SecureCheckValidationFilter extends HttpServletRequestWrapper {
   /**
    * @Method Name : getParameter
    * @Method Desc : getParameter 호출 시 Html Tag 치환, SQL Injection 방지, Cross Site Script 방지
-   * 
+   *
    * @작성일 : Jun 7, 2019
    * @작성자 : zest
    * @변경이력 : 이름 : 일자 : 근거자료 : 변경내용
    *       ------------------------------------------------------------------- zest : Jun 7, 2019 :
    *       : 변경 개발 . html tag 방지를 Spring lib로 변경
-   * 
+   *
    * @param value
    * @return
    */
@@ -107,13 +107,13 @@ public class SecureCheckValidationFilter extends HttpServletRequestWrapper {
   /**
    * @Method Name : getParameterMap
    * @Method Desc : getParameterMap 호출 시 Html Tag 치환, SQL Injection 방지, Cross Site Script 방지
-   * 
+   *
    * @작성일 : Jun 7, 2019
    * @작성자 : zest
    * @변경이력 : 이름 : 일자 : 근거자료 : 변경내용
    *       ------------------------------------------------------------------- zest : Jun 7, 2019 :
    *       : 변경 개발 . html tag 방지를 Spring lib로 변경
-   * 
+   *
    * @param value
    * @return
    */
@@ -137,13 +137,13 @@ public class SecureCheckValidationFilter extends HttpServletRequestWrapper {
   /**
    * @Method Name : getParameterValues
    * @Method Desc : getParameterValues 호출 시 Html Tag 치환, SQL Injection 방지, Cross Site Script 방지
-   * 
+   *
    * @작성일 : Jun 7, 2019
    * @작성자 : zest
    * @변경이력 : 이름 : 일자 : 근거자료 : 변경내용
    *       ------------------------------------------------------------------- zest : Jun 7, 2019 :
    *       : 변경 개발 . html tag 방지를 Spring lib로 변경
-   * 
+   *
    * @param value
    * @return
    */
@@ -196,7 +196,7 @@ public class SecureCheckValidationFilter extends HttpServletRequestWrapper {
    * @변경이력 : 이름 : 일자 : 근거자료 : 변경내용
    *       ------------------------------------------------------------------- zest : Jun 11, 2019 :
    *       : 신규 개발.
-   * 
+   *
    * @param value
    * @return
    */
@@ -205,7 +205,6 @@ public class SecureCheckValidationFilter extends HttpServletRequestWrapper {
       return value;
     }
     String valueLowerCase = value.toLowerCase();
-    log.info("ORIGIN DATA : {}", value);
     for (String sqlInjectionWord : SQL_INJECTION_WORDS) {
       if (valueLowerCase.contains(sqlInjectionWord)) {
         String xSqlInjectionWord = "x-" + sqlInjectionWord;
@@ -215,7 +214,6 @@ public class SecureCheckValidationFilter extends HttpServletRequestWrapper {
         value = value.replaceAll("(?i)" + sqlInjectionWord, xSqlInjectionWord);
       }
     }
-    log.info("변환 DATA : {}", value);
     return value;
   }
 
@@ -228,7 +226,7 @@ public class SecureCheckValidationFilter extends HttpServletRequestWrapper {
    * @변경이력 : 이름 : 일자 : 근거자료 : 변경내용
    *       ------------------------------------------------------------------- zest : Jun 7, 2019 :
    *       : 변경 개발 . html tag 방지를 Spring lib로 변경
-   * 
+   *
    * @param value
    * @return
    */
@@ -261,7 +259,7 @@ public class SecureCheckValidationFilter extends HttpServletRequestWrapper {
    * @변경이력 : 이름 : 일자 : 근거자료 : 변경내용
    *       ------------------------------------------------------------------- zest : Jun 11, 2019 :
    *       : 신규 개발.
-   * 
+   *
    * @param value
    * @return
    */
