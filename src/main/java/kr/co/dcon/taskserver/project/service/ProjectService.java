@@ -1,6 +1,7 @@
 package kr.co.dcon.taskserver.project.service;
 
 import com.google.gson.Gson;
+import kr.co.dcon.taskserver.auth.service.CurrentUserService;
 import kr.co.dcon.taskserver.common.dto.ResponseDTO;
 import kr.co.dcon.taskserver.common.util.RestTemplateUtil;
 import kr.co.dcon.taskserver.project.dto.*;
@@ -11,18 +12,18 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 @Service
 @Slf4j
 public class ProjectService {
     @Value("${taskserver.url}")
     private String taskUrl;
+    private CurrentUserService currentUserService;
 
-    private static final String RESULT = "result";
-
+    public ProjectService(CurrentUserService currentUserService){
+        this.currentUserService = currentUserService;
+    }
     public ResponseDTO<List<ProjectListDTO>> selectIssueList(ProjectListReqDTO reqDTO) {
         String url = taskUrl + "/project/issueList/";
         return RestTemplateUtil.getForResponseDTO(reqDTO.getUrlToForward(url), new ParameterizedTypeReference<ResponseDTO<List<ProjectListDTO>>>() {
@@ -30,13 +31,14 @@ public class ProjectService {
     }
 
     public ResponseDTO<ProjectTaskUpdateReqDTO> updateProjectTaskStatus(ProjectTaskUpdateReqDTO reqDTO) {
-        Map<String, Object> result = new HashMap<>();
+        reqDTO.setUpdateId(currentUserService.getCurrentUser().getUserId());
         String url = taskUrl + "/project/taskStatus/"+reqDTO.getProjectId()+"/"+reqDTO.getTaskId()+"/"+reqDTO.getTaskStatus();
         return RestTemplateUtil.getForResponseDTO(reqDTO.getUrlToForward(url), new ParameterizedTypeReference<ResponseDTO<ProjectTaskUpdateReqDTO>>() {
         });
     }
 
     public ResponseDTO<ProjectTaskUpdateReqDTO> updateProjectTaskAssign(ProjectTaskUpdateReqDTO reqDTO) {
+        reqDTO.setUpdateId(currentUserService.getCurrentUser().getUserId());
         String url = taskUrl + "/project/taskAssign/"+reqDTO.getProjectId()+"/"+reqDTO.getTaskId();
 
         return RestTemplateUtil.getForResponseDTO(reqDTO.getUrlToForward(url), new ParameterizedTypeReference<ResponseDTO<ProjectTaskUpdateReqDTO>>() {
@@ -44,6 +46,7 @@ public class ProjectService {
     }
 
     public ResponseDTO<ProjectTaskUpdateReqDTO> insertTask(ProjectTaskCreateReqDTO reqDTO) {
+        reqDTO.setCreateId(currentUserService.getCurrentUser().getUserId());
         String url = taskUrl + "/project/taskAdd/";
         MultiValueMap<String, String> parameters = new LinkedMultiValueMap<>();
 
@@ -60,6 +63,7 @@ public class ProjectService {
     }
 
     public ResponseDTO<ProjectTaskUpdateReqDTO> updateProjectTaskDetail(ProjectTaskUpdateReqDTO reqDTO) {
+        reqDTO.setUpdateId(currentUserService.getCurrentUser().getUserId());
         String url = taskUrl + "/project/taskDetail/update";
 
         return RestTemplateUtil.getForResponseDTO(reqDTO.getUrlToForward(url), new ParameterizedTypeReference<ResponseDTO<ProjectTaskUpdateReqDTO>>() {

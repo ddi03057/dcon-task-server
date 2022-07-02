@@ -1,7 +1,6 @@
 package kr.co.dcon.taskserver.code.dto;
 
 import io.swagger.annotations.ApiModelProperty;
-import kr.co.dcon.taskserver.common.dto.Forwardable;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 

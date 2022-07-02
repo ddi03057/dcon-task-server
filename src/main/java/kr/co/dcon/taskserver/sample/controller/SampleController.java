@@ -11,7 +11,6 @@ import kr.co.dcon.taskserver.sample.dto.SampleListDTO;
 import kr.co.dcon.taskserver.sample.dto.SampleListReqDTO;
 import kr.co.dcon.taskserver.sample.dto.SampleReqDTO;
 import kr.co.dcon.taskserver.sample.service.SampleService;
-import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 
