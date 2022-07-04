@@ -110,4 +110,22 @@ public class ProjectController {
         return new ResponseDTO<>(resultCode, reqDTO);
 
     }
+
+    @ApiOperation(value = "task Status 수정", notes = "task Status")
+    @PutMapping("/taskStatus/{projectId}/taskList/{taskStatus}")
+    public ResponseDTO<ProjectTaskListUpdateReqDTO> updateProjectTaskListStatus( @RequestBody @Valid ProjectTaskListUpdateReqDTO reqDTO) {
+        ResultCode resultCode = ResultCode.OK;
+
+        try {
+            projectService.updateProjectTaskListStatus(reqDTO);
+        } catch (RuntimeExceptionBase runtimeExceptionBase) {
+            resultCode = ResultCode.USER_NOT_AVAILABLE_EXCEPTION;
+        } catch (Exception e) {
+            resultCode = ResultCode.ETC_ERROR;
+        }
+
+        return new ResponseDTO<>(resultCode, reqDTO);
+
+    }
+
 }

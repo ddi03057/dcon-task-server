@@ -2,7 +2,9 @@ package kr.co.dcon.taskserver.project.service;
 
 import com.google.gson.Gson;
 import kr.co.dcon.taskserver.auth.service.CurrentUserService;
+import kr.co.dcon.taskserver.common.constants.ResultCode;
 import kr.co.dcon.taskserver.common.dto.ResponseDTO;
+import kr.co.dcon.taskserver.common.exception.RuntimeExceptionBase;
 import kr.co.dcon.taskserver.common.util.RestTemplateUtil;
 import kr.co.dcon.taskserver.project.dto.*;
 import lombok.extern.slf4j.Slf4j;
@@ -69,4 +71,17 @@ public class ProjectService {
         return RestTemplateUtil.getForResponseDTO(reqDTO.getUrlToForward(url), new ParameterizedTypeReference<ResponseDTO<ProjectTaskUpdateReqDTO>>() {
         });
     }
+    public boolean updateProjectTaskListStatus(ProjectTaskListUpdateReqDTO reqDTO) {
+        boolean result = true;
+
+        String url = taskUrl + "/project/taskStatus/"+reqDTO.getProjectId()+"/taskList/"+reqDTO.getTaskStatus();
+
+        try {
+            RestTemplateUtil.putForResponseDTO(url, reqDTO);
+        } catch (Exception e) {
+            throw new RuntimeExceptionBase(ResultCode.ETC_ERROR);
+        }
+        return result;
+    }
+
 }
