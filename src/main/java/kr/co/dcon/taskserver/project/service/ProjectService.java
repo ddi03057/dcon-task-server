@@ -84,4 +84,9 @@ public class ProjectService {
         return result;
     }
 
+    public ResponseDTO<List<ProjectUserListDTO>> selectProjectUserList(ProjectUserListDTO reqDTO) {
+        String url = taskUrl + "/project/projectUserList/";
+        return RestTemplateUtil.getForResponseDTO(reqDTO.getUrlToForward(url), new ParameterizedTypeReference<ResponseDTO<List<ProjectUserListDTO>>>() {
+        });
+    }
 }

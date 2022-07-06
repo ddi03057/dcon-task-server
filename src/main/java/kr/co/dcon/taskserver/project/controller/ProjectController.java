@@ -125,7 +125,11 @@ public class ProjectController {
         }
 
         return new ResponseDTO<>(resultCode, reqDTO);
-
     }
 
+    @ApiOperation(value = "project user list", notes = "task detail")
+    @GetMapping("/projectUserList")
+    public ResponseDTO<List<ProjectUserListDTO>>selectProjectUserList(@Valid ProjectUserListDTO reqDTO){
+        return projectService.selectProjectUserList(reqDTO);
+    }
 }
