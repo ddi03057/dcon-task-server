@@ -67,9 +67,7 @@ public class ProjectController {
         } catch (Exception e) {
             resultCode = ResultCode.ETC_ERROR;
         }
-
         return new ResponseDTO<>(resultCode, reqDTO);
-
     }
     @ApiOperation(value = "task insert", notes = "task insert")
     @PostMapping("/taskAdd")
@@ -83,9 +81,7 @@ public class ProjectController {
         } catch (Exception e) {
             resultCode = ResultCode.ETC_ERROR;
         }
-
         return new ResponseDTO<>(resultCode, reqDTO);
-
     }
 
     @ApiOperation(value = "task detail", notes = "task detail")
@@ -131,5 +127,19 @@ public class ProjectController {
     @GetMapping("/projectUserList")
     public ResponseDTO<List<ProjectUserListDTO>>selectProjectUserList(@Valid ProjectUserListDTO reqDTO){
         return projectService.selectProjectUserList(reqDTO);
+    }
+
+    @ApiOperation(value = "delete task list", notes = "task detail")
+    @DeleteMapping("/taskList")
+    public ResponseDTO<ProjectTaskListUpdateReqDTO>deleteTaskList(@Valid ProjectTaskListUpdateReqDTO reqDTO){
+        ResultCode resultCode = null;
+        try {
+            projectService.deleteTaskList(reqDTO);
+            resultCode = ResultCode.OK;
+        } catch (Exception e) {
+            resultCode = ResultCode.ETC_ERROR;
+        }
+
+        return new ResponseDTO<>(resultCode, reqDTO);
     }
 }

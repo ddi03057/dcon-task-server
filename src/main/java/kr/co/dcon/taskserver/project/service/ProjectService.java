@@ -15,6 +15,7 @@ import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 
 import java.util.List;
+import java.util.Map;
 
 @Service
 @Slf4j
@@ -88,5 +89,18 @@ public class ProjectService {
         String url = taskUrl + "/project/projectUserList/";
         return RestTemplateUtil.getForResponseDTO(reqDTO.getUrlToForward(url), new ParameterizedTypeReference<ResponseDTO<List<ProjectUserListDTO>>>() {
         });
+    }
+
+    public boolean deleteTaskList(ProjectTaskListUpdateReqDTO reqDTO) {
+
+        String url = taskUrl + "/project/deleteTaskList/";
+        reqDTO.setUpdateId(currentUserService.getCurrentUser().getUserId());
+        boolean result = true;
+        try {
+            RestTemplateUtil.putForResponseDTO(url, reqDTO);
+        } catch (Exception e) {
+            throw new RuntimeExceptionBase(ResultCode.ETC_ERROR);
+        }
+        return result;
     }
 }
