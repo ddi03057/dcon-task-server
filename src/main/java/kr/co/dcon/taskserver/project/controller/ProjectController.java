@@ -142,4 +142,19 @@ public class ProjectController {
 
         return new ResponseDTO<>(resultCode, reqDTO);
     }
+
+    @ApiOperation(value = "project insert", notes = "project insert")
+    @PostMapping("/projectAdd")
+    public ResponseDTO<ProjectCreateReqDTO> insertTaskinsert(@Valid @RequestBody ProjectCreateReqDTO reqDTO){
+        ResultCode resultCode = ResultCode.OK;
+
+        try {
+            projectService.insertProject(reqDTO);
+        } catch (RuntimeExceptionBase runtimeExceptionBase) {
+            resultCode = ResultCode.USER_NOT_AVAILABLE_EXCEPTION;
+        } catch (Exception e) {
+            resultCode = ResultCode.ETC_ERROR;
+        }
+        return new ResponseDTO<>(resultCode, reqDTO);
+    }
 }

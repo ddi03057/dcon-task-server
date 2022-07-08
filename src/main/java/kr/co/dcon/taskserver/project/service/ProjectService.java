@@ -103,4 +103,14 @@ public class ProjectService {
         }
         return result;
     }
+
+    public ResponseDTO<ProjectCreateReqDTO> insertProject(ProjectCreateReqDTO reqDTO) {
+        reqDTO.setCreateId(currentUserService.getCurrentUser().getUserId());
+        String url = taskUrl + "/project/projectAdd/";
+        MultiValueMap<String, String> parameters = new LinkedMultiValueMap<>();
+
+        parameters.add("reqDTO", new Gson().toJson(reqDTO));
+
+        return RestTemplateUtil.postJsonResponseDTO(url, parameters, new ResponseDTO<>());
+    }
 }
