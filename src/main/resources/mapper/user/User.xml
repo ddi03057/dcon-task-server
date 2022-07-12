@@ -5,8 +5,8 @@
     <select id="selectKeyCloakUserCount" parameterType="kr.co.dcon.taskserver.user.dto.UserCreateDTO"
             resultType="java.lang.Integer">
         SELECT count(UE.id)
-        FROM `dcon-keycloak`.USER_ENTITY UE,
-             `dcon-keycloak`.USER_ATTRIBUTE UA
+        FROM dconkeycloak.USER_ENTITY UE,
+             dcon-keycloak.USER_ATTRIBUTE UA
         WHERE UE.email = #{userEmail}
           AND UE.id = UA.user_id
           AND CONCAT(UA.name, UA.value) = 'USE_YNY'
@@ -14,8 +14,8 @@
     </select>
     <select id="selectKeyCloakUserId" parameterType="String" resultType="string">
         SELECT UE.id
-        FROM `dcon-keycloak`.USER_ENTITY UE,
-             `dcon-keycloak`.USER_ATTRIBUTE UA
+        FROM dconkeycloak.USER_ENTITY UE,
+             dconkeycloak.USER_ATTRIBUTE UA
         WHERE UE.email = #{userEmail}
           AND UE.id = UA.user_id
           AND CONCAT(UA.name, UA.value) = 'USE_YNY'
@@ -35,7 +35,7 @@
                ifnull(email, '')     AS userEmail,
                ifnull(first_name, '') AS firstName,
                ifnull(last_name, '')  AS lastName
-        FROM `dcon-keycloak`.USER_ENTITY
+        FROM dconkeycloak.USER_ENTITY
         WHERE REALM_ID = #{projectRealm}
 
     </sql>
