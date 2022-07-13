@@ -133,4 +133,11 @@ public class ProjectService {
         }
         return result;
     }
+
+    public ResponseDTO<String> selectUserFirstProjectId(String userId) {
+
+        String url = taskUrl + "/project/userFirstProjectId/"+userId;
+        return RestTemplateUtil.getForResponseDTO(url, new ParameterizedTypeReference<ResponseDTO<String>>() {
+        });
+    }
 }
