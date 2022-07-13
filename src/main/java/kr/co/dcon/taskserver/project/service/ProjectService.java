@@ -113,4 +113,24 @@ public class ProjectService {
 
         return RestTemplateUtil.postJsonResponseDTO(url, parameters, new ResponseDTO<>());
     }
+
+    public ResponseDTO<ProjectDetailDTO> selectProjectDetail(ProjectDetailReqDTO reqDTO) {
+        String url = taskUrl + "/project/projectDetail/";
+        return RestTemplateUtil.getForResponseDTO(reqDTO.getUrlToForward(url), new ParameterizedTypeReference<ResponseDTO<ProjectDetailDTO>>() {
+        });
+    }
+
+    public boolean updateProject(ProjectUpdateReqDTO reqDTO) {
+        reqDTO.setUpdateId(currentUserService.getCurrentUser().getUserId());
+        boolean result = true;
+
+        String url = taskUrl + "/project/"+reqDTO.getProjectId();
+
+        try {
+            RestTemplateUtil.putForResponseDTO(url, reqDTO);
+        } catch (Exception e) {
+            throw new RuntimeExceptionBase(ResultCode.ETC_ERROR);
+        }
+        return result;
+    }
 }

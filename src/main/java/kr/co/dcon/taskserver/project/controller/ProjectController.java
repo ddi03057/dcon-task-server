@@ -12,7 +12,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Slf4j
 @Api(value = "PROJECT API")
@@ -23,6 +25,7 @@ public class ProjectController {
     ProjectService projectService;
     UserService userService;
 
+    private final String RESULT_STRING = "result";
 
     public ProjectController(ProjectService projectService,UserService userService) {
         this.projectService = projectService;
@@ -155,6 +158,26 @@ public class ProjectController {
         } catch (Exception e) {
             resultCode = ResultCode.ETC_ERROR;
         }
+        return new ResponseDTO<>(resultCode, reqDTO);
+    }
+
+    @ApiOperation(value = "project detail", notes = "task detail")
+    @GetMapping("/projectDetail")
+    public ResponseDTO<ProjectDetailDTO>selectProjectDetail(@Valid ProjectDetailReqDTO reqDTO){
+        return projectService.selectProjectDetail(reqDTO);
+    }
+    @ApiOperation(value = "project update", notes = "project insert")
+    @PutMapping("/{projectId}")
+    public ResponseDTO<ProjectUpdateReqDTO> updateProject(@Valid @RequestBody ProjectUpdateReqDTO reqDTO){
+        ResultCode resultCode = ResultCode.OK;
+
+        try {
+            projectService.updateProject(reqDTO);
+
+        } catch (Exception e) {
+            resultCode = ResultCode.ETC_ERROR;
+        }
+
         return new ResponseDTO<>(resultCode, reqDTO);
     }
 }

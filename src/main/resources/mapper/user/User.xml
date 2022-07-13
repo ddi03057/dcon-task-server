@@ -9,7 +9,8 @@
              dcon-keycloak.USER_ATTRIBUTE UA
         WHERE UE.email = #{userEmail}
           AND UE.id = UA.user_id
-          AND CONCAT(UA.name, UA.value) = 'USE_YNY'
+          AND CONCAT(UA.name
+            , UA.value) = 'USE_YNY'
 
     </select>
     <select id="selectKeyCloakUserId" parameterType="String" resultType="string">
@@ -31,27 +32,29 @@
     </select>
 
     <sql id="projectUserList">
-        SELECT id                    AS userId,
-               ifnull(email, '')     AS userEmail,
+        SELECT UE.id                  AS userId,
+               ifnull(email, '')      AS userEmail,
                ifnull(first_name, '') AS firstName,
                ifnull(last_name, '')  AS lastName
-        FROM dconkeycloak.USER_ENTITY
-        WHERE REALM_ID = #{projectRealm}
-
+        FROM dconkeycloak.USER_ENTITY UE,
+             dconkeycloak.USER_ATTRIBUTE UA
+        WHERE UE.id = UA.user_id
+          AND CONCAT(UA.name, UA.value) = 'USE_YNY'
+          AND REALM_ID = #{projectRealm}
     </sql>
 
     <select id="selectProjectUserList" parameterType="kr.co.dcon.taskserver.user.dto.UserListProjectReqDTO"
             resultType="kr.co.dcon.taskserver.user.dto.UserListDTO">
         <include refid="projectUserList"/>
-          AND ID NOT IN (#{realmMasterUseUserId})
-        ORDER BY id
+        AND UE.ID NOT IN (#{realmMasterUseUserId})
+        ORDER BY UE.id
     </select>
 
     <select id="selectProjectUserDetail" parameterType="kr.co.dcon.taskserver.user.dto.UserListProjectReqDTO"
             resultType="kr.co.dcon.taskserver.user.dto.UserListDTO">
         <include refid="projectUserList"/>
-            AND ID = #{userId}
+        AND UE.ID = #{userId}
 
-        ORDER BY id
+        ORDER BY UE.id
     </select>
 </mapper>

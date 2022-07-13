@@ -5,6 +5,7 @@ import lombok.Data;
 
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
+import java.util.Date;
 
 @Data
 public class UserInfoDTO {
@@ -21,6 +22,9 @@ public class UserInfoDTO {
     @NotBlank
     @Email(message = "이메일 형식에 맞지 않습니다.")
     private String userId;
+
+    private String createId;
+    private Date createDate;
 
     @ApiModelProperty(value = "token", notes = "token", example = "3acd88f9-faf8-4827-9d54-3769343c9ef2")
     private String token;
