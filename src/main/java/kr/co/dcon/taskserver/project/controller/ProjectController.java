@@ -2,6 +2,7 @@ package kr.co.dcon.taskserver.project.controller;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
 import kr.co.dcon.taskserver.common.constants.ResultCode;
 import kr.co.dcon.taskserver.common.dto.ResponseDTO;
 import kr.co.dcon.taskserver.common.exception.RuntimeExceptionBase;
@@ -27,7 +28,7 @@ public class ProjectController {
 
     private final String RESULT_STRING = "result";
 
-    public ProjectController(ProjectService projectService,UserService userService) {
+    public ProjectController(ProjectService projectService, UserService userService) {
         this.projectService = projectService;
         this.userService = userService;
 
@@ -72,9 +73,10 @@ public class ProjectController {
         }
         return new ResponseDTO<>(resultCode, reqDTO);
     }
+
     @ApiOperation(value = "task insert", notes = "task insert")
     @PostMapping("/taskAdd")
-    public ResponseDTO<ProjectTaskCreateReqDTO> insertTaskinsert(@Valid @RequestBody ProjectTaskCreateReqDTO reqDTO){
+    public ResponseDTO<ProjectTaskCreateReqDTO> insertTaskinsert(@Valid @RequestBody ProjectTaskCreateReqDTO reqDTO) {
         ResultCode resultCode = ResultCode.OK;
 
         try {
@@ -89,7 +91,7 @@ public class ProjectController {
 
     @ApiOperation(value = "task detail", notes = "task detail")
     @GetMapping("/taskDetail")
-    public ResponseDTO<ProjectTaskDetailDTO>selectTaskDetail(@Valid ProjectTaskDetailReqDTO reqDTO){
+    public ResponseDTO<ProjectTaskDetailDTO> selectTaskDetail(@Valid ProjectTaskDetailReqDTO reqDTO) {
         return projectService.selectTaskDetail(reqDTO);
     }
 
@@ -112,7 +114,7 @@ public class ProjectController {
 
     @ApiOperation(value = "task Status 수정", notes = "task Status")
     @PutMapping("/taskStatus/{projectId}/taskList/{taskStatus}")
-    public ResponseDTO<ProjectTaskListUpdateReqDTO> updateProjectTaskListStatus( @RequestBody @Valid ProjectTaskListUpdateReqDTO reqDTO) {
+    public ResponseDTO<ProjectTaskListUpdateReqDTO> updateProjectTaskListStatus(@RequestBody @Valid ProjectTaskListUpdateReqDTO reqDTO) {
         ResultCode resultCode = ResultCode.OK;
 
         try {
@@ -128,13 +130,13 @@ public class ProjectController {
 
     @ApiOperation(value = "project user list", notes = "task detail")
     @GetMapping("/projectUserList")
-    public ResponseDTO<List<ProjectUserListDTO>>selectProjectUserList(@Valid ProjectUserListDTO reqDTO){
+    public ResponseDTO<List<ProjectUserListDTO>> selectProjectUserList(@Valid ProjectUserListDTO reqDTO) {
         return projectService.selectProjectUserList(reqDTO);
     }
 
     @ApiOperation(value = "delete task list", notes = "task detail")
     @DeleteMapping("/taskList")
-    public ResponseDTO<ProjectTaskListUpdateReqDTO>deleteTaskList(@Valid ProjectTaskListUpdateReqDTO reqDTO){
+    public ResponseDTO<ProjectTaskListUpdateReqDTO> deleteTaskList(@Valid ProjectTaskListUpdateReqDTO reqDTO) {
         ResultCode resultCode = null;
         try {
             projectService.deleteTaskList(reqDTO);
@@ -148,7 +150,7 @@ public class ProjectController {
 
     @ApiOperation(value = "project insert", notes = "project insert")
     @PostMapping("/projectAdd")
-    public ResponseDTO<ProjectCreateReqDTO> insertTaskinsert(@Valid @RequestBody ProjectCreateReqDTO reqDTO){
+    public ResponseDTO<ProjectCreateReqDTO> insertTaskinsert(@Valid @RequestBody ProjectCreateReqDTO reqDTO) {
         ResultCode resultCode = ResultCode.OK;
 
         try {
@@ -163,12 +165,13 @@ public class ProjectController {
 
     @ApiOperation(value = "project detail", notes = "task detail")
     @GetMapping("/projectDetail")
-    public ResponseDTO<ProjectDetailDTO>selectProjectDetail(@Valid ProjectDetailReqDTO reqDTO){
+    public ResponseDTO<ProjectDetailDTO> selectProjectDetail(@Valid ProjectDetailReqDTO reqDTO) {
         return projectService.selectProjectDetail(reqDTO);
     }
+
     @ApiOperation(value = "project update", notes = "project insert")
     @PutMapping("/{projectId}")
-    public ResponseDTO<ProjectUpdateReqDTO> updateProject(@Valid @RequestBody ProjectUpdateReqDTO reqDTO){
+    public ResponseDTO<ProjectUpdateReqDTO> updateProject(@Valid @RequestBody ProjectUpdateReqDTO reqDTO) {
         ResultCode resultCode = ResultCode.OK;
 
         try {
@@ -180,4 +183,11 @@ public class ProjectController {
 
         return new ResponseDTO<>(resultCode, reqDTO);
     }
+
+    @ApiOperation(value = "userFirstProjectId", notes = "userFirstProjectId")
+    @GetMapping("/userFirstProjectId/{userId}")
+    public ResponseDTO<String> selectUserFirstProjectId(@ApiParam(value = "userId", required = true, example = "6ef8ef43-428c-44a6-9bf3-9e57d90d6610") @PathVariable String userId) {
+        return projectService.selectUserFirstProjectId(userId);
+    }
+
 }
