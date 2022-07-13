@@ -10,7 +10,7 @@ import javax.validation.constraints.NotBlank;
 @Data
 @Slf4j
 public class MenuTopListReqDTO implements Forwardable {
-    @ApiModelProperty(value = "userId", notes = "userId", example = "20878cc7-4397-4d26-8269-73cd220c95a3")
+    @ApiModelProperty(value = "userId", notes = "userId", example = "6ef8ef43-428c-44a6-9bf3-9e57d90d6610")
     @NotBlank
     private String userId;
 
