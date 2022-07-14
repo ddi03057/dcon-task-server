@@ -315,7 +315,6 @@ public class UserService implements UserServiceKeycloak {
 //                .grantType(OAuth2Constants.CLIENT_CREDENTIALS)
                 .grantType(OAuth2Constants.PASSWORD)
                 .username(currentUserService.getRealmInfo().getUserName())
-                // TODO : 패스워드 DB에 암호화해서 넣고 쓸 때는 암호화 풀어서 넣을 것 > 최초에 DB에 넣을 때 암호화 어떻게?
                 .password(EncryptUtil.decrypt(currentUserService.getRealmInfo().getPassword(), encryptKey))
                 .build();
     }
