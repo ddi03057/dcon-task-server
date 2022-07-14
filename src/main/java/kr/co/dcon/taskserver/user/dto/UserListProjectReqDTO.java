@@ -7,14 +7,14 @@ import javax.validation.constraints.NotBlank;
 
 @Data
 public class UserListProjectReqDTO {
-    @ApiModelProperty(value = "userId", notes = "userId", example = "20878cc7-4397-4d26-8269-73cd220c95a3")
+    @ApiModelProperty(value = "userId", notes = "userId", example = "6ef8ef43-428c-44a6-9bf3-9e57d90d6610")
     @NotBlank
     public String userId;
 
     @ApiModelProperty(value = "projectRealm", notes = "projectRealm", example = "dcon")
     public String projectRealm;
 
-    @ApiModelProperty(value = "realmMasterUseUSerId", notes = "realmMasterUseUSerId", example = "03e70271-4736-4d5b-ae4f-5016c765c8db")
+    @ApiModelProperty(value = "realmMasterUseUSerId", notes = "realmMasterUseUSerId", example = "43bedf60-581b-4cd7-9d7f-4cbdc046d1cc")
     public String realmMasterUseUserId;
 
 

@@ -17,10 +17,10 @@ public class ProjectTaskUpdateReqDTO implements Forwardable {
     @ApiModelProperty(value = "taskId", notes = "taskId", example = "task_1", required = true)
     private String taskId;
 
-    @ApiModelProperty(value = "updateId", notes = "updateId", example = "20878cc7-4397-4d26-8269-73cd220c95a3")
+    @ApiModelProperty(value = "updateId", notes = "updateId", example = "6ef8ef43-428c-44a6-9bf3-9e57d90d6610")
     private String updateId;
 
-    @ApiModelProperty(value = "userId", notes = "userId", example = "af14336d-77e3-43df-a4f5-f8f7b5c7f10e'")
+    @ApiModelProperty(value = "userId", notes = "userId", example = "6ef8ef43-428c-44a6-9bf3-9e57d90d6610")
     private String userId;
 
     @ApiModelProperty(value = "taskDesc", notes = "taskDesc", example = "taskDesc")
