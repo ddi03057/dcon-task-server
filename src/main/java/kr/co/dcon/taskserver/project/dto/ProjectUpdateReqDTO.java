@@ -15,7 +15,7 @@ public class ProjectUpdateReqDTO {
     @ApiModelProperty(value = "userInfo", notes = "userInfo", example = "task_1", required = false)
     private List<UserInfoDTO> userList;
 
-    @ApiModelProperty(value = "updateId", notes = "updateId", example = "20878cc7-4397-4d26-8269-73cd220c95a3", required = false)
+    @ApiModelProperty(value = "updateId", notes = "updateId", example = "6ef8ef43-428c-44a6-9bf3-9e57d90d6610", required = false)
     private String updateId;
 
     @ApiModelProperty(value = "updateDate", notes = "updateDate", example = "2022-06-29 13:14:47")

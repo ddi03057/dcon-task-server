@@ -24,6 +24,6 @@ public class ProjectTaskDetailDTO {
     @ApiModelProperty(value = "taskStatus", notes = "taskStatus", example = "open")
     private String taskStatus;
 
-    @ApiModelProperty(value = "taskUserId", notes = "taskUserId", example = "20878cc7-4397-4d26-8269-73cd220c95a3")
+    @ApiModelProperty(value = "taskUserId", notes = "taskUserId", example = "6ef8ef43-428c-44a6-9bf3-9e57d90d6610")
     private String taskUserId;
 }

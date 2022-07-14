@@ -96,14 +96,14 @@ public class UserController {
 
     @ApiOperation(value = "사용자 탈퇴")
     @DeleteMapping("{userId}")
-    public ResponseDTO<Map<String, String>> userWithdraw(@ApiParam(value = "userId", required = true, example = "653e297b-5d10-4982-bf1e-d1114415ac97") @PathVariable String userId) throws Exception{
+    public ResponseDTO<Map<String, String>> userWithdraw(@ApiParam(value = "userId", required = true, example = "6ef8ef43-428c-44a6-9bf3-9e57d90d6611") @PathVariable String userId) throws Exception{
         userService.withdraw(userId);
         return new ResponseDTO<>(ResultCode.OK);
     }
 
     @ApiOperation(value = "사용자 리스트")
     @GetMapping("allUser/{userId}")
-    public ResponseDTO<List<UserRepresentation>> selectUserList(@ApiParam(value = "userId", required = true, example = "20878cc7-4397-4d26-8269-73cd220c95a3") @PathVariable String userId) throws Exception {
+    public ResponseDTO<List<UserRepresentation>> selectUserList(@ApiParam(value = "userId", required = true, example = "6ef8ef43-428c-44a6-9bf3-9e57d90d6610") @PathVariable String userId) throws Exception {
         return new ResponseDTO<>(ResultCode.OK, userService.selectUserList(userId));
     }
     @ApiOperation(value = "사용자 리스트")
