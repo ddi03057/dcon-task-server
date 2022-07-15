@@ -190,4 +190,9 @@ public class ProjectController {
         return projectService.selectUserFirstProjectId(userId);
     }
 
+    @ApiOperation(value = "project detail", notes = "task detail")
+    @GetMapping("/taskDetail/commentList")
+    public ResponseDTO<List<ProjectTaskCommentListDTO>> selectTaskCommentList(@Valid ProjectTaskCommentListReqDTO reqDTO) {
+        return projectService.selectTaskCommentList(reqDTO);
+    }
 }
