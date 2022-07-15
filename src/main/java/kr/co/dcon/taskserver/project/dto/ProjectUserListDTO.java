@@ -12,6 +12,8 @@ public class ProjectUserListDTO implements Forwardable {
 
     private String userId;
     private String userName;
+    private String userEmail;
+    private String taskAssignCnt;
 
     @Override
     public String getUrlToForward(String baseUrl) {

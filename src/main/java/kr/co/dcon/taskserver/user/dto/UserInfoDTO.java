@@ -24,7 +24,7 @@ public class UserInfoDTO {
     private String userId;
 
     private String createId;
-    private Date createDate;
+    private String createDate;
 
     @ApiModelProperty(value = "token", notes = "token", example = "3acd88f9-faf8-4827-9d54-3769343c9ef2")
     private String token;
