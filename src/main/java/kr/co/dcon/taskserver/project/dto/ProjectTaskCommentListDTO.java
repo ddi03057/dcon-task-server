@@ -18,8 +18,8 @@ public class ProjectTaskCommentListDTO {
     @ApiModelProperty(value = "userName", notes = "userName", example = "박수석")
     private String userName;
 
-    @ApiModelProperty(value = "coomentDesc", notes = "coomentDesc", example = "coomentDesc")
-    private String coomentDesc;
+    @ApiModelProperty(value = "commentDesc", notes = "commentDesc", example = "commentDesc")
+    private String commentDesc;
 
 
     @ApiModelProperty(value = "createDate", notes = "createDate", example = "2022-06-29 13:14:47")
