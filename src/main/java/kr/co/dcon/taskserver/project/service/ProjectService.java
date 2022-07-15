@@ -140,4 +140,10 @@ public class ProjectService {
         return RestTemplateUtil.getForResponseDTO(url, new ParameterizedTypeReference<ResponseDTO<String>>() {
         });
     }
+
+    public ResponseDTO<List<ProjectTaskCommentListDTO>> selectTaskCommentList(ProjectTaskCommentListReqDTO reqDTO) {
+        String url = taskUrl + "/project/taskDetail/commentList";
+        return RestTemplateUtil.getForResponseDTO(reqDTO.getUrlToForward(url), new ParameterizedTypeReference<ResponseDTO<List<ProjectTaskCommentListDTO>>>() {
+        });
+    }
 }
