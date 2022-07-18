@@ -250,4 +250,19 @@ public class ProjectController {
         return new ResponseDTO<>(resultCode, reqDTO);
 
     }
+
+    @ApiOperation(value = "task sub item add", notes = "task sub item add")
+    @PostMapping("/taskSubItem/insert/{tasskId}")
+    public ResponseDTO<ProjectSubItemCRUDReqDTO> insertTaskSubItem(@Valid @RequestBody ProjectSubItemCRUDReqDTO reqDTO) {
+        ResultCode resultCode = ResultCode.OK;
+
+        try {
+            projectService.insertTaskSubItem(reqDTO);
+        } catch (RuntimeExceptionBase runtimeExceptionBase) {
+            resultCode = ResultCode.USER_NOT_AVAILABLE_EXCEPTION;
+        } catch (Exception e) {
+            resultCode = ResultCode.ETC_ERROR;
+        }
+        return new ResponseDTO<>(resultCode, reqDTO);
+    }
 }

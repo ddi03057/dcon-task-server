@@ -185,4 +185,13 @@ public class ProjectService {
         }
        return result ;
     }
+
+    public ResponseDTO<ProjectSubItemCRUDReqDTO> insertTaskSubItem(ProjectSubItemCRUDReqDTO reqDTO) {
+        String url = taskUrl + "/project/taskSubItem/insert";
+        MultiValueMap<String, String> parameters = new LinkedMultiValueMap<>();
+        reqDTO.setUserId(currentUserService.getCurrentUser().getUserId());
+        parameters.add("reqDTO", new Gson().toJson(reqDTO));
+
+        return RestTemplateUtil.postJsonResponseDTO(url, parameters, new ResponseDTO<>());
+    }
 }
