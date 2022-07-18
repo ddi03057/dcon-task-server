@@ -146,4 +146,43 @@ public class ProjectService {
         return RestTemplateUtil.getForResponseDTO(reqDTO.getUrlToForward(url), new ParameterizedTypeReference<ResponseDTO<List<ProjectTaskCommentListDTO>>>() {
         });
     }
+
+    public boolean updateTaskComment(ProjectCommentCRUDReqDTO reqDTO) {
+        boolean result = false;
+
+        String url = taskUrl + "/project/taskComment/update/"+reqDTO.getTaskId();
+
+        try {
+            RestTemplateUtil.putForResponseDTO(url, reqDTO);
+            result = true;
+        } catch (Exception e) {
+            result = false;
+            throw new RuntimeExceptionBase(ResultCode.ETC_ERROR);
+        }
+        return result;
+    }
+
+    public ResponseDTO<ProjectCommentCRUDReqDTO> insertTaskComment(ProjectCommentCRUDReqDTO reqDTO) {
+
+        String url = taskUrl + "/project/taskComment/insert";
+        MultiValueMap<String, String> parameters = new LinkedMultiValueMap<>();
+
+        parameters.add("reqDTO", new Gson().toJson(reqDTO));
+
+        return RestTemplateUtil.postJsonResponseDTO(url, parameters, new ResponseDTO<>());
+    }
+
+    public boolean  deleteTaskComment(ProjectCommentCRUDReqDTO reqDTO) {
+        boolean result = false;
+        String url = taskUrl + "/project/taskComment/delete/"+reqDTO.getTaskId();
+
+        try {
+            RestTemplateUtil.putForResponseDTO(url, reqDTO);
+            result = true;
+        } catch (Exception e) {
+            result = false;
+            throw new RuntimeExceptionBase(ResultCode.ETC_ERROR);
+        }
+       return result ;
+    }
 }

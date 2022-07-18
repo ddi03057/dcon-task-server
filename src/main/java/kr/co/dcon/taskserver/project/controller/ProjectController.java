@@ -9,6 +9,7 @@ import kr.co.dcon.taskserver.common.exception.RuntimeExceptionBase;
 import kr.co.dcon.taskserver.project.dto.*;
 import kr.co.dcon.taskserver.project.service.ProjectService;
 import kr.co.dcon.taskserver.user.service.UserService;
+import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 
@@ -194,5 +195,59 @@ public class ProjectController {
     @GetMapping("/taskDetail/commentList")
     public ResponseDTO<List<ProjectTaskCommentListDTO>> selectTaskCommentList(@Valid ProjectTaskCommentListReqDTO reqDTO) {
         return projectService.selectTaskCommentList(reqDTO);
+    }
+
+    @ApiOperation(value = "task comment 수정", notes = "task comment update")
+    @PutMapping("/taskComment/update/{taskId}")
+    public ResponseDTO<ProjectCommentCRUDReqDTO> updateTaskComment(@Valid @RequestBody ProjectCommentCRUDReqDTO reqDTO) {
+        ResultCode resultCode = null;
+        boolean result = false;
+
+        result =  projectService.updateTaskComment(reqDTO);
+        if(result){
+            resultCode = ResultCode.OK;
+        }else{
+            resultCode = ResultCode.ETC_ERROR;
+        }
+
+
+        return new ResponseDTO<>(resultCode, reqDTO);
+
+    }
+
+    @ApiOperation(value = "comment add", notes = "comment add")
+    @PostMapping("/taskComment/insert/{tasskId}")
+    public ResponseDTO<ProjectCommentCRUDReqDTO> insertTaskComment(@Valid @RequestBody ProjectCommentCRUDReqDTO reqDTO) {
+        ResultCode resultCode = ResultCode.OK;
+
+        try {
+            projectService.insertTaskComment(reqDTO);
+        } catch (RuntimeExceptionBase runtimeExceptionBase) {
+            resultCode = ResultCode.USER_NOT_AVAILABLE_EXCEPTION;
+        } catch (Exception e) {
+            resultCode = ResultCode.ETC_ERROR;
+        }
+        return new ResponseDTO<>(resultCode, reqDTO);
+    }
+
+    @ApiOperation(value = "task comment delete", notes = "task comment delete")
+    @DeleteMapping("/taskComment/delete/{taskId}")
+    public ResponseDTO<ProjectCommentCRUDReqDTO> deleteTaskComment(@Valid  ProjectCommentCRUDReqDTO reqDTO) {
+        ResultCode resultCode = null;
+
+
+        boolean result = false;
+
+        result =  projectService.deleteTaskComment(reqDTO);
+        if(result){
+            resultCode = ResultCode.OK;
+        }else{
+            resultCode = ResultCode.ETC_ERROR;
+        }
+
+
+
+        return new ResponseDTO<>(resultCode, reqDTO);
+
     }
 }
