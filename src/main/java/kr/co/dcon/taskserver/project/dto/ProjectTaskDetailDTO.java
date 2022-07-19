@@ -29,4 +29,5 @@ public class ProjectTaskDetailDTO {
 
     @ApiModelProperty(value = "useYn", notes = "useYn", example = "Y")
     private String useYn;
+    private String dueDate;
 }

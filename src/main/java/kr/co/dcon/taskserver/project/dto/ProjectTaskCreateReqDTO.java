@@ -39,4 +39,7 @@ public class ProjectTaskCreateReqDTO{
     private String createDate;
 
 
+    @ApiModelProperty(value = "dueDate", notes = "dueDate", example = "2022-06-29")
+    private String dueDate;
+
 }

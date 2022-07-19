@@ -28,6 +28,9 @@ public class ProjectTaskUpdateReqDTO implements Forwardable {
 
     @ApiModelProperty(value = "useYn", notes = "useYn", example = "Y")
     private String useYn;
+
+    @ApiModelProperty(value = "dueDate", notes = "dueDate", example = "2022-08-01")
+    private String dueDate;
     @Override
     public String getUrlToForward(String baseUrl) {
         StringBuilder urlParam = new StringBuilder();
@@ -40,6 +43,7 @@ public class ProjectTaskUpdateReqDTO implements Forwardable {
         urlParam.append("&userId="+userId);
         urlParam.append("&taskDesc="+taskDesc);
         urlParam.append("&useYn="+useYn);
+        urlParam.append("&dueDate="+dueDate);
 
         return urlParam.toString();
     }
