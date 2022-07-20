@@ -20,7 +20,6 @@ public class MenuService {
     @Value("${taskserver.url}")
     private String taskUrl;
 
-    private static final String RESULT = "result";
 
 
     public MenuService(CurrentUserService currentUserService) {
@@ -35,13 +34,6 @@ public class MenuService {
         });
     }
 
-    public ResponseDTO<List<MenuTopProjectListDTO>> selectTopProjectList(MenuTopListReqDTO reqDTO) {
-        String url = taskUrl + "/menu/topProjectList/" + reqDTO.getUserId();
-        reqDTO.setUserAuth(currentUserService.getCurrentUser().getAuth());
-        reqDTO.setUseYn(currentUserService.getCurrentUser().getUseYn());
-        return RestTemplateUtil.getForResponseDTO(reqDTO.getUrlToForward(url), new ParameterizedTypeReference<ResponseDTO<List<MenuTopProjectListDTO>>>() {
-        });
-    }
 
     public ResponseDTO<MenuListDTO> selectMenuList(MenuLeftListReqDTO reqDTO) {
         String url = taskUrl + "/menu/list/" + reqDTO.getUserId();;

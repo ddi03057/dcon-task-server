@@ -32,11 +32,7 @@ public class MenuController {
         return menuService.selectMenuTopList(reqDTO);
     }
 
-    @ApiOperation(value = "menu top project list", notes = " menu top project list")
-    @GetMapping("/topProjectList")
-    public ResponseDTO<List<MenuTopProjectListDTO>> selectTopProjectList(@Valid MenuTopListReqDTO reqDTO) {
-        return menuService.selectTopProjectList(reqDTO);
-    }
+
 
     @ApiOperation(value = "menu list", notes = " menu list")
     @GetMapping("/menuLeftList")
