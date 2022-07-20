@@ -77,7 +77,7 @@ public class ProjectController {
 
     @ApiOperation(value = "task insert", notes = "task insert")
     @PostMapping("/taskAdd")
-    public ResponseDTO<ProjectTaskCreateReqDTO> insertTaskinsert(@Valid @RequestBody ProjectTaskCreateReqDTO reqDTO) {
+    public ResponseDTO<ProjectTaskCreateReqDTO> insertTask(@Valid @RequestBody ProjectTaskCreateReqDTO reqDTO) {
         ResultCode resultCode = ResultCode.OK;
 
         try {
@@ -209,8 +209,6 @@ public class ProjectController {
         }else{
             resultCode = ResultCode.ETC_ERROR;
         }
-
-
         return new ResponseDTO<>(resultCode, reqDTO);
 
     }
@@ -235,7 +233,6 @@ public class ProjectController {
     public ResponseDTO<ProjectCommentCRUDReqDTO> deleteTaskComment(@Valid  ProjectCommentCRUDReqDTO reqDTO) {
         ResultCode resultCode = null;
 
-
         boolean result = false;
 
         result =  projectService.deleteTaskComment(reqDTO);
@@ -244,9 +241,6 @@ public class ProjectController {
         }else{
             resultCode = ResultCode.ETC_ERROR;
         }
-
-
-
         return new ResponseDTO<>(resultCode, reqDTO);
 
     }
@@ -264,5 +258,45 @@ public class ProjectController {
             resultCode = ResultCode.ETC_ERROR;
         }
         return new ResponseDTO<>(resultCode, reqDTO);
+    }
+
+    @ApiOperation(value = "task subItem list", notes = "task subItem list")
+    @GetMapping("/taskSubItem/list/{taskId}")
+    public ResponseDTO<List<ProjectTaskSubItemListDTO>> selectIssueList(@Valid ProjectTaskCommentListReqDTO reqDTO) {
+        return projectService.selectTaskSubList(reqDTO);
+
+    }
+
+    @ApiOperation(value = "task sub item update", notes = "task sub item update")
+    @PutMapping("/task/subItemList/update/{taskSubId}")
+    public ResponseDTO<ProjectSubItemCRUDReqDTO> updateTaskSubList(@Valid @RequestBody ProjectSubItemCRUDReqDTO reqDTO) {
+        ResultCode resultCode = null;
+        boolean result = false;
+
+        result =  projectService.updateTaskSubList(reqDTO);
+        if(result){
+            resultCode = ResultCode.OK;
+        }else{
+            resultCode = ResultCode.ETC_ERROR;
+        }
+        return new ResponseDTO<>(resultCode, reqDTO);
+
+    }
+
+    @ApiOperation(value = "task sub item delete", notes = "task sub item delete")
+    @DeleteMapping("/task/subItemList/delete/{taskSubId}")
+    public ResponseDTO<ProjectSubItemCRUDReqDTO> deleteTaskSubList(@Valid  ProjectSubItemCRUDReqDTO reqDTO) {
+        ResultCode resultCode = null;
+
+        boolean result = false;
+
+        result =  projectService.deleteTaskSubList(reqDTO);
+        if(result){
+            resultCode = ResultCode.OK;
+        }else{
+            resultCode = ResultCode.ETC_ERROR;
+        }
+        return new ResponseDTO<>(resultCode, reqDTO);
+
     }
 }

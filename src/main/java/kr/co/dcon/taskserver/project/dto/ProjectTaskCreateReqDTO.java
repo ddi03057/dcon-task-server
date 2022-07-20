@@ -4,7 +4,7 @@ import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
 @Data
-public class ProjectTaskCreateReqDTO{
+public class ProjectTaskCreateReqDTO {
 
     @ApiModelProperty(value = "projectId", notes = "projectId", example = "dcon_project_1", required = true)
     private String projectId;
@@ -42,4 +42,11 @@ public class ProjectTaskCreateReqDTO{
     @ApiModelProperty(value = "dueDate", notes = "dueDate", example = "2022-06-29")
     private String dueDate;
 
+    @ApiModelProperty(value = "createGubun", notes = "createGubun", example = "sub")
+    private String createGubun;
+
+    @ApiModelProperty(value = "taskSubId", notes = "taskSubId", example = "4d5b56c6-57a9-4abf-b670-d0a83ee10a72")
+    private String taskSubId;
+    @ApiModelProperty(value = "seq", notes = "seq", example = "1")
+    private String seq;
 }

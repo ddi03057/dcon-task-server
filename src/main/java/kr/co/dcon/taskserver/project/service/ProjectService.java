@@ -194,4 +194,39 @@ public class ProjectService {
 
         return RestTemplateUtil.postJsonResponseDTO(url, parameters, new ResponseDTO<>());
     }
+
+    public ResponseDTO<List<ProjectTaskSubItemListDTO>> selectTaskSubList(ProjectTaskCommentListReqDTO reqDTO) {
+        String url = taskUrl + "/project/task/subItemList/"+reqDTO.getTaskId();
+        return RestTemplateUtil.getForResponseDTO(reqDTO.getUrlToForward(url), new ParameterizedTypeReference<ResponseDTO<List<ProjectTaskSubItemListDTO>>>() {
+        });
+    }
+
+    public boolean updateTaskSubList(ProjectSubItemCRUDReqDTO reqDTO) {
+        boolean result = false;
+
+        String url = taskUrl + "/project/task/subItemList/update/"+reqDTO.getTaskSubId();
+
+        try {
+            RestTemplateUtil.putForResponseDTO(reqDTO.getUrlToForward(url), reqDTO);
+            result = true;
+        } catch (Exception e) {
+            result = false;
+            throw new RuntimeExceptionBase(ResultCode.ETC_ERROR);
+        }
+        return result;
+    }
+
+    public boolean deleteTaskSubList(ProjectSubItemCRUDReqDTO reqDTO) {
+        boolean result = false;
+        String url = taskUrl + "/project/task/subItemList/delete/"+reqDTO.getTaskSubId();
+
+        try {
+            RestTemplateUtil.putForResponseDTO(reqDTO.getUrlToForward(url), reqDTO);
+            result = true;
+        } catch (Exception e) {
+            result = false;
+            throw new RuntimeExceptionBase(ResultCode.ETC_ERROR);
+        }
+        return result ;
+    }
 }
