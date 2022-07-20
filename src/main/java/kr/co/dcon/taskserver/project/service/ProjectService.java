@@ -229,4 +229,9 @@ public class ProjectService {
         }
         return result ;
     }
+    public ResponseDTO<ProjectDetailDTO> selectTaskPrefixProject(ProjectPrefixExistReqDTO reqDTO) {
+        String url = taskUrl + "/project/taskPrefixExist/";
+        return RestTemplateUtil.getForResponseDTO(reqDTO.getUrlToForward(url), new ParameterizedTypeReference<ResponseDTO<ProjectDetailDTO>>() {
+        });
+    }
 }

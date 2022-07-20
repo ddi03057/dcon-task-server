@@ -290,13 +290,18 @@ public class ProjectController {
 
         boolean result = false;
 
-        result =  projectService.deleteTaskSubList(reqDTO);
-        if(result){
+        result = projectService.deleteTaskSubList(reqDTO);
+        if (result) {
             resultCode = ResultCode.OK;
-        }else{
+        } else {
             resultCode = ResultCode.ETC_ERROR;
         }
         return new ResponseDTO<>(resultCode, reqDTO);
+    }
 
+    @ApiOperation(value = "task prefix", notes = "task Status")
+    @GetMapping("/taskPrefixExist")
+    public ResponseDTO<ProjectDetailDTO> taskPrefixExist(@Valid ProjectPrefixExistReqDTO reqDTO) {
+        return projectService.selectTaskPrefixProject(reqDTO);
     }
 }
