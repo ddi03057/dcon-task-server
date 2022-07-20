@@ -39,6 +39,11 @@ public class ProjectSubItemCRUDReqDTO implements Forwardable {
 
     @ApiModelProperty(value = "seq", notes = "seq", example = "1", required = true)
     private String seq;
+
+
+    @ApiModelProperty(value = "completeYn", notes = "completeYn", example = "Y")
+    private String completeYn;
+
     @Override
     public String getUrlToForward(String baseUrl) {
         StringBuilder urlParam = new StringBuilder();
@@ -50,6 +55,8 @@ public class ProjectSubItemCRUDReqDTO implements Forwardable {
         urlParam.append("&taskSubName=").append(taskSubName);
         urlParam.append("&taskSubId=").append(taskSubId);
         urlParam.append("&seq=").append(seq);
+        urlParam.append("&completeYn=").append(completeYn);
+
         return urlParam.toString();
     }
 }
