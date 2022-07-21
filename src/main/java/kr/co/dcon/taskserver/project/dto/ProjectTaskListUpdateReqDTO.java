@@ -26,5 +26,6 @@ public class ProjectTaskListUpdateReqDTO {
 
     @ApiModelProperty(value = "userId", notes = "userId", example = "6ef8ef43-428c-44a6-9bf3-9e57d90d6610")
     private String userId;
-
+    @ApiModelProperty(value = "useYn", notes = "useYn", example = "Y")
+    private String useYn;
 }

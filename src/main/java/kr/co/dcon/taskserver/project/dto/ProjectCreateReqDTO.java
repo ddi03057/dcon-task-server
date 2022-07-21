@@ -26,4 +26,7 @@ public class ProjectCreateReqDTO {
 
     @ApiModelProperty(value = "사용여부", notes = "Y,N", example = "Y")
     private String useYn;
+
+    @ApiModelProperty(value = "task prefix", notes = "dcon_project_1", example = "dcon_project_1")
+    private String taskPrefix;
 }

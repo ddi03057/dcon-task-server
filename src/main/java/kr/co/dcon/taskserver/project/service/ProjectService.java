@@ -140,4 +140,98 @@ public class ProjectService {
         return RestTemplateUtil.getForResponseDTO(url, new ParameterizedTypeReference<ResponseDTO<String>>() {
         });
     }
+
+    public ResponseDTO<List<ProjectTaskCommentListDTO>> selectTaskCommentList(ProjectTaskCommentListReqDTO reqDTO) {
+        String url = taskUrl + "/project/taskDetail/commentList";
+        return RestTemplateUtil.getForResponseDTO(reqDTO.getUrlToForward(url), new ParameterizedTypeReference<ResponseDTO<List<ProjectTaskCommentListDTO>>>() {
+        });
+    }
+
+    public boolean updateTaskComment(ProjectCommentCRUDReqDTO reqDTO) {
+        boolean result = false;
+
+        String url = taskUrl + "/project/taskComment/update/"+reqDTO.getTaskId();
+
+        try {
+            RestTemplateUtil.putForResponseDTO(url, reqDTO);
+            result = true;
+        } catch (Exception e) {
+            result = false;
+            throw new RuntimeExceptionBase(ResultCode.ETC_ERROR);
+        }
+        return result;
+    }
+
+    public ResponseDTO<ProjectCommentCRUDReqDTO> insertTaskComment(ProjectCommentCRUDReqDTO reqDTO) {
+
+        String url = taskUrl + "/project/taskComment/insert";
+        MultiValueMap<String, String> parameters = new LinkedMultiValueMap<>();
+
+        parameters.add("reqDTO", new Gson().toJson(reqDTO));
+
+        return RestTemplateUtil.postJsonResponseDTO(url, parameters, new ResponseDTO<>());
+    }
+
+    public boolean  deleteTaskComment(ProjectCommentCRUDReqDTO reqDTO) {
+        boolean result = false;
+        String url = taskUrl + "/project/taskComment/delete/"+reqDTO.getTaskId();
+
+        try {
+            RestTemplateUtil.putForResponseDTO(url, reqDTO);
+            result = true;
+        } catch (Exception e) {
+            result = false;
+            throw new RuntimeExceptionBase(ResultCode.ETC_ERROR);
+        }
+       return result ;
+    }
+
+    public ResponseDTO<ProjectSubItemCRUDReqDTO> insertTaskSubItem(ProjectSubItemCRUDReqDTO reqDTO) {
+        String url = taskUrl + "/project/taskSubItem/insert";
+        MultiValueMap<String, String> parameters = new LinkedMultiValueMap<>();
+        reqDTO.setUserId(currentUserService.getCurrentUser().getUserId());
+        parameters.add("reqDTO", new Gson().toJson(reqDTO));
+
+        return RestTemplateUtil.postJsonResponseDTO(url, parameters, new ResponseDTO<>());
+    }
+
+    public ResponseDTO<List<ProjectTaskSubItemListDTO>> selectTaskSubList(ProjectTaskCommentListReqDTO reqDTO) {
+        String url = taskUrl + "/project/task/subItemList/"+reqDTO.getTaskId();
+        return RestTemplateUtil.getForResponseDTO(reqDTO.getUrlToForward(url), new ParameterizedTypeReference<ResponseDTO<List<ProjectTaskSubItemListDTO>>>() {
+        });
+    }
+
+    public boolean updateTaskSubList(ProjectSubItemCRUDReqDTO reqDTO) {
+        boolean result = false;
+
+        String url = taskUrl + "/project/task/subItemList/update/"+reqDTO.getTaskSubId();
+
+        try {
+            RestTemplateUtil.putForResponseDTO(reqDTO.getUrlToForward(url), reqDTO);
+            result = true;
+        } catch (Exception e) {
+            result = false;
+            throw new RuntimeExceptionBase(ResultCode.ETC_ERROR);
+        }
+        return result;
+    }
+
+    public boolean deleteTaskSubList(ProjectSubItemCRUDReqDTO reqDTO) {
+        boolean result = false;
+        String url = taskUrl + "/project/task/subItemList/delete/"+reqDTO.getTaskSubId();
+
+        try {
+            RestTemplateUtil.putForResponseDTO(reqDTO.getUrlToForward(url), reqDTO);
+            result = true;
+        } catch (Exception e) {
+            result = false;
+            throw new RuntimeExceptionBase(ResultCode.ETC_ERROR);
+        }
+        return result ;
+    }
+    public ResponseDTO<ProjectDetailDTO> selectTaskPrefixProject(ProjectPrefixExistReqDTO reqDTO) {
+        String url = taskUrl + "/project/taskPrefixExist/";
+        return RestTemplateUtil.getForResponseDTO(reqDTO.getUrlToForward(url), new ParameterizedTypeReference<ResponseDTO<ProjectDetailDTO>>() {
+        });
+    }
 }

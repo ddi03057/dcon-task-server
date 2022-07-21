@@ -54,15 +54,9 @@
     <logger name="jdbc.resultsettable" level="OFF"/>
     <logger name="log4jdbc.debug" level="OFF"/>
     <logger name="jdbc.sqltiming" level="${JDBC_LOG_LEVEL}"/>
-   <!-- <logger name="com.bespin.oauth.config" level="info" additivity="true">
-        <appender-ref ref="stdout"/>
-    </logger>-->Application
-    <!-- Application Loggers -->
+
     <logger name="kr.co.dcon" level="${LOG_LEVEL}"/>
-    <!-- IP Check Loggers -->
-<!--    <logger name="com.bespinglobal.framework.security.authentication" level="${LOG_LEVEL}"/>-->
-    <!-- <logger name="org.apache.http.wire" additivity="false" level="debug" /> -->
-    <!-- 3rdparty Loggers -->
+
     <logger name="org.mybatis.spring" level="DEBUG"/>
     <logger name="org.mybatis.spring.SqlSessionUtils" level="DEBUG"/>
     <logger name="org.mybatis.spring.SqlSessionUtils$SqlSessionSynchronization" level="DEBUG"/>

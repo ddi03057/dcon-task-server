@@ -27,10 +27,11 @@ import springfox.documentation.swagger2.annotations.EnableSwagger2;
 public class KeyCloakSecurityConfig extends KeycloakWebSecurityConfigurerAdapter {
 
 
-    @Autowired
     private RestTemplateBuilder restBuilder;
 
-
+    public KeyCloakSecurityConfig(RestTemplateBuilder restBuilder){
+        this.restBuilder = restBuilder;
+    }
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
@@ -41,14 +42,11 @@ public class KeyCloakSecurityConfig extends KeycloakWebSecurityConfigurerAdapter
         KeycloakAuthenticationProvider keycloakAuthenticationProvider = keycloakAuthenticationProvider();
         keycloakAuthenticationProvider.setGrantedAuthoritiesMapper(new SimpleAuthorityMapper());
         auth.authenticationProvider(keycloakAuthenticationProvider);
-        //auth.authenticationProvider(keycloakAuthenticationProvider());
     }
 
     @Bean
     @Override
     protected SessionAuthenticationStrategy sessionAuthenticationStrategy() {
-       // return new RegisterSessionAuthenticationStrategy(new SessionRegistryImpl());
-      //return new KeycloakRemoteInvalidUserSessionManager(restBuilder);
           return new NullAuthenticatedSessionStrategy();
     }
 

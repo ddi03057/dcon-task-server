@@ -14,7 +14,7 @@ public class UserCreateDetailsDTO implements Serializable {
 	@ApiModelProperty(value = "이름", notes = "이름", example = "박수석")
 	private String employeeName;
 
-	@ApiModelProperty(value = "이메일", notes = "이메일", example = "suseok.park@bespinglobal.com")
+	@ApiModelProperty(value = "이메일", notes = "이메일", example = "suseokpark@dc-on.co.kr")
 	private String employeeEmail;
 
 	@ApiModelProperty(value = "연락처", notes = "연락처", example = "010-1234-5678")
