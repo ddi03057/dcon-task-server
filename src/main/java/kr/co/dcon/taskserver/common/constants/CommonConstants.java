@@ -17,8 +17,6 @@ public final class CommonConstants {
 	public static final String SSO_ATTR_SURFIX = "_user_id";
 
 	public static final String CHUNK_SPILTER = ":slice:{0}:slice:";
-	public static final String BESPIN_CUS_CD = "X10000";
-	public static final String CUS_DEPT_SPILITER = "|";
 
 	public static final String OK = "OK";
 	public static final String SUCCESS = "SUCCESS";
@@ -28,8 +26,6 @@ public final class CommonConstants {
 	public static final String DELETE = "D";
 	public static final String ZERO = "0";
 
-	public static final String BESPINGLOBAL = "bespinglobal";
-	public static final String CUSTOMER = "customer";
 
 	public static final String MYSQL_DATE_FORMAT = "yyyy-MM-dd HH:mm:ss.S";
 	public final static String COMMON_DATE_FORMAT = "yyyy-MM-dd";

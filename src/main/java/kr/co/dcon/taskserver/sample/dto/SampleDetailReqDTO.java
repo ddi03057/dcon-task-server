@@ -21,7 +21,7 @@ public class SampleDetailReqDTO  {
     @NotBlank
     private String userName;
 
-    @ApiModelProperty(value = "이메일", notes = "이메일", example = "test@bespinglobal.com", required = true)
+    @ApiModelProperty(value = "이메일", notes = "이메일", example = "test@dc-on.co.kr", required = true)
     @NotBlank
     @Email(message = "이메일 형식에 맞지 않습니다.")
     private String userEmail;
