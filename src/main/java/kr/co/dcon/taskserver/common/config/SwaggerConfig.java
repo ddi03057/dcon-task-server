@@ -4,17 +4,17 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import springfox.documentation.builders.ApiInfoBuilder;
+import springfox.documentation.builders.ParameterBuilder;
 import springfox.documentation.builders.PathSelectors;
 import springfox.documentation.builders.RequestHandlerSelectors;
-import springfox.documentation.service.ApiInfo;
-import springfox.documentation.service.ApiKey;
-import springfox.documentation.service.AuthorizationScope;
-import springfox.documentation.service.SecurityReference;
+import springfox.documentation.schema.ModelRef;
+import springfox.documentation.service.*;
 import springfox.documentation.spi.DocumentationType;
 import springfox.documentation.spi.service.contexts.SecurityContext;
 import springfox.documentation.spring.web.plugins.Docket;
 import springfox.documentation.swagger2.annotations.EnableSwagger2;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -24,6 +24,20 @@ import java.util.List;
 public class SwaggerConfig {
 	String version = "V1";
 	String title = "API " + version;
+
+	private ApiKey apiKey() {
+		return new ApiKey("access_token", "Authorization", "header");
+	}
+	private SecurityContext securityContext() {
+		return SecurityContext.builder().securityReferences(defaultAuth()).build();
+	}
+
+	private List<SecurityReference> defaultAuth() {
+		AuthorizationScope authorizationScope = new AuthorizationScope("global", "accessEverything");
+		AuthorizationScope[] authorizationScopes = new AuthorizationScope[1];
+		authorizationScopes[0] = authorizationScope;
+		return Arrays.asList(new SecurityReference("access_token", authorizationScopes));
+	}
 
 	@Bean
 	public Docket api() {
@@ -40,29 +54,19 @@ public class SwaggerConfig {
 	}
 
 	private ApiInfo apiInfo(String version) {
-		log.info("version : {}", version); // 소나큐브 코드스멜로 잡혀 추후 사용하는 것으로 판단 하여 로깅으로 제거 함.
-		return new ApiInfoBuilder().title("DcOn API List " + title)
-				.description("DcOn API List " + title).build();
+		log.info("version : {}", version);
+		return new ApiInfoBuilder().title("DC-ON API List " + title)
+				.description("DC-ON API List " + title).build();
 
 	}
-	private SecurityContext securityContext() {
-		return SecurityContext.builder().securityReferences(defaultAuth()).build();
-	}
-	private ApiKey apiKey() {
-		return new ApiKey("JWT", "Authorization", "header");
-	}
 
-	private List<SecurityReference> defaultAuth() {
-		AuthorizationScope authorizationScope = new AuthorizationScope("global", "accessEverything");
-		AuthorizationScope[] authorizationScopes = new AuthorizationScope[1];
-		authorizationScopes[0] = authorizationScope;
-		return Arrays.asList(new SecurityReference("JWT", authorizationScopes));
-	}
 	@Bean
-    public Docket apiV2() {
-        version = "V2";
-        title = "API " + version;
-        return new Docket(DocumentationType.SWAGGER_2)
+	public Docket apiV2() {
+		version = "V2";
+		title = "API " + version;
+		List<Parameter> global = new ArrayList<>();
+		global.add(new ParameterBuilder().name("Authorization").description("Access Token").parameterType("header").required(false).modelRef(new ModelRef("string")).build());
+		return new Docket(DocumentationType.SWAGGER_2).globalOperationParameters(global)
 				.useDefaultResponseMessages(false) // 기존적인 응답메시지 미사용
 				.groupName(version)
 				.apiInfo(apiInfo(version))
@@ -72,7 +76,9 @@ public class SwaggerConfig {
 				.paths(PathSelectors.ant("/api/v2/**")) // 그중 /api/** 인 URL들만 필터링
 				.build();
 
-    }
+	}
+
+
 
 
 }
