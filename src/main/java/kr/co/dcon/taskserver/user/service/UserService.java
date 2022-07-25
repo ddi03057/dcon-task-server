@@ -204,7 +204,7 @@ public class UserService implements UserServiceKeycloak {
         String userEmail = useChg.getUserEmail();
         String userId = userMapper.selectKeyCloakUserId(userEmail);
 
-        if (dconMasterUserId.equals(userId)) {
+        if (!dconMasterUserId.equals(userId)) {
             resultMap.put(RESULT_CODE, ResultCode.USER_NOT_EXISTS_EXCEPTION);
             return resultMap;
         }

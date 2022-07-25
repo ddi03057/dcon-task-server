@@ -72,6 +72,7 @@ public class KeyCloakSecurityConfig extends KeycloakWebSecurityConfigurerAdapter
         http.headers().frameOptions().disable();
         http.cors().and().csrf().disable().authorizeRequests()
                 //http.cors().and().authorizeRequests()
+                .antMatchers("/*").permitAll()
                 .and().authorizeRequests().antMatchers("/api/v1/mail/**").permitAll()
                 .and().authorizeRequests().antMatchers("/api/v1/front-profile").permitAll()
                 .and().authorizeRequests().antMatchers("/api/v1/pay/payment").permitAll()
@@ -86,9 +87,8 @@ public class KeyCloakSecurityConfig extends KeycloakWebSecurityConfigurerAdapter
                 .and().authorizeRequests().antMatchers("/js/*").permitAll()
                 .and().authorizeRequests().antMatchers("/").permitAll()
                 .and().authorizeRequests().antMatchers("/health").permitAll()
-                .and().authorizeRequests().antMatchers("/api/v1/**")
-                .permitAll().anyRequest().authenticated()
-                .and().authorizeRequests().antMatchers("/api/v1/**").permitAll()
+//                .and().authorizeRequests().antMatchers("/api/v1/**").permitAll()
+//                .and().authorizeRequests().antMatchers("/*/api/v1/**").permitAll()
                 .anyRequest().authenticated();
 
     }
