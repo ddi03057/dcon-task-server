@@ -6,7 +6,7 @@
             resultType="java.lang.Integer">
         SELECT count(UE.id)
         FROM dconkeycloak.USER_ENTITY UE,
-             dcon-keycloak.USER_ATTRIBUTE UA
+             dconkeycloak.USER_ATTRIBUTE UA
         WHERE UE.email = #{userEmail}
           AND UE.id = UA.user_id
           AND CONCAT(UA.name
