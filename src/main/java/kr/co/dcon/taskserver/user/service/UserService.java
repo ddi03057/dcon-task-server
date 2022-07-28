@@ -2,6 +2,7 @@ package kr.co.dcon.taskserver.user.service;
 
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import kr.co.dcon.taskserver.auth.dto.TokenDTO;
 import kr.co.dcon.taskserver.auth.dto.UserDetailsDTO;
 import kr.co.dcon.taskserver.auth.service.CurrentUserService;
 import kr.co.dcon.taskserver.common.constants.CommonConstants;
@@ -31,12 +32,19 @@ import org.keycloak.representations.AccessToken;
 import org.keycloak.representations.idm.CredentialRepresentation;
 import org.keycloak.representations.idm.UserRepresentation;
 import org.springframework.beans.BeanUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
 import org.springframework.util.ObjectUtils;
+import org.springframework.web.client.RestTemplate;
 
 import javax.ws.rs.BadRequestException;
 import javax.ws.rs.NotFoundException;
@@ -62,6 +70,8 @@ public class UserService implements UserServiceKeycloak {
     private String dconMasterUserId;
     private CurrentUserService currentUserService;
 
+    private RestTemplate restTemplate;
+
     private UserMapper userMapper;
 
     private static final String RESULT_STRING = "result";
@@ -77,9 +87,10 @@ public class UserService implements UserServiceKeycloak {
 //    private static final String[] ignoreProperties = {"userId", "userEmail", "email", "useYn", FRIST_NAME, LAST_NAME};
     private static final String[] ignoreProperties = {"userId", "email", "firstName", "lastName", "userFullName"};
 
-    public UserService(CurrentUserService currentUserService, UserMapper userMapper) {
+    public UserService(CurrentUserService currentUserService, UserMapper userMapper, RestTemplate restTemplate) {
         this.currentUserService = currentUserService;
         this.userMapper = userMapper;
+        this.restTemplate = restTemplate;
     }
 
     @Value("${dcon.encrypt}")
@@ -169,12 +180,14 @@ public class UserService implements UserServiceKeycloak {
 
             BeanUtils.copyProperties(userDetailsDTO, userDetails , ignoreProperties);
         }
-
     }
 
     public ResultCode updateUserPassword(UserChangePasswordDTO changePasswordmodel) {
 
         if (!changePasswordmodel.getNewCredential().equals(changePasswordmodel.getNewCredentialConfirm())) {
+            return ResultCode.BAD_REQUEST;
+        }
+        if (changePasswordmodel.getEmail().equals(changePasswordmodel.getNewCredential())) {
             return ResultCode.BAD_REQUEST;
         }
 
@@ -199,6 +212,8 @@ public class UserService implements UserServiceKeycloak {
 
             UserRepresentation user = userResource.toRepresentation();
             user.getAttributes().put(UserOtherClaim.ERROR_CNT, Arrays.asList(CommonConstants.ZERO));
+            user.getAttributes().put(UserOtherClaim.UPDATED_DATE, Arrays.asList(Utils.getCurrentDateYYMMDD()));
+            user.getAttributes().put(UserOtherClaim.UPDATED_ID, Arrays.asList(currentUserService.getCurrentUser().getUserId()));
 //            user.getAttributes().put(UserOtherClaim.PWD_INIT_YN,Arrays.asList(CommonConstants.YES));
 //            user.getAttributes().put(UserOtherClaim.PWD_CHG_DT, Arrays.asList(String.valueOf(System.currentTimeMillis())));
 //            user.getAttributes().put(UserOtherClaim.SKIP_PWD_CHG_DT, Arrays.asList(String.valueOf(System.currentTimeMillis())));
@@ -429,7 +444,39 @@ public class UserService implements UserServiceKeycloak {
         }else{
             dto.setUserName(dto.getFirstName().concat(dto.getLastName()));
         }
-
         return dto;
+    }
+    public boolean validUserPassword(String userEmail, String password) {
+
+        if (StringUtil.isEmpty(userEmail)) {
+            throw new IllegalArgumentException("validUserPassword() userName can not be empty");
+        }
+        if (StringUtil.isEmpty(password)) {
+            throw new IllegalArgumentException("validUserPassword() password can not be empty");
+        }
+        HttpHeaders headers = buildHeader();
+        MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
+
+        params.add("client_id", currentUserService.getRealmInfo().getClientId());
+        params.add("client_secret", currentUserService.getRealmInfo().getClientSecret());
+        params.add("username", userEmail);
+        params.add("password", password);
+        params.add("grant_type", "password");
+        String tokenUrl = String.format("%s/realms/%s/protocol/openid-connect/token", this.authServerUrl, currentUserService.getRealmInfo().getRealmName());
+
+        HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<>(params, headers);
+
+        try {
+            this.restTemplate.postForEntity(tokenUrl, request, TokenDTO.class, params);
+            return true;
+        } catch (Exception e) {
+            return false;
+        }
+    }
+    private HttpHeaders buildHeader() {
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
+        headers.setAccept(Collections.singletonList(MediaType.APPLICATION_JSON));
+        return headers;
     }
 }
