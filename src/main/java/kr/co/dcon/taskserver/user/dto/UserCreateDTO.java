@@ -18,4 +18,5 @@ public class UserCreateDTO {
     private String userAuth;
     private String userEmail;
     private String userLocale;
+    private String useYn;
 }

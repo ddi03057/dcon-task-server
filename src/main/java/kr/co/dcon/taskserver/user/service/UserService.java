@@ -7,8 +7,10 @@ import kr.co.dcon.taskserver.auth.service.CurrentUserService;
 import kr.co.dcon.taskserver.common.constants.CommonConstants;
 import kr.co.dcon.taskserver.common.constants.ResultCode;
 import kr.co.dcon.taskserver.common.constants.UserOtherClaim;
+import kr.co.dcon.taskserver.common.dto.ResponseDTO;
 import kr.co.dcon.taskserver.common.exception.RuntimeExceptionBase;
 import kr.co.dcon.taskserver.common.exception.UserAttributeException;
+import kr.co.dcon.taskserver.common.util.DateUtils;
 import kr.co.dcon.taskserver.common.util.EncryptUtil;
 import kr.co.dcon.taskserver.common.util.StringUtil;
 import kr.co.dcon.taskserver.common.util.Utils;
@@ -69,8 +71,11 @@ public class UserService implements UserServiceKeycloak {
     public static String LAST_NAME = "lastName";
 
 
-    private static final String[] attributeArr = {UserOtherClaim.USER_NAME, UserOtherClaim.USER_LOCALE};
-    private static final String[] ignoreProperties = {"userId", "userEmail", "email", "useYn", FRIST_NAME, LAST_NAME};
+    private static final String[] attributeArr = {UserOtherClaim.USER_NAME, UserOtherClaim.USER_LOCALE, UserOtherClaim.ERROR_CNT
+                                                , UserOtherClaim.UPDATED_ID, UserOtherClaim.UPDATED_DATE, UserOtherClaim.AUTH
+                                                , UserOtherClaim.USER_EMAIL, UserOtherClaim.USE_YN};
+//    private static final String[] ignoreProperties = {"userId", "userEmail", "email", "useYn", FRIST_NAME, LAST_NAME};
+    private static final String[] ignoreProperties = {"userId", "email", "firstName", "lastName", "userFullName"};
 
     public UserService(CurrentUserService currentUserService, UserMapper userMapper) {
         this.currentUserService = currentUserService;
@@ -112,7 +117,11 @@ public class UserService implements UserServiceKeycloak {
         UserResource userResource = getUserResource(userId);
         UserRepresentation user = userResource.toRepresentation();
 
-        return buildUserDetail(user);
+        String userLocale = userMapper.selectUserLocale(userId);
+        if ( StringUtil.isEmpty(userLocale) ) {
+            userLocale = "ko";
+        }
+        return buildUserDetail(user, userLocale);
     }
 
     private UserResource getUserResource(String userId) throws Exception {
@@ -122,7 +131,7 @@ public class UserService implements UserServiceKeycloak {
         return userResource;
     }
 
-    private UserDetailsDTO buildUserDetail(UserRepresentation user) throws IOException {
+    private UserDetailsDTO buildUserDetail(UserRepresentation user, String userLocale) throws IOException {
 
         UserDetailsDTO userDetails = new UserDetailsDTO();
         Map<String, List<String>> attribute = user.getAttributes();
@@ -130,6 +139,7 @@ public class UserService implements UserServiceKeycloak {
         if (attribute == null) {
             throw new UserAttributeException(user.getId());
         }
+        String userFullName = Objects.equals("en", userLocale) ? user.getFirstName() + " " + user.getLastName() : user.getLastName() + user.getFirstName();
 
         userDetails.setUserId(user.getId());
         userDetails.setUserEmail(user.getEmail());
@@ -137,6 +147,8 @@ public class UserService implements UserServiceKeycloak {
         userDetails.setUseYn(Boolean.TRUE.equals(user.isEnabled()) ? CommonConstants.YES : CommonConstants.NO);
         userDetails.setFirstName(user.getFirstName());
         userDetails.setLastName(user.getLastName());
+        userDetails.setUserFullName(userFullName);
+        log.info("userDetails : {}", userDetails.toString());
         fetchUserAttribute(userDetails, attribute);
         return userDetails;
     }
@@ -155,24 +167,34 @@ public class UserService implements UserServiceKeycloak {
             ObjectMapper mapper = new ObjectMapper();
             UserDetailsDTO userDetailsDTO = mapper.readValue(mapper.writeValueAsString(userDetailsMap), UserDetailsDTO.class);
 
-            BeanUtils.copyProperties(userDetails, userDetailsDTO, ignoreProperties);
+            BeanUtils.copyProperties(userDetailsDTO, userDetails , ignoreProperties);
         }
 
     }
 
-    public Map<String, Object> updateUserPassword(UserChangePasswordDTO changePasswordmodel) throws Exception {
-        Map<String, Object> resultMap = new HashMap<>();
+    public ResultCode updateUserPassword(UserChangePasswordDTO changePasswordmodel) {
 
-        String userEmail = changePasswordmodel.getEmail();
-        String userId = userMapper.selectKeyCloakUserId(userEmail);
-
-        if (dconMasterUserId.equals(userId)) {
-            throw new RuntimeExceptionBase(ResultCode.USER_NOT_AVAILABLE_EXCEPTION);
+        if (!changePasswordmodel.getNewCredential().equals(changePasswordmodel.getNewCredentialConfirm())) {
+            return ResultCode.BAD_REQUEST;
         }
 
-        UserResource userResource = getUserResource(userId);
-        CredentialRepresentation credential = setCredential(changePasswordmodel.getNewCredential());
+        String userEmail = changePasswordmodel.getEmail();
+        String userAuth = currentUserService.getCurrentUser().getAuth();
+
+        log.info("userAuth : {}", userAuth);
+        Map<String, Object> paramMap = new HashedMap<>();
+        paramMap.put("userEmail", userEmail);
+        paramMap.put("userAuth", userAuth);
+        String userId = userMapper.selectKeyCloakUserId(paramMap);
+
+        if (dconMasterUserId.equals(userId)) {
+            return ResultCode.USER_NOT_AVAILABLE_EXCEPTION;
+        }
+
         try {
+            UserResource userResource = getUserResource(userId);
+            CredentialRepresentation credential = setCredential(changePasswordmodel.getNewCredential());
+
             userResource.resetPassword(credential);
 
             UserRepresentation user = userResource.toRepresentation();
@@ -185,28 +207,32 @@ public class UserService implements UserServiceKeycloak {
         } catch (BadRequestException e) {
 
             // credential setvalue시 전 암호와 같은 암호라면 400 에러 발생.
-            resultMap.put(RESULT_STRING, CommonConstants.NO);
-            return resultMap;
+            return ResultCode.BAD_REQUEST;
         } catch (Exception e) {
-
-            resultMap.put(RESULT_STRING, "Server Error");
-            return resultMap;
+            return ResultCode.ETC_ERROR;
         }
 
-        return resultMap;
+        return ResultCode.OK;
     }
 
 
     @Transactional
-    public Map<String, Object> updateUser(UserChangeDTO useChg) {
-        Map<String, Object> resultMap = new HashMap<>();
+    public ResultCode updateUser(UserChangeDTO useChg) {
+        ResultCode resultCode = ResultCode.OK;
 
         String userEmail = useChg.getUserEmail();
-        String userId = userMapper.selectKeyCloakUserId(userEmail);
+        String userAuth = currentUserService.getCurrentUser().getAuth();
 
-        if (!dconMasterUserId.equals(userId)) {
-            resultMap.put(RESULT_CODE, ResultCode.USER_NOT_EXISTS_EXCEPTION);
-            return resultMap;
+        log.info("userAuth : {}", userAuth);
+
+        Map<String, Object> paramMap = new HashedMap<>();
+        paramMap.put("userEmail", userEmail);
+        paramMap.put("userAuth", userAuth);
+
+        String userId = userMapper.selectKeyCloakUserId(paramMap);
+
+        if (dconMasterUserId.equals(userId)) {
+            return ResultCode.USER_NOT_EXISTS_EXCEPTION;
         }
 
         try {
@@ -214,41 +240,43 @@ public class UserService implements UserServiceKeycloak {
 //                param.put(UserOtherClaim.USER_TEL_NO, Utils.nvl(useChg.getTelNo(),""));
 //                param.put(UserOtherClaim.USER_MBL_TEL_CNTR_CD, useChg.getUserTelNoCtrCd());
 //                param.put(UserOtherClaim.USER_REGIST_COMPANY_NAME, useChg.getRegistCompanyName());
+//            param.put(LAST_NAME, useChg.getLastName());
+//            param.put(FRIST_NAME, useChg.getFirstName());
             param.put(UserOtherClaim.USER_LOCALE, useChg.getUserLocale());
-            param.put(FRIST_NAME, useChg.getFirstName());
-            param.put(LAST_NAME, useChg.getLastName());
+            param.put(UserOtherClaim.AUTH, useChg.getUserAuth());
+            param.put(UserOtherClaim.USE_YN, useChg.getUseYn());
             param.put(UserOtherClaim.ERROR_CNT, "0");
 
-            resultMap = updateKeyCloakUser(userId, param);
+            resultCode = updateKeyCloakUser(userId, param);
         } catch (NotFoundException notFoundException) {
-            resultMap.put(RESULT_CODE, ResultCode.USER_NOT_EXISTS_EXCEPTION);
+            resultCode = ResultCode.USER_NOT_EXISTS_EXCEPTION;
         } catch (Exception e) {
-            resultMap.put(RESULT_CODE, String.valueOf(ResultCode.ETC_ERROR));
+            resultCode = ResultCode.ETC_ERROR;
         }
 
-        return resultMap;
+        return resultCode;
     }
 
-    public Map<String, Object> updateKeyCloakUser(String userId, Map<String, String> param) throws Exception {
+    public ResultCode updateKeyCloakUser(String userId, Map<String, String> param) throws Exception {
 
-        Map<String, Object> result = new HashedMap<>();
+        ResultCode resultCode = ResultCode.OK;
 
         UserResource userResource = getUserResource(userId);
         UserRepresentation user = userResource.toRepresentation();
-
-        if (param.containsKey(FRIST_NAME) && param.get(FRIST_NAME) != null) {
-            user.setFirstName(param.get(FRIST_NAME));
-        }
-        if (param.containsKey(LAST_NAME) && param.get(LAST_NAME) != null) {
-            user.setLastName(param.get(LAST_NAME));
-        }
+// lastName, firstName 은 정책상 수정불가
+//        if (param.containsKey(FRIST_NAME) && param.get(FRIST_NAME) != null) {
+//            user.setFirstName(param.get(FRIST_NAME));
+//        }
+//        if (param.containsKey(LAST_NAME) && param.get(LAST_NAME) != null) {
+//            user.setLastName(param.get(LAST_NAME));
+//        }
 
         Map<String, List<String>> attributes = user.getAttributes();
         for (Map.Entry<String, String> entry : param.entrySet()) {
-            if (Objects.equals("fistName", entry.getKey())
-                    || Objects.equals(LAST_NAME, entry.getKey())) {
-                continue;
-            }
+//            if (Objects.equals("firstName", entry.getKey())
+//                    || Objects.equals(LAST_NAME, entry.getKey())) {
+//                continue;
+//            }
 
             attributes.put(entry.getKey(), Arrays.asList(entry.getValue()));
         }
@@ -258,29 +286,18 @@ public class UserService implements UserServiceKeycloak {
         attributes.put(UserOtherClaim.UPDATED_DATE, Arrays.asList(String.valueOf(System.currentTimeMillis())));
         try {
             userResource.update(user);
-            result.put(RESULT_STRING, CommonConstants.YES);
         } catch (Exception e) {
-            result.put(RESULT_STRING, CommonConstants.NO);
+            resultCode = ResultCode.ETC_ERROR;
         }
 
-        return result;
+        return resultCode;
     }
 
     @Transactional
-    public Map<String, Object> createUser(UserCreateDTO user) {
+    public ResultCode createUser(UserCreateDTO user) {
 
-        Map<String, Object> resultMap = new HashedMap<>();
-        try {
-            String password = Utils.getRandomString();
-            insertKeycloakUserInfo(user, password, resultMap);
+        String password = Utils.getRandomString();
 
-        } catch (Exception e) {
-            log.info("Exception : {}", e);
-        }
-        return resultMap;
-    }
-
-    public void insertKeycloakUserInfo(UserCreateDTO user, String password, Map<String, Object> resultMap) {
         try {
             Keycloak keycloak = buildKeycloak();
 
@@ -295,13 +312,14 @@ public class UserService implements UserServiceKeycloak {
             int userCount = userMapper.selectKeyCloakUserCount(user);
 
             if (userCount > 0) {
-                resultMap.put(RESULT_STRING, ResultCode.USER_EXIST_ALREADY);
+                return ResultCode.USER_EXIST_ALREADY;
             } else {
                 usersResource.create(createUser);
+                return ResultCode.OK;
             }
 
         } catch (Exception e) {
-            resultMap.put(RESULT_STRING, ResultCode.ETC_ERROR);
+            return ResultCode.ETC_ERROR;
         }
     }
 
@@ -332,7 +350,7 @@ public class UserService implements UserServiceKeycloak {
         String userFullName = Objects.equals("en", user.getUserLocale()) ? user.getFirstName() + " " + user.getLastName() : user.getLastName() + user.getFirstName();
 
         createUser.setId(user.getUserId());
-        createUser.setUsername(user.getUserName());
+        createUser.setUsername(userFullName);
         createUser.setEmail(user.getUserEmail());
         createUser.setFirstName(user.getFirstName());
         createUser.setLastName(user.getLastName());
@@ -342,28 +360,39 @@ public class UserService implements UserServiceKeycloak {
 
         // 업데이트 할 때는 뺄 것
         attributes.put(UserOtherClaim.CREATE_ID, Arrays.asList(currentUserService.getCurrentUser().getUserId()));
-        attributes.put(UserOtherClaim.CREATE_DATE, Arrays.asList("시간 : simpledateformat"));
+        attributes.put(UserOtherClaim.CREATE_DATE, Arrays.asList(Utils.getCurrentDateYYMMDD()));
 
         attributes.put(UserOtherClaim.UPDATED_ID, Arrays.asList(currentUserService.getCurrentUser().getUserId()));
-        attributes.put(UserOtherClaim.UPDATED_DATE, Arrays.asList("시간 : simpledateformat"));
+        attributes.put(UserOtherClaim.UPDATED_DATE, Arrays.asList(Utils.getCurrentDateYYMMDD()));
 
 //        attributes.put(UserOtherClaim.USER_TEL_NO, Arrays.asList(user.getUserTelNo()));
         attributes.put(UserOtherClaim.USER_NAME, Arrays.asList(userFullName));
+        attributes.put(UserOtherClaim.ERROR_CNT, Arrays.asList(String.valueOf(user.getErrorCnt())));
+        attributes.put(UserOtherClaim.AUTH, Arrays.asList(user.getUserAuth()));
+        attributes.put(UserOtherClaim.USE_YN, Arrays.asList(user.getUseYn()));
+        attributes.put(UserOtherClaim.USER_EMAIL, Arrays.asList(user.getUserEmail()));
+
+
         createUser.setAttributes(attributes);
 
         return createUser;
     }
 
-    public void withdraw(String userId) throws Exception {
+    public ResultCode withdraw(String userId) throws Exception {
 
-        if (dconMasterUserId.equals(userId)) {
-            throw new RuntimeExceptionBase(ResultCode.USER_NOT_AVAILABLE_EXCEPTION);
+        try {
+            if (dconMasterUserId.equals(userId)) {
+                return ResultCode.USER_NOT_AVAILABLE_EXCEPTION;
+            }
+            Keycloak keycloak = buildKeycloak();
+
+            RealmResource realmResource = keycloak.realm(realm);
+            UsersResource usersResource = realmResource.users();
+            usersResource.delete(userId);
+        } catch (Exception e) {
+            return ResultCode.ETC_ERROR;
         }
-        Keycloak keycloak = buildKeycloak();
-
-        RealmResource realmResource = keycloak.realm(realm);
-        UsersResource usersResource = realmResource.users();
-        usersResource.delete(userId);
+        return ResultCode.OK;
     }
 
     public List<UserRepresentation> selectUserList(String userId) throws Exception {

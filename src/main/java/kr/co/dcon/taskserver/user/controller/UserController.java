@@ -6,6 +6,7 @@ import io.swagger.annotations.ApiParam;
 import kr.co.dcon.taskserver.auth.dto.UserDetailsDTO;
 import kr.co.dcon.taskserver.auth.service.CurrentUserService;
 import kr.co.dcon.taskserver.common.constants.ResultCode;
+import kr.co.dcon.taskserver.common.dto.NoResultDTO;
 import kr.co.dcon.taskserver.common.dto.ResponseDTO;
 import kr.co.dcon.taskserver.common.exception.RuntimeExceptionBase;
 import kr.co.dcon.taskserver.common.util.DateUtils;
@@ -46,46 +47,20 @@ public class UserController {
 
     @ApiOperation(value = "사용자 비밀번호 변경")
     @PutMapping("update-password")
-    public ResponseDTO<Map<String, Object>> updateUserPassword(@RequestBody UserChangePasswordDTO changePassword) {
-
-        Map<String, Object> result = new HashedMap<>();
-        if (!changePassword.getNewCredential().equals(changePassword.getNewCredentialConfirm())) {
-            return new ResponseDTO<>(ResultCode.BAD_REQUEST);
-        }
-        try {
-            result.put(RESULT_STRING, ResultCode.OK);
-            result = userService.updateUserPassword(changePassword);
-            result.put("lastPasswordChangeDate", DateUtils.getDateStrFronTimeStamp(String.valueOf(System.currentTimeMillis())));
-        } catch (RuntimeExceptionBase runtimeExceptionBase) {
-            result.put(RESULT_STRING, ResultCode.USER_NOT_AVAILABLE_EXCEPTION);
-        }
-        catch (Exception e) {
-            result.put(RESULT_STRING, ResultCode.ETC_ERROR);
-        }
-
-        return new ResponseDTO<>(ResultCode.OK, result);
+    public ResponseDTO<NoResultDTO> updateUserPassword(@RequestBody UserChangePasswordDTO changePassword) {
+        return new ResponseDTO<>(userService.updateUserPassword(changePassword), null);
     }
 
     @ApiOperation(value = "사용자 정보 업데이트")
     @PutMapping
-    public ResponseDTO<Map<String, Object>> userUpdate(@Valid @RequestBody UserChangeDTO user) {
-
-        Map<String, Object> result = new HashMap<>();
-        try {
-            result.put(RESULT_STRING, userService.updateUser(user));
-        } catch (Exception e) {
-            result.put(RESULT_STRING, ResultCode.ETC_ERROR);
-        }
-
-        return new ResponseDTO<>(ResultCode.OK, result);
+    public ResponseDTO<NoResultDTO> userUpdate(@Valid @RequestBody UserChangeDTO user) {
+        return new ResponseDTO<>(userService.updateUser(user), null);
     }
 
     @ApiOperation(value = "로그인한 사용자 추가")
     @PostMapping("")
-    public ResponseDTO<Map<String, Object>> createUser(@Valid @RequestBody UserCreateDTO createUser) {
-
-        ResultCode resultCode = ResultCode.OK;
-        return new ResponseDTO<>(resultCode, userService.createUser(createUser));
+    public ResponseDTO<NoResultDTO> createUser(@Valid @RequestBody UserCreateDTO createUser) {
+        return new ResponseDTO<>(userService.createUser(createUser), null);
     }
 
     @ApiOperation(value = "사용자 조회 상세")
@@ -96,9 +71,8 @@ public class UserController {
 
     @ApiOperation(value = "사용자 탈퇴")
     @DeleteMapping("{userId}")
-    public ResponseDTO<Map<String, String>> userWithdraw(@ApiParam(value = "userId", required = true, example = "6ef8ef43-428c-44a6-9bf3-9e57d90d6611") @PathVariable String userId) throws Exception{
-        userService.withdraw(userId);
-        return new ResponseDTO<>(ResultCode.OK);
+    public ResponseDTO<NoResultDTO> userWithdraw(@ApiParam(value = "userId", required = true, example = "6ef8ef43-428c-44a6-9bf3-9e57d90d6611") @PathVariable String userId) throws Exception{
+        return new ResponseDTO<>(userService.withdraw(userId), null);
     }
 
     @ApiOperation(value = "사용자 리스트")
