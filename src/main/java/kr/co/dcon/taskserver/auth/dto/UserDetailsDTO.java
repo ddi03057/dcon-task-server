@@ -15,7 +15,8 @@ public class UserDetailsDTO implements Serializable {
 	private String userName;
 	private String firstName;
 	private String lastName;
-	
+	private String userFullName;
+
 	@ApiModelProperty(value = "이메일", notes = "이메일", example = "suseokpark@dc-on.co.kr", required = true)
 	@Email(message = "이메일 형식에 맞지 않습니다.")
 	private String userEmail;
@@ -42,5 +43,9 @@ public class UserDetailsDTO implements Serializable {
 	private String useYnName;
 
 	private String userLocale;
+	private String updateDate;
+	private String updateId;
+	private String userAuth;
+
 }
 

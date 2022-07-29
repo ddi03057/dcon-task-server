@@ -4,6 +4,7 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import kr.co.dcon.taskserver.common.constants.ResultCode;
+import kr.co.dcon.taskserver.common.dto.NoResultDTO;
 import kr.co.dcon.taskserver.common.dto.ResponseDTO;
 import kr.co.dcon.taskserver.common.exception.RuntimeExceptionBase;
 import kr.co.dcon.taskserver.project.dto.*;
@@ -27,67 +28,33 @@ public class ProjectController {
     ProjectService projectService;
     UserService userService;
 
-    private final String RESULT_STRING = "result";
-
     public ProjectController(ProjectService projectService, UserService userService) {
         this.projectService = projectService;
         this.userService = userService;
-
     }
 
     @ApiOperation(value = "issueList", notes = "issueList")
     @GetMapping("/issueList")
     public ResponseDTO<List<ProjectListDTO>> selectIssueList(@Valid ProjectListReqDTO reqDTO) {
         return projectService.selectIssueList(reqDTO);
-
     }
 
     @ApiOperation(value = "task Status 수정", notes = "task Status")
     @GetMapping("/taskStatus/{projectId}/{taskId}/{taskStatus}")
-    public ResponseDTO<ProjectTaskUpdateReqDTO> updateProjectTaskStatus(@Valid ProjectTaskUpdateReqDTO reqDTO) {
-        ResultCode resultCode = ResultCode.OK;
-
-        try {
-            projectService.updateProjectTaskStatus(reqDTO);
-        } catch (RuntimeExceptionBase runtimeExceptionBase) {
-            resultCode = ResultCode.USER_NOT_AVAILABLE_EXCEPTION;
-        } catch (Exception e) {
-            resultCode = ResultCode.ETC_ERROR;
-        }
-
-        return new ResponseDTO<>(resultCode, reqDTO);
-
+    public ResponseDTO<NoResultDTO> updateProjectTaskStatus(@Valid ProjectTaskUpdateReqDTO reqDTO) {
+        return new ResponseDTO<>(projectService.updateProjectTaskStatus(reqDTO), null);
     }
 
     @ApiOperation(value = "task assign 수정", notes = "task assign")
     @GetMapping("/taskAssign/{projectId}/{taskId}")
-
-    public ResponseDTO<ProjectTaskUpdateReqDTO> updateProjectTaskAssign(@Valid ProjectTaskUpdateReqDTO reqDTO) {
-        ResultCode resultCode = ResultCode.OK;
-
-        try {
-            projectService.updateProjectTaskAssign(reqDTO);
-        } catch (RuntimeExceptionBase runtimeExceptionBase) {
-            resultCode = ResultCode.USER_NOT_AVAILABLE_EXCEPTION;
-        } catch (Exception e) {
-            resultCode = ResultCode.ETC_ERROR;
-        }
-        return new ResponseDTO<>(resultCode, reqDTO);
+    public ResponseDTO<NoResultDTO> updateProjectTaskAssign(@Valid ProjectTaskUpdateReqDTO reqDTO) {
+        return new ResponseDTO<>(projectService.updateProjectTaskAssign(reqDTO), null);
     }
 
     @ApiOperation(value = "task insert", notes = "task insert")
     @PostMapping("/taskAdd")
-    public ResponseDTO<ProjectTaskCreateReqDTO> insertTask(@Valid @RequestBody ProjectTaskCreateReqDTO reqDTO) {
-        ResultCode resultCode = ResultCode.OK;
-
-        try {
-            projectService.insertTask(reqDTO);
-        } catch (RuntimeExceptionBase runtimeExceptionBase) {
-            resultCode = ResultCode.USER_NOT_AVAILABLE_EXCEPTION;
-        } catch (Exception e) {
-            resultCode = ResultCode.ETC_ERROR;
-        }
-        return new ResponseDTO<>(resultCode, reqDTO);
+    public ResponseDTO<NoResultDTO> insertTask(@Valid @RequestBody ProjectTaskCreateReqDTO reqDTO) {
+        return new ResponseDTO<>(projectService.insertTask(reqDTO), null);
     }
 
     @ApiOperation(value = "task detail", notes = "task detail")
@@ -98,19 +65,8 @@ public class ProjectController {
 
     @ApiOperation(value = "task update", notes = "task update")
     @PutMapping(value = "/taskDetail/update")
-    public ResponseDTO<ProjectTaskUpdateReqDTO> updateProjectTaskDetail(@Valid @RequestBody ProjectTaskUpdateReqDTO reqDTO) {
-        ResultCode resultCode = null;
-        try {
-            projectService.updateProjectTaskDetail(reqDTO);
-            resultCode = ResultCode.OK;
-        } catch (RuntimeExceptionBase runtimeExceptionBase) {
-            resultCode = ResultCode.USER_NOT_AVAILABLE_EXCEPTION;
-        } catch (Exception e) {
-            resultCode = ResultCode.ETC_ERROR;
-        }
-
-        return new ResponseDTO<>(resultCode, reqDTO);
-
+    public ResponseDTO<NoResultDTO> updateProjectTaskDetail(@Valid @RequestBody ProjectTaskUpdateReqDTO reqDTO) {
+        return new ResponseDTO<>(projectService.updateProjectTaskDetail(reqDTO), null);
     }
 
     @ApiOperation(value = "task Status 수정", notes = "task Status")
@@ -203,10 +159,10 @@ public class ProjectController {
         ResultCode resultCode = null;
         boolean result = false;
 
-        result =  projectService.updateTaskComment(reqDTO);
-        if(result){
+        result = projectService.updateTaskComment(reqDTO);
+        if (result) {
             resultCode = ResultCode.OK;
-        }else{
+        } else {
             resultCode = ResultCode.ETC_ERROR;
         }
         return new ResponseDTO<>(resultCode, reqDTO);
@@ -230,15 +186,15 @@ public class ProjectController {
 
     @ApiOperation(value = "task comment delete", notes = "task comment delete")
     @DeleteMapping("/taskComment/delete/{taskId}")
-    public ResponseDTO<ProjectCommentCRUDReqDTO> deleteTaskComment(@Valid  ProjectCommentCRUDReqDTO reqDTO) {
+    public ResponseDTO<ProjectCommentCRUDReqDTO> deleteTaskComment(@Valid ProjectCommentCRUDReqDTO reqDTO) {
         ResultCode resultCode = null;
 
         boolean result = false;
 
-        result =  projectService.deleteTaskComment(reqDTO);
-        if(result){
+        result = projectService.deleteTaskComment(reqDTO);
+        if (result) {
             resultCode = ResultCode.OK;
-        }else{
+        } else {
             resultCode = ResultCode.ETC_ERROR;
         }
         return new ResponseDTO<>(resultCode, reqDTO);
@@ -273,10 +229,10 @@ public class ProjectController {
         ResultCode resultCode = null;
         boolean result = false;
 
-        result =  projectService.updateTaskSubList(reqDTO);
-        if(result){
+        result = projectService.updateTaskSubList(reqDTO);
+        if (result) {
             resultCode = ResultCode.OK;
-        }else{
+        } else {
             resultCode = ResultCode.ETC_ERROR;
         }
         return new ResponseDTO<>(resultCode, reqDTO);
@@ -285,7 +241,7 @@ public class ProjectController {
 
     @ApiOperation(value = "task sub item delete", notes = "task sub item delete")
     @DeleteMapping("/task/subItemList/delete/{taskSubId}")
-    public ResponseDTO<ProjectSubItemCRUDReqDTO> deleteTaskSubList(@Valid  ProjectSubItemCRUDReqDTO reqDTO) {
+    public ResponseDTO<ProjectSubItemCRUDReqDTO> deleteTaskSubList(@Valid ProjectSubItemCRUDReqDTO reqDTO) {
         ResultCode resultCode = null;
 
         boolean result = false;

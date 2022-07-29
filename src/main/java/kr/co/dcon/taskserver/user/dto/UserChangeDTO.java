@@ -32,6 +32,8 @@ public class UserChangeDTO {
 	private String lastName;
 	
 	private String userLocale;
+	private String userAuth;
+	private String useYn;
 }
 
 

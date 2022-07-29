@@ -13,21 +13,27 @@
             , UA.value) = 'USE_YNY'
 
     </select>
-    <select id="selectKeyCloakUserId" parameterType="String" resultType="string">
+    <select id="selectKeyCloakUserId" parameterType="map" resultType="string">
         SELECT UE.id
         FROM dconkeycloak.USER_ENTITY UE,
              dconkeycloak.USER_ATTRIBUTE UA
-        WHERE UE.email = #{userEmail}
-          AND UE.id = UA.user_id
-          AND CONCAT(UA.name, UA.value) = 'USE_YNY'
+        WHERE UE.id = UA.user_id
+          <if test="userAuth != 'admin'" >
+              AND CONCAT(UA.name, UA.value) = 'USE_YNY'
+          </if>
+          AND UE.email = #{userEmail}
+        <if test="userAuth == 'admin'" >
+         limit 1
+        </if>
+
     </select>
 
-    <select id="selectKecloakRealmInfo" resultType="kr.co.dcon.taskserver.auth.dto.RealmInfoDTO">
+    <select id="selectKeycloakRealmInfo" resultType="kr.co.dcon.taskserver.auth.dto.RealmInfoDTO">
         SELECT realm_name    as realmName
              , client_id     as clientId
              , client_secret as clientSecret
              , user_name     as userName
-             , password      as password
+             , password
         FROM keycloak_realm_info
     </select>
 
@@ -56,5 +62,12 @@
         AND UE.ID = #{userId}
 
         ORDER BY UE.id
+    </select>
+    <select id="selectUserLocale" parameterType="string" resultType="string">
+        SELECT ifnull(value, 'ko')
+        FROM dconkeycloak.user_attribute
+        WHERE USER_ID = #{userId}
+        AND NAME = 'USER_LOCALE'
+
     </select>
 </mapper>

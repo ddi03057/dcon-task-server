@@ -27,13 +27,13 @@ public class KeyCloakCurrentUserServiceImpl  implements CurrentUserService{
 
 	@Override
 	public RealmInfoDTO getRealmInfo() {
-		this.realmInfoDTO = this.realmInfoDTO == null ? userMapper.selectKecloakRealmInfo() : this.realmInfoDTO;
+		this.realmInfoDTO = this.realmInfoDTO == null ? userMapper.selectKeycloakRealmInfo() : this.realmInfoDTO;
 		return this.realmInfoDTO;
 	}
 
 	@Override
 	public void setRealmInfo() {
-		this.realmInfoDTO = this.realmInfoDTO == null ? userMapper.selectKecloakRealmInfo() : this.realmInfoDTO;
+		this.realmInfoDTO = this.realmInfoDTO == null ? userMapper.selectKeycloakRealmInfo() : this.realmInfoDTO;
 	}
 
 	private UserSimpleDTO buildUserSimple(AccessToken accessToken) {
