@@ -282,6 +282,7 @@ public class UserService implements UserServiceKeycloak {
             param.put(UserOtherClaim.AUTH, useChg.getUserAuth());
             param.put(UserOtherClaim.USE_YN, useChg.getUseYn());
             param.put(UserOtherClaim.ERROR_CNT, "0");
+            param.put(UserOtherClaim.PASSWORD_INIT_YN, CommonConstants.PASSWORD_INIT_N);
 
             resultCode = updateKeyCloakUser(userId, param);
         } catch (NotFoundException notFoundException) {
