@@ -15,6 +15,7 @@ public class UserSimpleDTO{
 	private String loginType;
 	private String useYn;
 	private String locale;
+	private String passwordInitYn;
 
 
 

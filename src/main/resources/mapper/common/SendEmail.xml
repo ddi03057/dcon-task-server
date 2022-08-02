@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="kr.co.dcon.taskserver.common.mapper.CommonMapper">
+    <insert id="insertMailSend" parameterType="kr.co.dcon.taskserver.common.dto.SendEmailDTO">
+        INSERT INTO tbl_mai_send_history
+        ( user_name, user_email, send_yn, send_type, create_date, send_date)
+        values ( #{userName}
+               , #{userEmail}
+               , #{sendYn}
+               , #{sendType}
+               , #{createDate}
+               , #{sendDate})
+
+    </insert>
+</mapper>
