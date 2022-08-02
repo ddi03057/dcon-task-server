@@ -30,8 +30,11 @@ public class UserChangeDTO {
 	
 	@ApiModelProperty(value = "lastName", notes = "lastName", example = "테스트", required = true)
 	private String lastName;
-	
+
+	@ApiModelProperty(value = "userLocale", notes = "userLocale", example = "ko", required = true)
 	private String userLocale;
+
+	@ApiModelProperty(value = "userAuth", notes = "userAuth", example = "admin", required = true)
 	private String userAuth;
 	private String useYn;
 }
