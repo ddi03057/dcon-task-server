@@ -300,6 +300,7 @@ public class UserService implements UserServiceKeycloak {
         }
         attributes.put(UserOtherClaim.UPDATED_DATE, Arrays.asList(String.valueOf(System.currentTimeMillis())));
         try {
+            user.setRequiredActions(null);
             userResource.update(user);
         } catch (Exception e) {
             resultCode = ResultCode.ETC_ERROR;
@@ -370,6 +371,10 @@ public class UserService implements UserServiceKeycloak {
         createUser.setFirstName(user.getFirstName());
         createUser.setLastName(user.getLastName());
         createUser.setEnabled(true);
+
+        createUser.setEmailVerified(false);
+        createUser.setRequiredActions(null);
+
         Map<String, List<String>> attributes = new HashedMap<>();
         attributes.put(UserOtherClaim.USER_LOCALE, Arrays.asList(user.getUserLocale()));
 
