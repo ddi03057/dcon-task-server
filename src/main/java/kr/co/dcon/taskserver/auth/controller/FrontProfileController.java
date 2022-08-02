@@ -32,7 +32,7 @@ public class FrontProfileController {
 	public FrontProfileController(FrontProfileService service){
 		this.service = service;
 	}
-	
+
 	@GetMapping("/front-profile")
 	@ApiOperation(value = "front end profile 조회")
 	public ResponseDTO<FrontProfileDTO> getFrontProfile(HttpServletRequest request){

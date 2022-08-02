@@ -9,12 +9,9 @@ import kr.co.dcon.taskserver.common.constants.CommonConstants;
 import kr.co.dcon.taskserver.common.constants.ResultCode;
 import kr.co.dcon.taskserver.common.dto.NoResultDTO;
 import kr.co.dcon.taskserver.common.dto.ResponseDTO;
-import kr.co.dcon.taskserver.common.exception.RuntimeExceptionBase;
-import kr.co.dcon.taskserver.common.util.DateUtils;
 import kr.co.dcon.taskserver.user.dto.*;
 import kr.co.dcon.taskserver.user.service.UserService;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.collections4.map.HashedMap;
 import org.keycloak.representations.idm.UserRepresentation;
 import org.springframework.web.bind.annotation.*;
 
