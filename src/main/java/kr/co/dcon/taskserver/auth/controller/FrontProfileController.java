@@ -35,6 +35,4 @@ public class FrontProfileController {
 		String rootUrl = DomainUtil.getRootUrl(request.getRequestURL().toString());
 		return new ResponseDTO<>(ResultCode.OK, service.selectFrontFile(rootUrl));
 	}
-
-
 }
