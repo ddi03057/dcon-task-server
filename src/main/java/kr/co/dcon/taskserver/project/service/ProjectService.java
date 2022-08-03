@@ -5,7 +5,6 @@ import kr.co.dcon.taskserver.auth.service.CurrentUserService;
 import kr.co.dcon.taskserver.common.constants.ResultCode;
 import kr.co.dcon.taskserver.common.dto.NoResultDTO;
 import kr.co.dcon.taskserver.common.dto.ResponseDTO;
-import kr.co.dcon.taskserver.common.exception.RuntimeExceptionBase;
 import kr.co.dcon.taskserver.common.util.RestTemplateUtil;
 import kr.co.dcon.taskserver.project.dto.*;
 import lombok.extern.slf4j.Slf4j;
@@ -16,7 +15,6 @@ import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 
 import java.util.List;
-import java.util.Map;
 
 @Service
 @Slf4j

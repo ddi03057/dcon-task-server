@@ -3,21 +3,16 @@ package kr.co.dcon.taskserver.project.controller;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
-import kr.co.dcon.taskserver.common.constants.ResultCode;
 import kr.co.dcon.taskserver.common.dto.NoResultDTO;
 import kr.co.dcon.taskserver.common.dto.ResponseDTO;
-import kr.co.dcon.taskserver.common.exception.RuntimeExceptionBase;
 import kr.co.dcon.taskserver.project.dto.*;
 import kr.co.dcon.taskserver.project.service.ProjectService;
 import kr.co.dcon.taskserver.user.service.UserService;
-import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 @Slf4j
 @Api(value = "PROJECT API")
@@ -124,7 +119,7 @@ public class ProjectController {
     }
 
     @ApiOperation(value = "comment add", notes = "comment add")
-    @PostMapping("/taskComment/insert/{tasskId}")
+    @PostMapping("/taskComment/insert/{taskId}")
     public ResponseDTO<NoResultDTO> insertTaskComment(@Valid @RequestBody ProjectCommentCRUDReqDTO reqDTO) {
         return new ResponseDTO<>(projectService.insertTaskComment(reqDTO), null);
     }
@@ -136,7 +131,7 @@ public class ProjectController {
     }
 
     @ApiOperation(value = "task sub item add", notes = "task sub item add")
-    @PostMapping("/taskSubItem/insert/{tasskId}")
+    @PostMapping("/taskSubItem/insert/{taskId}")
     public ResponseDTO<NoResultDTO> insertTaskSubItem(@Valid @RequestBody ProjectSubItemCRUDReqDTO reqDTO) {
         return new ResponseDTO<>(projectService.insertTaskSubItem(reqDTO), null);
     }
@@ -149,7 +144,7 @@ public class ProjectController {
 
     @ApiOperation(value = "task sub item update", notes = "task sub item update")
     @PutMapping("/task/subItemList/update/{taskSubId}")
-    public ResponseDTO<ProjectSubItemCRUDReqDTO> updateTaskSubList(@Valid @RequestBody ProjectSubItemCRUDReqDTO reqDTO) {
+    public ResponseDTO<NoResultDTO> updateTaskSubList(@Valid @RequestBody ProjectSubItemCRUDReqDTO reqDTO) {
         return new ResponseDTO<>(projectService.updateTaskSubList(reqDTO), null);
     }
 
