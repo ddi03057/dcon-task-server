@@ -89,7 +89,6 @@ public class ProjectService {
         return resultCode;
     }
 
-
     public ResponseDTO<ProjectTaskDetailDTO> selectTaskDetail(ProjectTaskDetailReqDTO reqDTO) {
         String url = taskUrl + "/project/taskDetail/";
         return RestTemplateUtil.getForResponseDTO(reqDTO.getUrlToForward(url), new ParameterizedTypeReference<ResponseDTO<ProjectTaskDetailDTO>>() {
@@ -113,17 +112,18 @@ public class ProjectService {
         return resultCode;
     }
 
-    public boolean updateProjectTaskListStatus(ProjectTaskListUpdateReqDTO reqDTO) {
-        boolean result = true;
+    public ResultCode updateProjectTaskListStatus(ProjectTaskListUpdateReqDTO reqDTO) {
+        ResultCode resultCode;
 
         String url = taskUrl + "/project/taskStatus/" + reqDTO.getProjectId() + "/taskList/" + reqDTO.getTaskStatus();
 
         try {
             RestTemplateUtil.putForResponseDTO(url, reqDTO);
+            resultCode = ResultCode.OK;
         } catch (Exception e) {
-            throw new RuntimeExceptionBase(ResultCode.ETC_ERROR);
+            resultCode = ResultCode.ETC_ERROR;
         }
-        return result;
+        return resultCode;
     }
 
     public ResponseDTO<List<ProjectUserListDTO>> selectProjectUserList(ProjectUserListDTO reqDTO) {
@@ -132,27 +132,39 @@ public class ProjectService {
         });
     }
 
-    public boolean deleteTaskList(ProjectTaskListUpdateReqDTO reqDTO) {
+    public ResultCode deleteTaskList(ProjectTaskListUpdateReqDTO reqDTO) {
 
+        ResultCode resultCode;
         String url = taskUrl + "/project/deleteTaskList/";
         reqDTO.setUpdateId(currentUserService.getCurrentUser().getUserId());
-        boolean result = true;
+
         try {
             RestTemplateUtil.putForResponseDTO(url, reqDTO);
+            resultCode = ResultCode.OK;
         } catch (Exception e) {
-            throw new RuntimeExceptionBase(ResultCode.ETC_ERROR);
+            resultCode = ResultCode.ETC_ERROR;
         }
-        return result;
+        return resultCode;
     }
 
-    public ResponseDTO<ProjectCreateReqDTO> insertProject(ProjectCreateReqDTO reqDTO) {
-        reqDTO.setCreateId(currentUserService.getCurrentUser().getUserId());
-        String url = taskUrl + "/project/projectAdd/";
-        MultiValueMap<String, String> parameters = new LinkedMultiValueMap<>();
+    public ResultCode insertProject(ProjectCreateReqDTO reqDTO) {
 
-        parameters.add("reqDTO", new Gson().toJson(reqDTO));
+        ResultCode resultCode;
+        try {
+            reqDTO.setCreateId(currentUserService.getCurrentUser().getUserId());
+            String url = taskUrl + "/project/projectAdd/";
+            MultiValueMap<String, String> parameters = new LinkedMultiValueMap<>();
 
-        return RestTemplateUtil.postJsonResponseDTO(url, parameters, new ResponseDTO<>());
+            parameters.add("reqDTO", new Gson().toJson(reqDTO));
+
+            RestTemplateUtil.postJsonResponseDTO(url, parameters, new ResponseDTO<>());
+            resultCode = ResultCode.OK;
+
+        } catch (Exception e) {
+            resultCode = ResultCode.ETC_ERROR;
+        }
+
+        return resultCode;
     }
 
     public ResponseDTO<ProjectDetailDTO> selectProjectDetail(ProjectDetailReqDTO reqDTO) {
@@ -161,18 +173,18 @@ public class ProjectService {
         });
     }
 
-    public boolean updateProject(ProjectUpdateReqDTO reqDTO) {
+    public ResultCode updateProject(ProjectUpdateReqDTO reqDTO) {
+        ResultCode resultCode;
         reqDTO.setUpdateId(currentUserService.getCurrentUser().getUserId());
-        boolean result = true;
 
         String url = taskUrl + "/project/" + reqDTO.getProjectId();
-
         try {
             RestTemplateUtil.putForResponseDTO(url, reqDTO);
+            resultCode = ResultCode.OK;
         } catch (Exception e) {
-            throw new RuntimeExceptionBase(ResultCode.ETC_ERROR);
+            resultCode = ResultCode.ETC_ERROR;
         }
-        return result;
+        return resultCode;
     }
 
     public ResponseDTO<String> selectUserFirstProjectId(String userId) {
@@ -188,52 +200,66 @@ public class ProjectService {
         });
     }
 
-    public boolean updateTaskComment(ProjectCommentCRUDReqDTO reqDTO) {
-        boolean result = false;
+    public ResultCode updateTaskComment(ProjectCommentCRUDReqDTO reqDTO) {
+        ResultCode resultCode;
 
         String url = taskUrl + "/project/taskComment/update/" + reqDTO.getTaskId();
 
         try {
             RestTemplateUtil.putForResponseDTO(url, reqDTO);
-            result = true;
+            resultCode = ResultCode.OK;
         } catch (Exception e) {
-            result = false;
-            throw new RuntimeExceptionBase(ResultCode.ETC_ERROR);
+            resultCode = ResultCode.ETC_ERROR;
         }
-        return result;
+        return resultCode;
     }
 
-    public ResponseDTO<ProjectCommentCRUDReqDTO> insertTaskComment(ProjectCommentCRUDReqDTO reqDTO) {
+    public ResultCode insertTaskComment(ProjectCommentCRUDReqDTO reqDTO) {
 
+        ResultCode resultCode;
         String url = taskUrl + "/project/taskComment/insert";
         MultiValueMap<String, String> parameters = new LinkedMultiValueMap<>();
 
         parameters.add("reqDTO", new Gson().toJson(reqDTO));
 
-        return RestTemplateUtil.postJsonResponseDTO(url, parameters, new ResponseDTO<>());
+        try {
+            RestTemplateUtil.postJsonResponseDTO(url, parameters, new ResponseDTO<>());
+            resultCode = ResultCode.OK;
+        } catch (Exception e) {
+            resultCode = ResultCode.ETC_ERROR;
+        }
+
+        return resultCode;
     }
 
-    public boolean deleteTaskComment(ProjectCommentCRUDReqDTO reqDTO) {
-        boolean result = false;
+    public ResultCode deleteTaskComment(ProjectCommentCRUDReqDTO reqDTO) {
+        ResultCode resultCode;
         String url = taskUrl + "/project/taskComment/delete/" + reqDTO.getTaskId();
 
         try {
             RestTemplateUtil.putForResponseDTO(url, reqDTO);
-            result = true;
+            resultCode = ResultCode.OK;
         } catch (Exception e) {
-            result = false;
-            throw new RuntimeExceptionBase(ResultCode.ETC_ERROR);
+            resultCode = ResultCode.ETC_ERROR;
         }
-        return result;
+        return resultCode;
     }
 
-    public ResponseDTO<ProjectSubItemCRUDReqDTO> insertTaskSubItem(ProjectSubItemCRUDReqDTO reqDTO) {
+    public ResultCode insertTaskSubItem(ProjectSubItemCRUDReqDTO reqDTO) {
+        ResultCode resultCode;
         String url = taskUrl + "/project/taskSubItem/insert";
         MultiValueMap<String, String> parameters = new LinkedMultiValueMap<>();
         reqDTO.setUserId(currentUserService.getCurrentUser().getUserId());
         parameters.add("reqDTO", new Gson().toJson(reqDTO));
 
-        return RestTemplateUtil.postJsonResponseDTO(url, parameters, new ResponseDTO<>());
+        try {
+            RestTemplateUtil.postJsonResponseDTO(url, parameters, new ResponseDTO<>());
+            resultCode = ResultCode.OK;
+        } catch (Exception e) {
+            resultCode = ResultCode.ETC_ERROR;
+        }
+
+        return resultCode;
     }
 
     public ResponseDTO<List<ProjectTaskSubItemListDTO>> selectTaskSubList(ProjectTaskCommentListReqDTO reqDTO) {
@@ -242,32 +268,30 @@ public class ProjectService {
         });
     }
 
-    public boolean updateTaskSubList(ProjectSubItemCRUDReqDTO reqDTO) {
-        boolean result = false;
+    public ResultCode updateTaskSubList(ProjectSubItemCRUDReqDTO reqDTO) {
+        ResultCode resultCode;
 
         String url = taskUrl + "/project/task/subItemList/update/" + reqDTO.getTaskSubId();
 
         try {
             RestTemplateUtil.putForResponseDTO(reqDTO.getUrlToForward(url), reqDTO);
-            result = true;
+            resultCode = ResultCode.OK;
         } catch (Exception e) {
-            result = false;
-            throw new RuntimeExceptionBase(ResultCode.ETC_ERROR);
+            resultCode = ResultCode.ETC_ERROR;
         }
-        return result;
+        return resultCode;
     }
-    public boolean deleteTaskSubList(ProjectSubItemCRUDReqDTO reqDTO) {
-        boolean result = false;
+    public ResultCode deleteTaskSubList(ProjectSubItemCRUDReqDTO reqDTO) {
+        ResultCode resultCode;
         String url = taskUrl + "/project/task/subItemList/delete/" + reqDTO.getTaskSubId();
 
         try {
             RestTemplateUtil.putForResponseDTO(reqDTO.getUrlToForward(url), reqDTO);
-            result = true;
+            resultCode = ResultCode.OK;
         } catch (Exception e) {
-            result = false;
-            throw new RuntimeExceptionBase(ResultCode.ETC_ERROR);
+            resultCode = ResultCode.ETC_ERROR;
         }
-        return result;
+        return resultCode;
     }
 
     public ResponseDTO<ProjectDetailDTO> selectTaskPrefixProject(ProjectPrefixExistReqDTO reqDTO) {

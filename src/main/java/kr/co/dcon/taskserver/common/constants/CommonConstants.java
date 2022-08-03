@@ -11,7 +11,6 @@ public final class CommonConstants {
 	public static final String SERIES_NAME = "name";
 	public static final String COLOR = "color";
 	public static final String ROLE_PREFIX = "ROLE_";
-	public static final String OCP = "ocp";
 	public static final String WON = " ₩ ";
 	public static final String FOLDER_SPILITER = "/";
 	public static final String SSO_ATTR_SURFIX = "_user_id";
@@ -43,7 +42,11 @@ public final class CommonConstants {
 	public static final String OTP = "otp";
 	public static final String KO = "ko";
 
+	public static final String PASSWORD_INIT_Y = "Y";
+	public static final String PASSWORD_INIT_N = "N";
 
+	public static final String EMAIL_PASSWORD_INIT = "IP";
+	public static final String EMAIL_PASSWORD_RESET = "RP";
 
 	public static final String[] KEY_CLOAK_PROPERTY_ARR = {"ERROR_CNT", "USE_YN", "UPDATE_DATE", "UPDATE_ID", "USER_AUTH", "USER_EMAIL", "USER_LOCALE", "USER_NAME"};
 

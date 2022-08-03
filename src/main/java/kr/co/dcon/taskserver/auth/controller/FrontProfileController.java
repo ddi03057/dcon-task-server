@@ -9,6 +9,7 @@ import kr.co.dcon.taskserver.common.constants.ResultCode;
 import kr.co.dcon.taskserver.common.dto.ResponseDTO;
 import kr.co.dcon.taskserver.common.util.DomainUtil;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.xmlbeans.impl.xb.xsdschema.Public;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -26,8 +27,11 @@ public class FrontProfileController {
 	@Value("${front.env}")
 	private String env;
 
-	@Autowired
 	FrontProfileService service;
+
+	public FrontProfileController(FrontProfileService service){
+		this.service = service;
+	}
 
 	@GetMapping("/front-profile")
 	@ApiOperation(value = "front end profile 조회")
@@ -35,6 +39,4 @@ public class FrontProfileController {
 		String rootUrl = DomainUtil.getRootUrl(request.getRequestURL().toString());
 		return new ResponseDTO<>(ResultCode.OK, service.selectFrontFile(rootUrl));
 	}
-
-
 }

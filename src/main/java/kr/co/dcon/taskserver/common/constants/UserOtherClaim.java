@@ -10,9 +10,9 @@ public final class UserOtherClaim {
 	public static final String LAST_LOGIN_DEVICE = "LAST_LOGIN_DEVICE";
 	public static final String LAST_LOGIN_IPADDR = "LAST_LOGIN_IPADDR";
 	public static final String DISABLE_MULTI_LOGIN = "DISABLE_MULTI_LOGIN";
-	public static final String PWD_INIT_YN = "PWD_INIT_YN";
-	public static final String PWD_CHANGE_DATE = "PWD_CHANGE_DATE";
-	public static final String SKIP_PWD_CHANGE_DATE = "SKIP_PWD_CHANGE_DATE";
+	public static final String PASSWORD_INIT_YN = "PASSWORD_INIT_YN";
+	public static final String PASSWORD_CHANGE_DATE = "PASSWORD_CHANGE_DATE";
+	public static final String SKIP_PASSWORD_CHANGE_DATE = "SKIP_PASSWORD_CHANGE_DATE";
 	public static final String CREATE_ID = "CREATE_ID";
 	public static final String CREATE_DATE = "CREATE_DATE";
 	public static final String UPDATED_DATE = "UPDATE_DATE";

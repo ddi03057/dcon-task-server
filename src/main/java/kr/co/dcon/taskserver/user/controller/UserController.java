@@ -5,15 +5,13 @@ import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import kr.co.dcon.taskserver.auth.dto.UserDetailsDTO;
 import kr.co.dcon.taskserver.auth.service.CurrentUserService;
+import kr.co.dcon.taskserver.common.constants.CommonConstants;
 import kr.co.dcon.taskserver.common.constants.ResultCode;
 import kr.co.dcon.taskserver.common.dto.NoResultDTO;
 import kr.co.dcon.taskserver.common.dto.ResponseDTO;
-import kr.co.dcon.taskserver.common.exception.RuntimeExceptionBase;
-import kr.co.dcon.taskserver.common.util.DateUtils;
 import kr.co.dcon.taskserver.user.dto.*;
 import kr.co.dcon.taskserver.user.service.UserService;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.collections4.map.HashedMap;
 import org.keycloak.representations.idm.UserRepresentation;
 import org.springframework.web.bind.annotation.*;
 
@@ -89,5 +87,20 @@ public class UserController {
     @GetMapping("/task/allUser/{userId}")
     public ResponseDTO<UserListDTO> selectProjectUserDetail(@Valid UserListProjectReqDTO reqDTO) {
         return new ResponseDTO<>(ResultCode.OK, userService.selectProjectUserDetail(reqDTO));
+    }
+
+
+    @ApiOperation(value = "사용자 비밀번호 체크")
+    @GetMapping(value = "passwordCheck")
+    public ResponseDTO<Map<String, String>> selectValidUserPassword(@ApiParam(value = "newCredential", required = true, example = "test1234") @RequestParam String newCredential) {
+        Map<String, String> result = new HashMap<>();
+        String userEmail =  currentUserService.getCurrentUser().getUserEmail();
+        Boolean valid = userService.validUserPassword(userEmail, newCredential);
+        if(Boolean.TRUE.equals(valid)) {
+            result.put(RESULT_STRING, CommonConstants.YES);
+        }else {
+            result.put(RESULT_STRING, CommonConstants.NO);
+        }
+        return new ResponseDTO<>(ResultCode.OK, result);
     }
 }

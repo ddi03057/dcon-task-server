@@ -12,6 +12,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
 
+import java.net.URISyntaxException;
 import java.util.Map;
 
 @Component
@@ -35,6 +36,16 @@ public class RestTemplateUtil {
 //        return restTemplate.exchange(new URI(url), HttpMethod.GET, requestEntity, AlertNowDTO.class);
 //    }
 
+    /*
+    	@Override
+	public <T> ResponseEntity<T> postForEntity(String url, @Nullable Object request,
+			Class<T> responseType, Map<String, ?> uriVariables) throws RestClientException {
+
+		RequestCallback requestCallback = httpEntityCallback(request, responseType);
+		ResponseExtractor<ResponseEntity<T>> responseExtractor = responseEntityExtractor(responseType);
+		return nonNull(execute(url, HttpMethod.POST, requestCallback, responseExtractor, uriVariables));
+	}
+     */
     public static <T> ResponseDTO<T> getForResponseDTO(String url, Map<String, Object> params, ParameterizedTypeReference<ResponseDTO<T>> responseType) {
         HttpEntity<Object> requestEntity = new HttpEntity<>(params);
         return restTemplate.exchange(url, HttpMethod.GET, requestEntity, responseType).getBody();

@@ -40,4 +40,6 @@ public class UserDTO {
         return String.valueOf(this.token.getOtherClaims().get(UserOtherClaim.USE_YN));
     }
 
+    public String getPasswordInitYn() { return String.valueOf(this.token.getOtherClaims().get(UserOtherClaim.PASSWORD_INIT_YN));}
+
 }

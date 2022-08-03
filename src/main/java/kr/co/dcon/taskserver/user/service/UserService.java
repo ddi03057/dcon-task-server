@@ -2,15 +2,15 @@ package kr.co.dcon.taskserver.user.service;
 
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import kr.co.dcon.taskserver.auth.dto.TokenDTO;
 import kr.co.dcon.taskserver.auth.dto.UserDetailsDTO;
 import kr.co.dcon.taskserver.auth.service.CurrentUserService;
 import kr.co.dcon.taskserver.common.constants.CommonConstants;
 import kr.co.dcon.taskserver.common.constants.ResultCode;
 import kr.co.dcon.taskserver.common.constants.UserOtherClaim;
-import kr.co.dcon.taskserver.common.dto.ResponseDTO;
-import kr.co.dcon.taskserver.common.exception.RuntimeExceptionBase;
+import kr.co.dcon.taskserver.common.dto.SendEmailDTO;
 import kr.co.dcon.taskserver.common.exception.UserAttributeException;
-import kr.co.dcon.taskserver.common.util.DateUtils;
+import kr.co.dcon.taskserver.common.service.MailSendService;
 import kr.co.dcon.taskserver.common.util.EncryptUtil;
 import kr.co.dcon.taskserver.common.util.StringUtil;
 import kr.co.dcon.taskserver.common.util.Utils;
@@ -32,11 +32,17 @@ import org.keycloak.representations.idm.CredentialRepresentation;
 import org.keycloak.representations.idm.UserRepresentation;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
 import org.springframework.util.ObjectUtils;
+import org.springframework.web.client.RestTemplate;
 
 import javax.ws.rs.BadRequestException;
 import javax.ws.rs.NotFoundException;
@@ -62,6 +68,10 @@ public class UserService implements UserServiceKeycloak {
     private String dconMasterUserId;
     private CurrentUserService currentUserService;
 
+    private MailSendService mailSendService;
+
+    private RestTemplate restTemplate;
+
     private UserMapper userMapper;
 
     private static final String RESULT_STRING = "result";
@@ -77,9 +87,11 @@ public class UserService implements UserServiceKeycloak {
 //    private static final String[] ignoreProperties = {"userId", "userEmail", "email", "useYn", FRIST_NAME, LAST_NAME};
     private static final String[] ignoreProperties = {"userId", "email", "firstName", "lastName", "userFullName"};
 
-    public UserService(CurrentUserService currentUserService, UserMapper userMapper) {
+    public UserService(CurrentUserService currentUserService, UserMapper userMapper, RestTemplate restTemplate, MailSendService mailSendService) {
         this.currentUserService = currentUserService;
         this.userMapper = userMapper;
+        this.restTemplate = restTemplate;
+        this.mailSendService = mailSendService;
     }
 
     @Value("${dcon.encrypt}")
@@ -100,10 +112,13 @@ public class UserService implements UserServiceKeycloak {
         String userAuth = String.valueOf(accessToken.getOtherClaims().get(UserOtherClaim.AUTH));
         String userUseYn = String.valueOf(accessToken.getOtherClaims().get(UserOtherClaim.USE_YN));
         String userLocale = String.valueOf(accessToken.getOtherClaims().get(UserOtherClaim.USER_LOCALE));
+        String passwordInitYn = String.valueOf(accessToken.getOtherClaims().get(UserOtherClaim.PASSWORD_INIT_YN));
+
         currentUserService.getCurrentUser().setUserName(userName);
         currentUserService.getCurrentUser().setLocale(userLocale);
         currentUserService.getCurrentUser().setAuth(userAuth);
         currentUserService.getCurrentUser().setUseYn(userUseYn);
+        currentUserService.getCurrentUser().setPasswordInitYn(passwordInitYn);
         currentUserService.setRealmInfo();
 
         return new UserDTO(context);
@@ -169,12 +184,14 @@ public class UserService implements UserServiceKeycloak {
 
             BeanUtils.copyProperties(userDetailsDTO, userDetails , ignoreProperties);
         }
-
     }
 
     public ResultCode updateUserPassword(UserChangePasswordDTO changePasswordmodel) {
 
         if (!changePasswordmodel.getNewCredential().equals(changePasswordmodel.getNewCredentialConfirm())) {
+            return ResultCode.BAD_REQUEST;
+        }
+        if (changePasswordmodel.getEmail().equals(changePasswordmodel.getNewCredential())) {
             return ResultCode.BAD_REQUEST;
         }
 
@@ -199,10 +216,29 @@ public class UserService implements UserServiceKeycloak {
 
             UserRepresentation user = userResource.toRepresentation();
             user.getAttributes().put(UserOtherClaim.ERROR_CNT, Arrays.asList(CommonConstants.ZERO));
+            user.getAttributes().put(UserOtherClaim.UPDATED_DATE, Arrays.asList(Utils.getCurrentDateYYMMDD()));
+            user.getAttributes().put(UserOtherClaim.UPDATED_ID, Arrays.asList(currentUserService.getCurrentUser().getUserId()));
+            user.getAttributes().put(UserOtherClaim.PASSWORD_INIT_YN, Arrays.asList(CommonConstants.PASSWORD_INIT_N));
 //            user.getAttributes().put(UserOtherClaim.PWD_INIT_YN,Arrays.asList(CommonConstants.YES));
 //            user.getAttributes().put(UserOtherClaim.PWD_CHG_DT, Arrays.asList(String.valueOf(System.currentTimeMillis())));
 //            user.getAttributes().put(UserOtherClaim.SKIP_PWD_CHG_DT, Arrays.asList(String.valueOf(System.currentTimeMillis())));
             userResource.update(user);
+
+            SendEmailDTO sendEmailDTO = new SendEmailDTO();
+            try {
+                // TODO : 이메일 전송
+                sendEmailDTO.setSendYn("Y");
+            } catch (Exception e) {
+                sendEmailDTO.setSendYn("N");
+            }
+
+            sendEmailDTO.setUserName(user.getUsername());
+            sendEmailDTO.setUserEmail(user.getEmail());
+            sendEmailDTO.setSendType(CommonConstants.EMAIL_PASSWORD_RESET);
+            sendEmailDTO.setCreateDate(Utils.getCurrentDateYYMMDD());
+            sendEmailDTO.setSendDate(Utils.getCurrentDateYYMMDD());
+
+            mailSendService.insertMailSend(sendEmailDTO);
 
         } catch (BadRequestException e) {
 
@@ -246,6 +282,7 @@ public class UserService implements UserServiceKeycloak {
             param.put(UserOtherClaim.AUTH, useChg.getUserAuth());
             param.put(UserOtherClaim.USE_YN, useChg.getUseYn());
             param.put(UserOtherClaim.ERROR_CNT, "0");
+            param.put(UserOtherClaim.PASSWORD_INIT_YN, CommonConstants.PASSWORD_INIT_N);
 
             resultCode = updateKeyCloakUser(userId, param);
         } catch (NotFoundException notFoundException) {
@@ -285,6 +322,7 @@ public class UserService implements UserServiceKeycloak {
         }
         attributes.put(UserOtherClaim.UPDATED_DATE, Arrays.asList(String.valueOf(System.currentTimeMillis())));
         try {
+            user.setRequiredActions(null);
             userResource.update(user);
         } catch (Exception e) {
             resultCode = ResultCode.ETC_ERROR;
@@ -314,7 +352,24 @@ public class UserService implements UserServiceKeycloak {
             if (userCount > 0) {
                 return ResultCode.USER_EXIST_ALREADY;
             } else {
-                usersResource.create(createUser);
+
+                SendEmailDTO sendEmailDTO = new SendEmailDTO();
+                try {
+                    usersResource.create(createUser);
+                    // TODO : 이메일을 보낸다.
+                    sendEmailDTO.setSendYn("Y");
+                } catch (Exception e) {
+                    sendEmailDTO.setSendYn("N");
+                }
+                // 사용자에게 임의로 생성된 패스워드 이메일 공지 후 히스토리 저장
+
+                sendEmailDTO.setUserName(createUser.getUsername());
+                sendEmailDTO.setUserEmail(createUser.getEmail());
+                sendEmailDTO.setSendType(CommonConstants.EMAIL_PASSWORD_INIT);
+                sendEmailDTO.setCreateDate(Utils.getCurrentDateYYMMDD());
+                sendEmailDTO.setSendDate(Utils.getCurrentDateYYMMDD());
+                mailSendService.insertMailSend(sendEmailDTO);
+
                 return ResultCode.OK;
             }
 
@@ -355,6 +410,10 @@ public class UserService implements UserServiceKeycloak {
         createUser.setFirstName(user.getFirstName());
         createUser.setLastName(user.getLastName());
         createUser.setEnabled(true);
+
+        createUser.setEmailVerified(false);
+        createUser.setRequiredActions(null);
+
         Map<String, List<String>> attributes = new HashedMap<>();
         attributes.put(UserOtherClaim.USER_LOCALE, Arrays.asList(user.getUserLocale()));
 
@@ -371,7 +430,7 @@ public class UserService implements UserServiceKeycloak {
         attributes.put(UserOtherClaim.AUTH, Arrays.asList(user.getUserAuth()));
         attributes.put(UserOtherClaim.USE_YN, Arrays.asList(user.getUseYn()));
         attributes.put(UserOtherClaim.USER_EMAIL, Arrays.asList(user.getUserEmail()));
-
+        attributes.put(UserOtherClaim.PASSWORD_INIT_YN, Arrays.asList(CommonConstants.PASSWORD_INIT_Y) );
 
         createUser.setAttributes(attributes);
 
@@ -429,7 +488,39 @@ public class UserService implements UserServiceKeycloak {
         }else{
             dto.setUserName(dto.getFirstName().concat(dto.getLastName()));
         }
-
         return dto;
+    }
+    public boolean validUserPassword(String userEmail, String password) {
+
+        if (StringUtil.isEmpty(userEmail)) {
+            throw new IllegalArgumentException("validUserPassword() userName can not be empty");
+        }
+        if (StringUtil.isEmpty(password)) {
+            throw new IllegalArgumentException("validUserPassword() password can not be empty");
+        }
+        HttpHeaders headers = buildHeader();
+        MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
+
+        params.add("client_id", currentUserService.getRealmInfo().getClientId());
+        params.add("client_secret", currentUserService.getRealmInfo().getClientSecret());
+        params.add("username", userEmail);
+        params.add("password", password);
+        params.add("grant_type", "password");
+        String tokenUrl = String.format("%s/realms/%s/protocol/openid-connect/token", this.authServerUrl, currentUserService.getRealmInfo().getRealmName());
+
+        HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<>(params, headers);
+
+        try {
+            this.restTemplate.postForEntity(tokenUrl, request, TokenDTO.class, params);
+            return true;
+        } catch (Exception e) {
+            return false;
+        }
+    }
+    private HttpHeaders buildHeader() {
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
+        headers.setAccept(Collections.singletonList(MediaType.APPLICATION_JSON));
+        return headers;
     }
 }
