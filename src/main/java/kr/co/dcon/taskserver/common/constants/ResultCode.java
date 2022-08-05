@@ -30,6 +30,7 @@ public enum ResultCode {
 	SERVER_ERROR(9500, "internalServerError", "내부 서버 오류"),
 	INSUFFICIENT_PARAMETER(9601, "insufficient parameter", "인자 부족"),
 	INVALID_PARAMETER(9602, "invalid parameter", "바르지 못한 인자"),
+	INVALID_PARAMETER_PASSWORD(9603, "invalid parameter password", "패스워드가 유효하지 않습니다."),
 
 
 	SEND_MAIL_FAIL(1000, "Send mail Fail", "메일 보내기 실패"),
