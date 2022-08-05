@@ -42,6 +42,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.util.ObjectUtils;
+import org.springframework.util.StringUtils;
 import org.springframework.web.client.RestTemplate;
 
 import javax.ws.rs.BadRequestException;
@@ -334,7 +335,7 @@ public class UserService implements UserServiceKeycloak {
     @Transactional
     public ResultCode createUser(UserCreateDTO user) {
 
-        String password = Utils.getRandomString();
+//        String password = Utils.getRandomString();
 
         try {
             Keycloak keycloak = buildKeycloak();
@@ -344,7 +345,13 @@ public class UserService implements UserServiceKeycloak {
 
             UserRepresentation createUser = new UserRepresentation();
             createUser = setInsertUserRepresentation(createUser, user);
-            CredentialRepresentation credential = setCredential(password);
+
+            if (StringUtils.isEmpty(user.getPassword())) {
+                return ResultCode.INVALID_PARAMETER_PASSWORD;
+            }
+
+//            CredentialRepresentation credential = setCredential(password);
+            CredentialRepresentation credential = setCredential(user.getPassword());
             createUser.setCredentials(Arrays.asList(credential));
 
             int userCount = userMapper.selectKeyCloakUserCount(user);
@@ -353,22 +360,19 @@ public class UserService implements UserServiceKeycloak {
                 return ResultCode.USER_EXIST_ALREADY;
             } else {
 
-                SendEmailDTO sendEmailDTO = new SendEmailDTO();
-                try {
-                    usersResource.create(createUser);
-                    // TODO : 이메일을 보낸다.
-                    sendEmailDTO.setSendYn("Y");
-                } catch (Exception e) {
-                    sendEmailDTO.setSendYn("N");
-                }
-                // 사용자에게 임의로 생성된 패스워드 이메일 공지 후 히스토리 저장
+                usersResource.create(createUser);
+                // TODO : 임의로 생성된 패스워드 공지 이메일을 보낸다.?
 
-                sendEmailDTO.setUserName(createUser.getUsername());
-                sendEmailDTO.setUserEmail(createUser.getEmail());
-                sendEmailDTO.setSendType(CommonConstants.EMAIL_PASSWORD_INIT);
-                sendEmailDTO.setCreateDate(Utils.getCurrentDateYYMMDD());
-                sendEmailDTO.setSendDate(Utils.getCurrentDateYYMMDD());
-                mailSendService.insertMailSend(sendEmailDTO);
+                // 사용자에게 임의로 생성된 패스워드 이메일 공지 후 히스토리 저장??
+                // 사용자에게 패스워드 받는 것으로 수정..
+//                    SendEmailDTO sendEmailDTO = new SendEmailDTO();
+//                    sendEmailDTO.setSendYn("Y");
+//                    sendEmailDTO.setUserName(createUser.getUsername());
+//                    sendEmailDTO.setUserEmail(createUser.getEmail());
+//                    sendEmailDTO.setSendType(CommonConstants.EMAIL_PASSWORD_INIT);
+//                    sendEmailDTO.setCreateDate(Utils.getCurrentDateYYMMDD());
+//                    sendEmailDTO.setSendDate(Utils.getCurrentDateYYMMDD());
+//                    mailSendService.insertMailSend(sendEmailDTO);
 
                 return ResultCode.OK;
             }
