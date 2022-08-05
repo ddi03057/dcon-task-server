@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="kr.co.dcon.taskserver.testYh.mapper.TestYhMapper">
+
+    <sql id="testYhList">
+        SELECT username AS userName,
+               useremail AS userEmail,
+               seq AS seq
+        FROM testYh
+
+
+    </sql>
+
+    <select id="selectTestYhListCountTotal" parameterType="kr.co.dcon.taskserver.testYh.dto.TestYhListReqDTO" resultType="java.lang.Integer">
+        SELECT COUNT(*)
+        FROM(
+        <include refid="testYhList"/>
+        )A
+    </select>
+
+    <select id="selectTestYhList" parameterType="kr.co.dcon.taskserver.testYh.dto.TestYhListReqDTO" resultType="kr.co.dcon.taskserver.testYh.dto.TestYhOverView">
+
+        <include refid="testYhList"/>
+
+    </select>
+
+    <select id="selectTestYhDetail" parameterType="kr.co.dcon.taskserver.testYh.dto.TestYhListReqDTO" resultType="kr.co.dcon.taskserver.testYh.dto.TestYhDTO">
+        SELECT username AS userName,
+               useremail AS userEmail,
+               seq AS seq
+        FROM testYh
+        WHERE seq = (SELECT max(seq) FROM testYh)
+
+    </select>
+
+    <insert id="testYhInsert" parameterType="kr.co.dcon.taskserver.testYh.dto.TestYhReqDTO">
+        INSERT INTO testYh
+        (userEmail,
+         userName)
+        VALUES (#{userEmail},
+                #{userName}
+               )
+
+    </insert>
+
+    <update id="testYhUpdate" parameterType="kr.co.dcon.taskserver.testYh.dto.TestYhReqDTO">
+        UPDATE testYh
+        SET userEmail = #{userEmail},
+            userName =  #{userName}
+        WHERE seq = #{seq}
+    </update>
+
+    <delete id="deleteTestYh" parameterType="map">
+
+        DELETE FROM testYh   WHERE seq = #{id}
+    </delete>
+
+</mapper>
