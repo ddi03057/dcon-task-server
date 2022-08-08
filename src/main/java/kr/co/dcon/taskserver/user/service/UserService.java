@@ -428,7 +428,6 @@ public class UserService implements UserServiceKeycloak {
         attributes.put(UserOtherClaim.UPDATED_ID, Arrays.asList(currentUserService.getCurrentUser().getUserId()));
         attributes.put(UserOtherClaim.UPDATED_DATE, Arrays.asList(Utils.getCurrentDateYYMMDD()));
 
-//        attributes.put(UserOtherClaim.USER_TEL_NO, Arrays.asList(user.getUserTelNo()));
         attributes.put(UserOtherClaim.USER_NAME, Arrays.asList(userFullName));
         attributes.put(UserOtherClaim.ERROR_CNT, Arrays.asList(String.valueOf(user.getErrorCnt())));
         attributes.put(UserOtherClaim.AUTH, Arrays.asList(user.getUserAuth()));
