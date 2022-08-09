@@ -41,5 +41,6 @@ public class UserDTO {
     }
 
     public String getPasswordInitYn() { return String.valueOf(this.token.getOtherClaims().get(UserOtherClaim.PASSWORD_INIT_YN));}
-
+    @ApiModelProperty(value = "userLocale", notes = "userLocale", example = "ko")
+    public String getUserLocale() { return String.valueOf(this.token.getOtherClaims().get(UserOtherClaim.USER_LOCALE));}
 }
