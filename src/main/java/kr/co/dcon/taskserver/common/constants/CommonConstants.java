@@ -48,6 +48,9 @@ public final class CommonConstants {
 	public static final String EMAIL_PASSWORD_INIT = "IP";
 	public static final String EMAIL_PASSWORD_RESET = "RP";
 
+	public static final String dev = "DEV";
+	public static final String local = "LOCAL";
+	public static final String prod = "PROD";
 	public static final String[] KEY_CLOAK_PROPERTY_ARR = {"ERROR_CNT", "USE_YN", "UPDATE_DATE", "UPDATE_ID", "USER_AUTH", "USER_EMAIL", "USER_LOCALE", "USER_NAME"};
 
 }

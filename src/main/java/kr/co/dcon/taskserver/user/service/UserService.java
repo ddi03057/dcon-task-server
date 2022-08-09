@@ -81,11 +81,12 @@ public class UserService implements UserServiceKeycloak {
     public static String FRIST_NAME = "firstName";
     public static String LAST_NAME = "lastName";
 
+    @Value("${front.env}")
+    private String env;
 
     private static final String[] attributeArr = {UserOtherClaim.USER_NAME, UserOtherClaim.USER_LOCALE, UserOtherClaim.ERROR_CNT
                                                 , UserOtherClaim.UPDATED_ID, UserOtherClaim.UPDATED_DATE, UserOtherClaim.AUTH
                                                 , UserOtherClaim.USER_EMAIL, UserOtherClaim.USE_YN};
-//    private static final String[] ignoreProperties = {"userId", "userEmail", "email", "useYn", FRIST_NAME, LAST_NAME};
     private static final String[] ignoreProperties = {"userId", "email", "firstName", "lastName", "userFullName"};
 
     public UserService(CurrentUserService currentUserService, UserMapper userMapper, RestTemplate restTemplate, MailSendService mailSendService) {
@@ -106,7 +107,10 @@ public class UserService implements UserServiceKeycloak {
         KeycloakSecurityContext context = keycloakPrincipal.getKeycloakSecurityContext();
         String nowToken = context.getTokenString();
 
-        log.info("nowToken :  {}", "Bearer " + nowToken);
+        if(CommonConstants.local.equals(env) || CommonConstants.dev.equals(env)){
+            log.info("nowToken :  {}", "Bearer " + nowToken);
+        }
+
 
         AccessToken accessToken = context.getToken();
         String userName = String.valueOf(accessToken.getOtherClaims().get(UserOtherClaim.USER_NAME));
