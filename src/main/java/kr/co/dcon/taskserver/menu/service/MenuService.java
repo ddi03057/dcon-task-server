@@ -3,10 +3,7 @@ package kr.co.dcon.taskserver.menu.service;
 import kr.co.dcon.taskserver.auth.service.CurrentUserService;
 import kr.co.dcon.taskserver.common.dto.ResponseDTO;
 import kr.co.dcon.taskserver.common.util.RestTemplateUtil;
-import kr.co.dcon.taskserver.menu.dto.MenuLeftListReqDTO;
-import kr.co.dcon.taskserver.menu.dto.MenuListDTO;
-import kr.co.dcon.taskserver.menu.dto.MenuTopListDTO;
-import kr.co.dcon.taskserver.menu.dto.MenuTopListReqDTO;
+import kr.co.dcon.taskserver.menu.dto.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.ParameterizedTypeReference;
@@ -39,10 +36,15 @@ public class MenuService {
 
 
     public ResponseDTO<MenuListDTO> selectMenuList(MenuLeftListReqDTO reqDTO) {
-        String url = taskUrl + "/menu/list/" + reqDTO.getUserId();;
+        String url = taskUrl + "/menu/list/" + reqDTO.getUserId();
 
         return RestTemplateUtil.getForResponseDTO(reqDTO.getUrlToForward(url), new ParameterizedTypeReference<ResponseDTO<MenuListDTO>>() {
         });
     }
 
+    public ResponseDTO<MenuInfoDTO> SelectMenuUserList(MenuTopListReqDTO reqDTO) {
+        String url = taskUrl + "/menu//menuTopUser/" + reqDTO.getUserId();;
+        return RestTemplateUtil.getForResponseDTO(reqDTO.getUrlToForward(url), new ParameterizedTypeReference<ResponseDTO<MenuInfoDTO>>() {
+        });
+    }
 }

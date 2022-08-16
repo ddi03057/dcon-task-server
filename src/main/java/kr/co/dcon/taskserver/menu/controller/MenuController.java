@@ -3,10 +3,7 @@ package kr.co.dcon.taskserver.menu.controller;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import kr.co.dcon.taskserver.common.dto.ResponseDTO;
-import kr.co.dcon.taskserver.menu.dto.MenuLeftListReqDTO;
-import kr.co.dcon.taskserver.menu.dto.MenuListDTO;
-import kr.co.dcon.taskserver.menu.dto.MenuTopListDTO;
-import kr.co.dcon.taskserver.menu.dto.MenuTopListReqDTO;
+import kr.co.dcon.taskserver.menu.dto.*;
 import kr.co.dcon.taskserver.menu.service.MenuService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -42,5 +39,11 @@ public class MenuController {
     public ResponseDTO<MenuListDTO> selectMenuList(@Valid MenuLeftListReqDTO reqDTO) {
         return menuService.selectMenuList(reqDTO);
 
+    }
+
+    @ApiOperation(value = "menu top list", notes = " menu top list")
+    @GetMapping("/getMenuUserList")
+    public ResponseDTO<MenuInfoDTO> SelectMenuUserList(@Valid MenuTopListReqDTO reqDTO) {
+        return menuService.SelectMenuUserList(reqDTO);
     }
 }
