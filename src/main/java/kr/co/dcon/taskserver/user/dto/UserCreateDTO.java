@@ -2,8 +2,6 @@ package kr.co.dcon.taskserver.user.dto;
 
 import lombok.Data;
 
-import javax.validation.constraints.NotNull;
-
 @Data
 public class UserCreateDTO {
 
