@@ -15,5 +15,10 @@ public class MenuInfoDTO {
     @ApiModelProperty(value = "메뉴헤더명", notes = "메뉴헤더명", example = "메뉴헤더명")
     private boolean hiddenOnCollapse;
 
+    @ApiModelProperty(value = "projectId", notes = "projectId", example = "projectId")
+    private String projectId;
+
+    @ApiModelProperty(value = "projectCnt", notes = "projectCnt", example = "projectCnt")
+    private int projectCnt;
 
 }

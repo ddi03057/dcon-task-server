@@ -20,6 +20,9 @@ public class MenuTopListReqDTO implements Forwardable {
     @ApiModelProperty(value = "사용자 권한", notes = "사용자 권한", example = "admin")
     private String userAuth;
 
+    @ApiModelProperty(value = "projectId", notes = "projectId", example = "71b6e619-3acf-4284-9e2e-f0a73188a533")
+    private String projectId;
+
     @Override
     public String getUrlToForward(String baseUrl) {
         StringBuilder urlParam = new StringBuilder();
@@ -28,6 +31,7 @@ public class MenuTopListReqDTO implements Forwardable {
         urlParam.append("?useYn=").append(useYn);
         urlParam.append("&userAuth=").append(userAuth);
         urlParam.append("&userid=").append(userId);
+        urlParam.append("&projectId=").append(projectId);
 
         return urlParam.toString();
     }
