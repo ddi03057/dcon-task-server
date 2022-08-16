@@ -1,13 +1,8 @@
 package kr.co.dcon.taskserver.project.dto;
 
 import io.swagger.annotations.ApiModelProperty;
-import kr.co.dcon.taskserver.common.dto.Forwardable;
 import lombok.Data;
-import org.apache.http.client.utils.URIBuilder;
-import org.springframework.web.util.UriComponentsBuilder;
 
-import java.net.URL;
-import java.util.ArrayList;
 import java.util.List;
 
 @Data
